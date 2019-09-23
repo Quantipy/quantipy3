@@ -1,7 +1,7 @@
 # Quantipy
 
 ### Quantipy for Python 3
-This branch is a port of Quantipy from Python 2.x to Python 3. The tests are not all working, but it can be imported and used for basic exploration such as Dataset.crosstab().
+This repository is a port of [Quantipy](https://www.github.com/quantipy/quantipy) from Python 2.x to Python 3. The tests are not all working, but it can be imported and used for basic exploration such as Dataset.crosstab().
 
 ### Python for people data
 Quantipy is an open-source data processing, analysis and reporting software project that builds on the excellent pandas and numpy libraries. Aimed at people data, Quantipy offers support for native handling of special data types like multiple choice variables, statistical analysis using case or observation weights, DataFrame metadata and pretty data exports.
@@ -18,18 +18,18 @@ Quantipy is an open-source data processing, analysis and reporting software proj
 
 #### Contributors
 - Alexander Buchhammer, Alasdair Eaglestone, James Griffiths, Kerstin Müller : https://yougov.co.uk
-- Datasmoothie’s Birgir Hrafn Sigurðsson and Geir Freysson: http://datasmoothie.io/
+- Datasmoothie’s Birgir Hrafn Sigurðsson and Geir Freysson: http://www.datasmoothie.com
 
 ## Docs
 [View the documentation at readthedocs.org](http://quantipy.readthedocs.io/)
 
 ### Required libraries before installation
-We recommend installing [Anaconda for Python 2.7](http://continuum.io/downloads)
+We recommend installing [Anaconda for Python 3](http://continuum.io/downloads)
 which will provide most of the required libraries and an easy means of keeping
 them up-to-date over time.
-  - Python 2.7.8
-  - Numpy 1.11.3
-  - Pandas 0.19.2
+  - Python 3
+  - Numpy 
+  - Pandas
 
 ### Developing
 
@@ -38,7 +38,7 @@ them up-to-date over time.
 Dependencies numpy and scipy are handled by conda.
 Create a virtual environment:
 ```python
-conda create -n envqp python=2.7 numpy==1.11.3 scipy==0.18.1
+conda create -n envqp python=3
 ```
 Install in editable mode:
 ```python
@@ -50,7 +50,7 @@ Dependencies numpy and scipy are handled in the installation.
 
 Create a virtual environment:
 ```python
-conda create -n envqp python=2.7
+conda create -n envqp python=3
 ```
 Install in editable mode:
 ```python
