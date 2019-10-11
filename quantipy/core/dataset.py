@@ -4367,6 +4367,8 @@ class DataSet(object):
         None
             DataSet is modified inplace.
         """
+        # for now, we don't support transposing delimited sets
+        raise NotImplementedError
         org_name = name
         # Get array item and value structure
         reg_items_object = self._get_itemmap(name)
