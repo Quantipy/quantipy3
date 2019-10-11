@@ -1,10 +1,38 @@
 # Quantipy
 
-### Quantipy for Python 3
-This repository is a port of [Quantipy](https://www.github.com/quantipy/quantipy) from Python 2.x to Python 3. The tests are not all working, but it can be imported and used for basic exploration such as Dataset.crosstab().
-
 ### Python for people data
 Quantipy is an open-source data processing, analysis and reporting software project that builds on the excellent pandas and numpy libraries. Aimed at people data, Quantipy offers support for native handling of special data types like multiple choice variables, statistical analysis using case or observation weights, DataFrame metadata and pretty data exports.
+
+### Quantipy for Python 3
+This repository is a port of [Quantipy](https://www.github.com/quantipy/quantipy) from Python 2.x to Python 3.
+
+Below is a list of the tests that are passing, and those that are not.
+
+When adding features to classes such as DataSet, the test suite for DataSet can be run with the command
+
+python3 -m unittest tests.test_dataset
+
+#### Feature support in python3 version
+- :heavy_check_mark: DataSet
+- :heavy_check_mark: RIM
+- :heavy_check_mark: Recode
+- :heavy_check_mark: Merging
+- :heavy_check_mark: Logic Views
+- :heavy_check_mark: Test Link
+- :heavy_check_mark: Complex Logic
+- :heavy_check_mark: Excel
+- :heavy_check_mark: IO Dimensions
+
+#### Tests that are not passing
+- :heavy_multiplication_x: Batch
+- :heavy_multiplication_x: Chain
+- :heavy_multiplication_x: Cluster
+- :heavy_multiplication_x: Banked Chains
+- :heavy_multiplication_x: Rules
+- :heavy_multiplication_x: Stack
+- :heavy_multiplication_x: View Manager
+- :heavy_multiplication_x: View Mapper
+- :heavy_multiplication_x: View Maps
 
 ### Key features
   - Reads plain .csv, converts from Dimensions, SPSS, Decipher, or Ascribe
@@ -28,7 +56,7 @@ We recommend installing [Anaconda for Python 3](http://continuum.io/downloads)
 which will provide most of the required libraries and an easy means of keeping
 them up-to-date over time.
   - Python 3
-  - Numpy 
+  - Numpy
   - Pandas
 
 ### Developing
@@ -143,105 +171,3 @@ dataset[['q2', 'q2_rc']].head(5)
 3       NaN    NaN
 4       NaN    NaN
 ```
-
-**Analyse and create aggregations batchwise**
-
-A ``qp.Batch`` as a subclass of ``qp.DataSet`` is a container for structuring
-data analysis and aggregation specifications:
-```python
-batch = dataset.add_batch('batch1')
-batch.add_x(['q2', 'q2b', 'q5'])
-batch.add_y(['gender', 'q2_rc'])
-```
-
-The batch definitions are stored in ``dataset._meta['sets']['batches']['batch1']``.
-A ``qp.Stack`` can be created and populated based on the available ``qp.Batch``
-definitions stored in the ``qp.DataSet``:
-```python
-stack = dataset.populate()
-stack.describe()
-```
-
-```
-                data     filter     x       y  view  #
-0   Example Data (A)  no_filter   q2b       @   NaN  1
-1   Example Data (A)  no_filter   q2b   q2_rc   NaN  1
-2   Example Data (A)  no_filter   q2b  gender   NaN  1
-3   Example Data (A)  no_filter    q2       @   NaN  1
-4   Example Data (A)  no_filter    q2   q2_rc   NaN  1
-5   Example Data (A)  no_filter    q2  gender   NaN  1
-6   Example Data (A)  no_filter    q5       @   NaN  1
-7   Example Data (A)  no_filter  q5_3       @   NaN  1
-8   Example Data (A)  no_filter  q5_3   q2_rc   NaN  1
-9   Example Data (A)  no_filter  q5_3  gender   NaN  1
-10  Example Data (A)  no_filter  q5_2       @   NaN  1
-11  Example Data (A)  no_filter  q5_2   q2_rc   NaN  1
-12  Example Data (A)  no_filter  q5_2  gender   NaN  1
-13  Example Data (A)  no_filter  q5_1       @   NaN  1
-14  Example Data (A)  no_filter  q5_1   q2_rc   NaN  1
-15  Example Data (A)  no_filter  q5_1  gender   NaN  1
-16  Example Data (A)  no_filter  q5_6       @   NaN  1
-17  Example Data (A)  no_filter  q5_6   q2_rc   NaN  1
-18  Example Data (A)  no_filter  q5_6  gender   NaN  1
-19  Example Data (A)  no_filter  q5_5       @   NaN  1
-20  Example Data (A)  no_filter  q5_5   q2_rc   NaN  1
-21  Example Data (A)  no_filter  q5_5  gender   NaN  1
-22  Example Data (A)  no_filter  q5_4       @   NaN  1
-23  Example Data (A)  no_filter  q5_4   q2_rc   NaN  1
-24  Example Data (A)  no_filter  q5_4  gender   NaN  1
-```
-
-Each of the defintions is a ``qp.Link``. These can be e.g. analyzed in various ways,
-e.g. grouped categories can be calculated using the engine ``qp.Quantity``:
-```python
-link = stack[dataset.name]['no_filter']['q2']['q2_rc']
-q = qp.Quantity(link)
-q.group(frange('1-6, 97'), axis='x', expand='after')
-q.count()
-```
-
-```
-Question          q2_rc
-Values              All       1    98
-Question Values
-q2       All     2999.0  2946.0  53.0
-         net     2946.0  2946.0   0.0
-         1       1127.0  1127.0   0.0
-         2       1366.0  1366.0   0.0
-         3       1721.0  1721.0   0.0
-         4        649.0   649.0   0.0
-         5        458.0   458.0   0.0
-         6        428.0   428.0   0.0
-         97       492.0   492.0   0.0
-```
-
-We can also simply add so called ``qp.View``s to the whole of the ``qp.Stack``:
-```python
-stack.aggregate(['counts', 'c%'], False, verbose=False)
-stack.add_stats('q2b', stats=['mean'], rescale={1: 100, 2:50, 3:0}, verbose=False)
-
-stack.describe('view', 'x')
-```
-
-```
-x                                q2  q2b   q5  q5_1  q5_2  q5_3  q5_4  q5_5  q5_6
-view
-x|d.mean|x[{100,50,0}]:|||stat  NaN  3.0  NaN   NaN   NaN   NaN   NaN   NaN   NaN
-x|f|:|y||c%                     3.0  3.0  1.0   3.0   3.0   3.0   3.0   3.0   3.0
-x|f|:|||counts                  3.0  3.0  1.0   3.0   3.0   3.0   3.0   3.0   3.0
-```
-
-```python
-link = stack[dataset.name]['no_filter']['q2b']['q2_rc']
-link['x|d.mean|x[{100,50,0}]:|||stat']
-```
-
-```
-Question             q2_rc
-Values                  1          98
-Question Values
-q2b      mean    52.354167  43.421053
-```
-
-## More examples
-There is so much more you can do with Quantipy... why don't you explore the docs to find out!
