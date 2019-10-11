@@ -6,9 +6,7 @@ Quantipy is an open-source data processing, analysis and reporting software proj
 ### Quantipy for Python 3
 This repository is a port of [Quantipy](https://www.github.com/quantipy/quantipy) from Python 2.x to Python 3.
 
-Below is a list of the tests that are passing, and those that are not.
-
-When adding features to classes such as DataSet, the test suite for DataSet can be run with the command
+When adding features to classes such as DataSet, the test suite for DataSet can be run with the command, until the test suite is cleaned up.
 
 `python3 -m unittest tests.test_dataset`
 
