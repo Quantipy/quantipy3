@@ -3,7 +3,7 @@ import os.path
 import numpy as np
 import pandas as pd
 from pandas.util.testing import assert_frame_equal
-import test_helper
+import tests.test_helper
 import copy
 
 from operator import lt, le, eq, ne, ge, gt
@@ -18,8 +18,8 @@ if pd.__version__ == '0.19.2':
     __index_symbol__[Index.symmetric_difference] = '^'
     pd_symmetric_difference = Index.symmetric_difference
 else:
-    __index_symbol__[Index.sym_diff] = '^'
-    pd_symmetric_difference = Index.sym_diff
+    __index_symbol__[Index.symmetric_difference] = '^'
+    pd_symmetric_difference = Index.symmetric_difference
 
 from collections import defaultdict, OrderedDict
 from quantipy.core.stack import Stack
@@ -62,7 +62,7 @@ class TestStackObject(unittest.TestCase):
         # Load Example Data (A) data and meta into self
         name_data = '%s.csv' % (project_name)
         path_data = '%s%s' % (self.path, name_data)
-        self.example_data_A_data = pd.DataFrame.from_csv(path_data)
+        self.example_data_A_data = pd.read_csv(path_data)
         name_meta = '%s.json' % (project_name)
         path_meta = '%s%s' % (self.path, name_meta)
         self.example_data_A_meta = load_json(path_meta)
@@ -98,7 +98,7 @@ class TestStackObject(unittest.TestCase):
                 # Test _has_all raises TypeError
                 func, values = has_any(test_values)
             self.assertEqual(
-                error.exception.message[:54],
+                str(error.exception)[:54],
                 "The values given to has_any() must be given as a list."
             )
             # Test not version
@@ -106,7 +106,7 @@ class TestStackObject(unittest.TestCase):
                 # Test _has_all raises TypeError
                 func, values = not_any(test_values)
             self.assertEqual(
-                error.exception.message[:54],
+                str(error.exception)[:54],
                 "The values given to not_any() must be given as a list."
             )
 
@@ -118,7 +118,7 @@ class TestStackObject(unittest.TestCase):
                 # Test _has_all raises TypeError
                 func, values = has_any(test_values)
             self.assertEqual(
-                error.exception.message[:54],
+                str(error.exception)[:54],
                 "The values given to has_any() are not correctly typed."
             )
             # Test not version
@@ -126,7 +126,7 @@ class TestStackObject(unittest.TestCase):
                 # Test _has_all raises TypeError
                 func, values = not_any(test_values)
             self.assertEqual(
-                error.exception.message[:54],
+                str(error.exception)[:54],
                 "The values given to not_any() are not correctly typed."
             )
 
@@ -231,7 +231,7 @@ class TestStackObject(unittest.TestCase):
             # Test _has_all raises TypeError
             idx = _has_any(start_time, test_values)
         self.assertEqual(
-            error.exception.message[:56],
+            str(error.exception)[:56],
             "The series given to has_any() must be a supported dtype."
         )
         # Test not version
@@ -240,7 +240,7 @@ class TestStackObject(unittest.TestCase):
             # Test _has_all raises TypeError
             idx = _not_any(start_time, test_values)
         self.assertEqual(
-            error.exception.message[:56],
+            str(error.exception)[:56],
             "The series given to not_any() must be a supported dtype."
         )
 
@@ -270,14 +270,14 @@ class TestStackObject(unittest.TestCase):
             with self.assertRaises(TypeError) as error:
                 func, values = has_all(test_values)
             self.assertEqual(
-                error.exception.message[:54],
+                str(error.exception)[:54],
                 "The values given to has_all() must be given as a list."
             )
             # Test not version
             with self.assertRaises(TypeError) as error:
                 func, values = not_all(test_values)
             self.assertEqual(
-                error.exception.message[:54],
+                str(error.exception)[:54],
                 "The values given to not_all() must be given as a list."
             )
 
@@ -288,14 +288,14 @@ class TestStackObject(unittest.TestCase):
             with self.assertRaises(TypeError) as error:
                 func, values = has_all(test_values)
             self.assertEqual(
-                error.exception.message[:54],
+                str(error.exception)[:54],
                 "The values given to has_all() are not correctly typed."
             )
             # Test not version
             with self.assertRaises(TypeError) as error:
                 func, values = not_all(test_values)
             self.assertEqual(
-                error.exception.message[:54],
+                str(error.exception)[:54],
                 "The values given to not_all() are not correctly typed."
             )
 
@@ -360,7 +360,7 @@ class TestStackObject(unittest.TestCase):
             # Test _has_all returns correct results
             idx = _has_all(q2, test_values, True)
             resulting_columns = q2[idx].str.get_dummies(';').columns
-            self.assertItemsEqual(
+            self.assertCountEqual(
                 [int(col) for col in resulting_columns],
                 test_values
             )
@@ -368,7 +368,7 @@ class TestStackObject(unittest.TestCase):
             not_idx = _not_all(q2, test_values, True)
             self.assertTrue(len(idx.intersection(not_idx))==0)
             self.assertTrue(not any(
-                q2[not_idx].str.get_dummies(';')[test_values].all()))
+                q2[not_idx].str.get_dummies(';')[[str(i) for i in test_values]].all()))
         self.assertTrue((q2.fillna(0)==q2_verify_unchanged.fillna(0)).all())
 
 
@@ -382,7 +382,7 @@ class TestStackObject(unittest.TestCase):
             test_values = [1, 2]
             idx = _has_all(start_time, test_values)
         self.assertEqual(
-            error.exception.message[:56],
+            str(error.exception)[:56],
             "The series given to has_all() must be a supported dtype."
         )
         # Test not version
@@ -390,7 +390,7 @@ class TestStackObject(unittest.TestCase):
             test_values = [1, 2]
             idx = _not_all(start_time, test_values)
         self.assertEqual(
-            error.exception.message[:56],
+            str(error.exception)[:56],
             "The series given to not_all() must be a supported dtype."
         )
 
@@ -506,7 +506,7 @@ class TestStackObject(unittest.TestCase):
             with self.assertRaises(IndexError) as error:
                 func, values, exclusive = has_count(responses)
             self.assertEqual(
-                error.exception.message[:85],
+                str(error.exception)[:85],
                 "The responses list given to has_count() must have "
                 "either 1, 2 or 3 items in the form:"
             )
@@ -515,7 +515,7 @@ class TestStackObject(unittest.TestCase):
                 # Test _has_all raises TypeError
                 func, values, exclusive = not_count(responses)
             self.assertEqual(
-                error.exception.message[:85],
+                str(error.exception)[:85],
                 "The responses list given to not_count() must have "
                 "either 1, 2 or 3 items in the form:"
             )
@@ -531,7 +531,7 @@ class TestStackObject(unittest.TestCase):
             with self.assertRaises(TypeError) as error:
                 func, values = has_count(responses)
             self.assertEqual(
-                error.exception.message[:59],
+                str(error.exception)[:59],
                 "The count target given to has_count() is "
                 "incorrectly typed."
             )
@@ -539,7 +539,7 @@ class TestStackObject(unittest.TestCase):
             with self.assertRaises(TypeError) as error:
                 func, values = not_count(responses)
             self.assertEqual(
-                error.exception.message[:59],
+                str(error.exception)[:59],
                 "The count target given to not_count() is "
                 "incorrectly typed."
             )
@@ -559,7 +559,7 @@ class TestStackObject(unittest.TestCase):
             with self.assertRaises(TypeError) as error:
                 func, values = has_count(responses)
             self.assertEqual(
-                error.exception.message[:63],
+                str(error.exception)[:63],
                 "The values subset given to has_count() are "
                 "not correctly typed."
             )
@@ -567,7 +567,7 @@ class TestStackObject(unittest.TestCase):
             with self.assertRaises(TypeError) as error:
                 func, values = not_count(responses)
             self.assertEqual(
-                error.exception.message[:63],
+                str(error.exception)[:63],
                 "The values subset given to not_count() are "
                 "not correctly typed."
             )
@@ -579,7 +579,7 @@ class TestStackObject(unittest.TestCase):
             with self.assertRaises(TypeError) as error:
                 func, values = has_count(responses)
             self.assertEqual(
-                error.exception.message[:63],
+                str(error.exception)[:63],
                 "The values subset given to has_count() are "
                 "not correctly typed."
             )
@@ -587,7 +587,7 @@ class TestStackObject(unittest.TestCase):
             with self.assertRaises(TypeError) as error:
                 func, values = not_count(responses)
             self.assertEqual(
-                error.exception.message[:63],
+                str(error.exception)[:63],
                 "The values subset given to not_count() are "
                 "not correctly typed."
             )
@@ -609,7 +609,7 @@ class TestStackObject(unittest.TestCase):
             with self.assertRaises(TypeError) as error:
                 func, values = has_count(responses)
             self.assertEqual(
-                error.exception.message[:63],
+                str(error.exception)[:63],
                 "The values subset given to has_count() are"
                 " not correctly typed."
             )
@@ -617,7 +617,7 @@ class TestStackObject(unittest.TestCase):
             with self.assertRaises(TypeError) as error:
                 func, values = not_count(responses)
             self.assertEqual(
-                error.exception.message[:63],
+                str(error.exception)[:63],
                 "The values subset given to not_count() are"
                 " not correctly typed."
             )
@@ -795,7 +795,7 @@ class TestStackObject(unittest.TestCase):
             # Test _has_count raises TypeError
             idx = _has_count(start_time, test_values)
         self.assertEqual(
-            error.exception.message[:58],
+            str(error.exception)[:58],
         "The series given to has_count() must be a supported dtype."
         )
 
@@ -805,7 +805,7 @@ class TestStackObject(unittest.TestCase):
             # Test _has_count raises TypeError
             idx = _not_count(start_time, test_values)
         self.assertEqual(
-            error.exception.message[:58],
+            str(error.exception)[:58],
         "The series given to not_count() must be a supported dtype."
         )
 
@@ -899,7 +899,7 @@ class TestStackObject(unittest.TestCase):
         idx1, vkey1 = get_logic_index(q2, test_logic[0])
         idx2, vkey2 = get_logic_index(q2, test_logic[2])
         idx, vkey = get_logic_index(q2, test_logic)
-        self.assertItemsEqual(
+        self.assertCountEqual(
             idx,
             idx1.union(idx2)
         )
@@ -915,7 +915,7 @@ class TestStackObject(unittest.TestCase):
         idx1, vkey1 = get_logic_index(q2, test_logic[0])
         idx2, vkey2 = get_logic_index(q2, test_logic[2])
         idx, vkey = get_logic_index(q2, test_logic)
-        self.assertItemsEqual(
+        self.assertCountEqual(
             idx,
             idx1.intersection(idx2)
         )
@@ -931,7 +931,7 @@ class TestStackObject(unittest.TestCase):
         idx1, vkey1 = get_logic_index(q2, test_logic[0])
         idx2, vkey2 = get_logic_index(q2, test_logic[2])
         idx, vkey = get_logic_index(q2, test_logic)
-        self.assertItemsEqual(
+        self.assertCountEqual(
             idx,
             idx1.difference(idx2)
         )
@@ -948,14 +948,14 @@ class TestStackObject(unittest.TestCase):
         idx2, vkey2 = get_logic_index(q2, test_logic[2])
         idx, vkey = get_logic_index(q2, test_logic)
         if pd.__version__ == '0.19.2':
-            self.assertItemsEqual(
+            self.assertCountEqual(
                 idx,
                 idx1.symmetric_difference(idx2)
             )
         else:
-            self.assertItemsEqual(
+            self.assertCountEqual(
                 idx,
-                idx1.sym_diff(idx2)
+                idx1.symmetric_difference(idx2)
             )
 
         self.assertEqual(
@@ -971,7 +971,7 @@ class TestStackObject(unittest.TestCase):
         idx, vkey = get_logic_index(q2, test_logic, self.example_data_A_data)
         idx_q3, vkey_q3 = get_logic_index(q3, has_all([1, 2, 3]))
         idx_q3 = q2.dropna().index.intersection(idx_q3)
-        self.assertItemsEqual(
+        self.assertCountEqual(
             idx,
             idx_q3
         )
@@ -987,7 +987,7 @@ class TestStackObject(unittest.TestCase):
         q3 = self.example_data_A_data['q3']
         idx_q3, vkey_q3 = get_logic_index(q3, has_all([1, 2, 3]))
         idx_q3 = idx_q2.intersection(idx_q3)
-        self.assertItemsEqual(
+        self.assertCountEqual(
             idx,
             idx_q3
         )
@@ -1003,7 +1003,7 @@ class TestStackObject(unittest.TestCase):
         q3 = self.example_data_A_data['q3']
         idx_q3, vkey_q3 = get_logic_index(q3, has_all([1, 2, 3]))
         idx_q3 = q2.dropna().index.intersection(idx_q3.difference(idx_q2))
-        self.assertItemsEqual(
+        self.assertCountEqual(
             idx,
             idx_q3
         )
@@ -1027,7 +1027,7 @@ class TestStackObject(unittest.TestCase):
         idx, vkey = get_logic_index(q2, test_logic)
         idx1, vkey1 = get_logic_index(q2, test_logic[0])
         idx2, vkey2 = get_logic_index(q2, test_logic[2])
-        self.assertItemsEqual(
+        self.assertCountEqual(
             idx,
             idx1.intersection(idx2)
         )
@@ -1053,7 +1053,7 @@ class TestStackObject(unittest.TestCase):
         idx_q3 = idx_q2_a.intersection(idx_q3)
         idx_q2_b, vkey_q2_a = get_logic_index(q2, has_any([5, 6]))
         idx_q2_b = idx_q3.intersection(idx_q2_b)
-        self.assertItemsEqual(
+        self.assertCountEqual(
             idx,
             idx_q2_b
         )
@@ -1074,7 +1074,7 @@ class TestStackObject(unittest.TestCase):
         idx1, vkey1 = get_logic_index(q2, test_logic[1][0])
         idx2, vkey2 = get_logic_index(q2, test_logic[1][1])
         idx3, vkey3 = get_logic_index(q2, test_logic[1][2])
-        self.assertItemsEqual(
+        self.assertCountEqual(
             idx,
             idx1.union(idx2).union(idx3)
         )
@@ -1093,7 +1093,7 @@ class TestStackObject(unittest.TestCase):
         idx1, vkey1 = get_logic_index(q2, test_logic[1][0])
         idx2, vkey2 = get_logic_index(q2, test_logic[1][1])
         idx3, vkey3 = get_logic_index(q2, test_logic[1][2])
-        self.assertItemsEqual(
+        self.assertCountEqual(
             idx,
             idx1.intersection(idx2).intersection(idx3)
         )
@@ -1112,7 +1112,7 @@ class TestStackObject(unittest.TestCase):
         idx1, vkey1 = get_logic_index(q2, test_logic[1][0])
         idx2, vkey2 = get_logic_index(q2, test_logic[1][1])
         idx3, vkey3 = get_logic_index(q2, test_logic[1][2])
-        self.assertItemsEqual(
+        self.assertCountEqual(
             idx,
             idx1.difference(idx2).difference(idx3)
         )
@@ -1132,14 +1132,14 @@ class TestStackObject(unittest.TestCase):
         idx2, vkey2 = get_logic_index(q2, test_logic[1][1])
         idx3, vkey3 = get_logic_index(q2, test_logic[1][2])
         if pd.__version__ == '0.19.2':
-            self.assertItemsEqual(
+            self.assertCountEqual(
                 idx,
                 idx1.symmetric_difference(idx2).symmetric_difference(idx3)
             )
         else:
-            self.assertItemsEqual(
+            self.assertCountEqual(
                 idx,
-                idx1.sym_diff(idx2).sym_diff(idx3)
+                idx1.symmetric_difference(idx2).symmetric_difference(idx3)
             )
         self.assertEqual(
             vkey,
@@ -1160,7 +1160,7 @@ class TestStackObject(unittest.TestCase):
         idx1, vkey1 = get_logic_index(q2, has_all([1, 2]))
         idx2, vkey2 = get_logic_index(q2, has_any([3, 4]))
         idx3, vkey3 = get_logic_index(q2, has_count([3]))
-        self.assertItemsEqual(
+        self.assertCountEqual(
             idx,
             idx1.union(idx2).intersection(idx3)
         )
@@ -1349,12 +1349,12 @@ class TestStackObject(unittest.TestCase):
             0
         )
         if incl_na:
-            self.assertItemsEqual(
+            self.assertCountEqual(
                 series.index,
                 idx_a.union(idx_b)
             )
         else:
-            self.assertItemsEqual(
+            self.assertCountEqual(
                 series.dropna().index,
                 idx_a.union(idx_b)
             )
@@ -1390,4 +1390,3 @@ class TestStackObject(unittest.TestCase):
             dummies = dummies[cols]
 
         return dummies, _min, _max
-

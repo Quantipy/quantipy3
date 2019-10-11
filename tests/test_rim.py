@@ -49,11 +49,11 @@ class TestScheme(unittest.TestCase):
         self.assertIn('Apple', scheme.groups)
         scheme.add_group(name='Samsung', filter_def='ownership==2')
         self.assertIn('Samsung', scheme.groups)
-        
+
         # Check to see if the available methods to add filter are equal
         self.assertEqual(scheme.groups['Samsung']['filters'], 'ownership==2')
         self.assertEqual(scheme.groups['Apple']['filters'], 'ownership==1')
-        
+
         #The targets should be empty lists
         for key in scheme.groups['Apple']['targets']:
             self.assertEqual(scheme.groups['Apple']['targets'][key], [])
@@ -63,7 +63,7 @@ class TestScheme(unittest.TestCase):
         scheme.set_targets(group_name='Apple', targets=[
             {'gender': {1: 1234, 2:200}}
             ])
-                
+
         #Set valid targets
         valid_targets=[
             {'gender': {code: prop for code, prop
@@ -74,7 +74,7 @@ class TestScheme(unittest.TestCase):
                      in enumerate([20, 55, 12.5, 12.5], start=1)}},
             {'sta_wo': {code: prop for code, prop
                         in enumerate([50, 50], start=1)}},
-            {'abschluss': {code: prop for code, prop 
+            {'abschluss': {code: prop for code, prop
                            in enumerate([60, 40], start=1)}},
             {'q06': {code: prop for code, prop
                      in enumerate([20, 20, 20, 20, 20], start=1)}}
@@ -90,6 +90,6 @@ class TestScheme(unittest.TestCase):
                 "Motorola": 30
             }
         )
-        
-        self.assertItemsEqual(scheme._group_targets.keys(), ['Motorola', 'Apple', 'Samsung'])
-        self.assertItemsEqual(scheme._group_targets.values(), [0.3, 0.3, 0.4])
+
+        self.assertCountEqual(scheme._group_targets.keys(), ['Motorola', 'Apple', 'Samsung'])
+        self.assertCountEqual(scheme._group_targets.values(), [0.3, 0.3, 0.4])

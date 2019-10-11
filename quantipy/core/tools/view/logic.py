@@ -1094,7 +1094,7 @@ def _symmetric_difference(idxs):
         if pd.__version__ == '0.19.2':
             idx = idx.symmetric_difference(idx_part)
         else:
-            idx = idx.sym_diff(idx_part)
+            idx = idx.symmetric_difference(idx_part)
     return idx
 
 

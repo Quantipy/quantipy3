@@ -12,7 +12,7 @@ from quantipy.sandbox.excel import Excel
 from quantipy.sandbox.excel_formats_constants import _DEFAULT_ATTRIBUTES
 from quantipy.core.view_generators.view_specs import ViewManager
 
-import parameters_excel as p
+import tests.parameters_excel as p
 
 # -----------------------------------------------------------------------------
 PATH_DATA  = './tests/'
@@ -39,7 +39,7 @@ def _read_file(zipf, filename):
     try:
         f = zipf.read(filename)
     except KeyError:
-        print 'ERROR: Did not find %s in zip file' % filename
+        print('ERROR: Did not find {} in zip file').format(filename)
     else:
         return re.sub(ISO8601, '', f)
 

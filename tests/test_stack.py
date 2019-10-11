@@ -555,7 +555,7 @@ class TestStackObject(unittest.TestCase):
             index=['y'],
             query="x=='%s' and view=='x|f|x:|||cbase'" % xk[0]
         ).index.tolist()
-        self.assertItemsEqual(yk, lazy_y)
+        self.assertCountEqual(yk, lazy_y)
 
         # Test lazy x-keys when 1 y key is given
         self.stack.add_link(y=yk[0], views=['cbase'], weights=['weight_a'])
@@ -563,7 +563,7 @@ class TestStackObject(unittest.TestCase):
             index=['x'],
             query="y=='%s' and view=='x|f|x:||weight_a|cbase'" % yk[0]
         ).index.tolist()
-        self.assertItemsEqual(xk, lazy_x)
+        self.assertCountEqual(xk, lazy_x)
 
         # TO DO (these features are not yet supported)
         # - lazy providing only data keys
@@ -639,7 +639,7 @@ class TestStackObject(unittest.TestCase):
 
         # Test that query can be used in conjunction with index
         contents = self.stack.describe(index=['view'], query="x=='gender'")
-        self.assertItemsEqual(
+        self.assertCountEqual(
             contents.index.tolist(),
             [
                 'x|default|:|||default',
@@ -650,12 +650,12 @@ class TestStackObject(unittest.TestCase):
 
         # Test that query can be used in conjunction with columns
         contents = self.stack.describe(columns=['y'], query="x=='gender'")
-        self.assertItemsEqual(contents.index.tolist(), ['q2', 'q3', 'q8', 'q9'])
+        self.assertCountEqual(contents.index.tolist(), ['q2', 'q3', 'q8', 'q9'])
 
         # Test that query can be used in conjunction with index AND columns
         contents = self.stack.describe(index=['view'], columns=['y'], query="x=='gender'")
-        self.assertItemsEqual(contents.columns.tolist(), ['q2', 'q3', 'q8', 'q9'])
-        self.assertItemsEqual(
+        self.assertCountEqual(contents.columns.tolist(), ['q2', 'q3', 'q8', 'q9'])
+        self.assertCountEqual(
             contents.index.tolist(),
             [
                 'x|default|:|||default',
@@ -971,13 +971,13 @@ class TestStackObject(unittest.TestCase):
 
             for key in new_stack.keys():
                 # Verify that the x Variables are the same in the loaded file and the original stack
-                self.assertItemsEqual(new_stack[key].keys(), self.stack[key].keys())
+                self.assertCountEqual(new_stack[key].keys(), self.stack[key].keys())
                 for a_filter in new_stack[key].keys():
                     for x in new_stack[key][a_filter]:
                         # Verify that the y Variables are the same in the loaded file and the original stack
-                        self.assertItemsEqual(new_stack[key][a_filter][x].keys(), self.stack[key][a_filter][x].keys())
+                        self.assertCountEqual(new_stack[key][a_filter][x].keys(), self.stack[key][a_filter][x].keys())
                         for y in new_stack[key][a_filter][x]:
-                            self.assertItemsEqual(new_stack[key][a_filter][x][y].keys(), self.stack[key][a_filter][x][y].keys())
+                            self.assertCountEqual(new_stack[key][a_filter][x][y].keys(), self.stack[key][a_filter][x][y].keys())
                             for view in new_stack[key][a_filter][x][y]:
                             # Verify that the content of the dataframes is the same
                                 self.assertTrue(new_stack[key][a_filter][x][y][view].dataframe.equals(self.stack[key][a_filter][x][y][view].dataframe),
@@ -1363,27 +1363,27 @@ class TestStackObject(unittest.TestCase):
         if not dk is None:
             has_dks = contents['data'].unique()
             if isinstance(dk, (str, unicode)): dk = [dk]
-            self.assertItemsEqual(has_dks, dk)
+            self.assertCountEqual(has_dks, dk)
 
         if not fk is None:
             has_fks = contents['filter'].unique()
             if isinstance(fk, (str, unicode)): fk = [fk]
-            self.assertItemsEqual(has_fks, fk)
+            self.assertCountEqual(has_fks, fk)
 
         if not xk is None:
             has_xks = contents['x'].unique()
             if isinstance(xk, (str, unicode)): xk = [xk]
-            self.assertItemsEqual(has_xks, xk)
+            self.assertCountEqual(has_xks, xk)
 
         if not yk is None:
             has_yks = contents['y'].unique()
             if isinstance(yk, (str, unicode)): yk = [yk]
-            self.assertItemsEqual(has_yks, yk)
+            self.assertCountEqual(has_yks, yk)
 
         if not vk is None:
             has_vks = contents['view'].unique()
             if isinstance(vk, (str, unicode)): vk = [vk]
-            self.assertItemsEqual(has_vks, vk)
+            self.assertCountEqual(has_vks, vk)
 
     def setup_stack_Example_Data_A(self, **kwargs):
         self.stack = self.get_stack_Example_Data_A(**kwargs)

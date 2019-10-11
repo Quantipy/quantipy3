@@ -61,7 +61,7 @@ class TestClusterObject(unittest.TestCase):
 
         cluster = Cluster(name="ClusterName")
         self.assertIsInstance(cluster, Cluster)
-        self.assertItemsEqual([],cluster.keys())
+        self.assertCountEqual([],cluster.keys())
 
         exception_message = (
             "You must pass either a Chain, a list of Chains or a"
@@ -104,7 +104,7 @@ class TestClusterObject(unittest.TestCase):
 
         cluster = Cluster(name="ClusterName")
         self.assertIsInstance(cluster, Cluster)
-        self.assertItemsEqual([],cluster.keys())
+        self.assertCountEqual([],cluster.keys())
 
         chain_1 = self.stack0.get_chain(name="ChainName1", data_keys="Jan", x=x, y=y, views=[COUNTS])
         chain_2 = self.stack1.get_chain(name="ChainName2", data_keys="Feb", x=x, y=y, views=[COUNTS])
@@ -113,11 +113,11 @@ class TestClusterObject(unittest.TestCase):
 
         cluster.add_chain(chains=chain_1)
         cluster.add_chain(chains=chain_2)
-        self.assertItemsEqual(["ChainName1", "ChainName2"], cluster.keys())
+        self.assertCountEqual(["ChainName1", "ChainName2"], cluster.keys())
 
         cluster.add_chain(chains=chain_3)
         cluster.add_chain(chains=chain_4)
-        self.assertItemsEqual(["ChainName1", "ChainName2", "ChainName3", "ChainName4",],cluster.keys())
+        self.assertCountEqual(["ChainName1", "ChainName2", "ChainName3", "ChainName4",],cluster.keys())
 
         #Check if the method incorrectly adds to the chain at the back of the list, along with / instead of saving over previous instance
         with self.assertRaises(IndexError):
@@ -129,7 +129,7 @@ class TestClusterObject(unittest.TestCase):
 
         cluster = Cluster(name="ClusterName")
         self.assertIsInstance(cluster, Cluster)
-        self.assertItemsEqual([],cluster.keys())
+        self.assertCountEqual([],cluster.keys())
 
         exception_message = "One or more of the supplied chains has an inappropriate type."
 
@@ -138,7 +138,7 @@ class TestClusterObject(unittest.TestCase):
         chain_3 = self.stack2.get_chain(name="ChainName3", data_keys="Mar", x=x, y=y, views=[COUNTS])
         chain_4 = self.stack3.get_chain(name="ChainName4", data_keys="Apr", x=x, y=y, views=[COUNTS])
 
-        self.assertItemsEqual([], cluster.keys())
+        self.assertCountEqual([], cluster.keys())
 
         invalid_chains_list = [chain_1, chain_2, chain_3, chain_4, "This is not a chain"]
         with self.assertRaises(TypeError) as cm:
@@ -146,7 +146,7 @@ class TestClusterObject(unittest.TestCase):
         self.assertEquals(cm.exception.message, exception_message)
 
         # Assert that no chains were added
-        self.assertItemsEqual([], cluster.keys())
+        self.assertCountEqual([], cluster.keys())
 
     def test_add_multiple_chains(self):
         y = self.minimum[0]
@@ -154,7 +154,7 @@ class TestClusterObject(unittest.TestCase):
 
         cluster = Cluster(name="ClusterName")
         self.assertIsInstance(cluster, Cluster)
-        self.assertItemsEqual([],cluster.keys())
+        self.assertCountEqual([],cluster.keys())
 
         chain_1 = self.stack0.get_chain(name="ChainName1", data_keys="Jan", x=x, y=y, views=[COUNTS])
         chain_2 = self.stack1.get_chain(name="ChainName2", data_keys="Feb", x=x, y=y, views=[COUNTS])
@@ -162,7 +162,7 @@ class TestClusterObject(unittest.TestCase):
         chain_4 = self.stack3.get_chain(name="ChainName4", data_keys="Apr", x=x, y=y, views=[COUNTS])
 
         cluster.add_chain(chains=[chain_1, chain_2, chain_3, chain_4])
-        self.assertItemsEqual(["ChainName1", "ChainName2", "ChainName3", "ChainName4"], cluster.keys())
+        self.assertCountEqual(["ChainName1", "ChainName2", "ChainName3", "ChainName4"], cluster.keys())
 
     def test_add_dataframe(self):
 
@@ -173,10 +173,10 @@ class TestClusterObject(unittest.TestCase):
 
         #check that we have a cluster
         self.assertIsInstance(cluster, Cluster)
-        self.assertItemsEqual('DataFrame', cluster.name)
+        self.assertCountEqual('DataFrame', cluster.name)
 
         #check the cluster keys
-        self.assertItemsEqual(['_'.join(self.one_of_each)], cluster.keys())
+        self.assertCountEqual(['_'.join(self.one_of_each)], cluster.keys())
 
         #cluster contents
         for item in cluster.values():
@@ -212,7 +212,7 @@ class TestClusterObject(unittest.TestCase):
         cluster = Cluster(name="ClusterName")
  
         self.assertIsInstance(cluster, Cluster)
-        self.assertItemsEqual([],cluster.keys())
+        self.assertCountEqual([],cluster.keys())
  
         for i in xrange(3):
             chain = self.stack0.get_chain(name="ChainName{0}".format(i), data_keys="Jan", x=x, y=y, views=[v])
