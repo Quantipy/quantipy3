@@ -3,11 +3,11 @@ import os.path
 import numpy
 import pandas as pd
 from pandas.util.testing import assert_frame_equal
-import test_helper
+import tests.test_helper
 import copy
 
 from collections import defaultdict, OrderedDict
-from test_batch import _get_batch
+from tests.test_batch import _get_batch
 from quantipy.core.stack import Stack
 from quantipy.core.chain import Chain
 from quantipy.core.link import Link
@@ -1422,4 +1422,3 @@ class TestStackObject(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-

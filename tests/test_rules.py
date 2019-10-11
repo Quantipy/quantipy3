@@ -3,7 +3,7 @@ import os.path
 import numpy as np
 import pandas as pd
 from pandas.util.testing import assert_frame_equal
-import test_helper
+import tests.test_helper
 import copy
 
 from operator import lt, le, eq, ne, ge, gt
@@ -13,7 +13,7 @@ __index_symbol__ = {
     Index.union: ',',
     Index.intersection: '&',
     Index.difference: '~',
-    Index.sym_diff: '^'
+    Index.symmetric_difference: '^'
 }
 
 from collections import defaultdict, OrderedDict
