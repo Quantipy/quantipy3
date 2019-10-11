@@ -10,29 +10,9 @@ Below is a list of the tests that are passing, and those that are not.
 
 When adding features to classes such as DataSet, the test suite for DataSet can be run with the command
 
-python3 -m unittest tests.test_dataset
+`python3 -m unittest tests.test_dataset`
 
-#### Feature support in python3 version
-- :heavy_check_mark: DataSet
-- :heavy_check_mark: RIM
-- :heavy_check_mark: Recode
-- :heavy_check_mark: Merging
-- :heavy_check_mark: Logic Views
-- :heavy_check_mark: Test Link
-- :heavy_check_mark: Complex Logic
-- :heavy_check_mark: Excel
-- :heavy_check_mark: IO Dimensions
-
-#### Tests that are not passing
-- :heavy_multiplication_x: Batch
-- :heavy_multiplication_x: Chain
-- :heavy_multiplication_x: Cluster
-- :heavy_multiplication_x: Banked Chains
-- :heavy_multiplication_x: Rules
-- :heavy_multiplication_x: Stack
-- :heavy_multiplication_x: View Manager
-- :heavy_multiplication_x: View Mapper
-- :heavy_multiplication_x: View Maps
+The DataSet suite of features are ready for production use, [the batch operations are not](SupportedFeaturesPython3.md).
 
 ### Key features
   - Reads plain .csv, converts from Dimensions, SPSS, Decipher, or Ascribe
