@@ -20,9 +20,6 @@ This repository is a port of [Quantipy](https://www.github.com/quantipy/quantipy
 - Alexander Buchhammer, Alasdair Eaglestone, James Griffiths, Kerstin Müller : https://yougov.co.uk
 - Datasmoothie’s Birgir Hrafn Sigurðsson and Geir Freysson: http://www.datasmoothie.com
 
-## Docs
-[View the documentation at readthedocs.org](http://quantipy.readthedocs.io/)
-
 ## Installation
 Quantipy is currently not published on pip (there's an [issue](https://github.com/Quantipy/quantipy3/issues/1) for that, if you want to help out.)
 
