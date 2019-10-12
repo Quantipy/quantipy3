@@ -29,123 +29,137 @@ The DataSet suite of features are ready for production use, [the batch operation
 ## Docs
 [View the documentation at readthedocs.org](http://quantipy.readthedocs.io/)
 
-### Required libraries before installation
-We recommend installing [Anaconda for Python 3](http://continuum.io/downloads)
-which will provide most of the required libraries and an easy means of keeping
-them up-to-date over time.
-  - Python 3
-  - Numpy
-  - Pandas
+## Installation
+Quantipy is currently not published on pip (there's an [issue](https://github.com/Quantipy/quantipy3/issues/1) for that, if you want to help out.)
 
-### Developing
+To start using Quantipy we
 
-#### Windows
+1. Create a virtual environment
+1. Download or clone the library
+1. Install the required packages
 
-Dependencies numpy and scipy are handled by conda.
+#### 1. Create a virtual envirionment
+
+
 Create a virtual environment:
+
+conda
 ```python
 conda create -n envqp python=3
 ```
-Install in editable mode:
+
+with venv
 ```python
-pip install -r requirements_dev.txt
+python -m venv [your_env_name]
+ ```
+
+#### 2. Download or clone library
+
+```
+git clone https://github.com/Quantipy/quantipy3.git
 ```
 
-#### Linux
-Dependencies numpy and scipy are handled in the installation.
+Add the quantipy3 folder that is created to your path, so you can import quantipy from wherever you are working.
 
-Create a virtual environment:
-```python
-conda create -n envqp python=3
+#### 3. Install required libraries
+
+Activate your virtual environment and install all the required packages.
+
 ```
-Install in editable mode:
-```python
-pip install -r requirements_dev.txt
+source [yourenv]/bin/activate
+pip install -r quantipy3/requirements.txt
 ```
+
+You're all set, now you can start crunching your survey data with ease.
 
 ## 5-minutes to Quantipy
 
 **Get started**
 
-Start a new folder called 'Quantipy-5' and add a subfolder called 'data'.
+If you are working with SPSS, import your sav file.
 
-You can find an example dataset in quantipy/tests:
-
-- Example Data (A).csv
-- Example Data (A).json
-
-Put these files into your ``'data'`` folder.
-
-Start with some import statements:
-
-```python
-import pandas as pd
+```
 import quantipy as qp
-
-from quantipy.core.tools.dp.prep import frange
-
-# This is a handy bit of pandas code to let you display your dataframes
-# without having them split to fit a vertical column.
-pd.set_option('display.expand_frame_repr', False)
+dataset = qp.DataSet.("My dataset, wave 1")
+dataset.read_spss('my_file.sav')
 ```
 
-**Load, inspect and edit your data**
-
-Load the input files in a ``qp.DataSet`` instance and inspect the metadata
-with methods like ``.variables()``, ``.meta()`` or ``.crosstab()``:
-```python
-# Define the paths of your input files
-path_json = './data/Example Data (A).json'
-path_csv = './data/Example Data (A).csv'
-
-dataset = qp.DataSet('Example Data (A)')
-dataset.read_quantipy(path_json, path_csv)
-
-dataset.crosstab('q2', text=True)
-```
+You can start straight away by exploring what variables are in your file.
 
 ```
-Question                                                           q2. Which, if any, of these other sports have you ever participated in?
-Values                                                                                                                                   @
-Question                                           Values
-q2. Which, if any, of these other sports have y... All                                                         2999.0
-                                                   Sky diving                                                  1127.0
-                                                   Base jumping                                                1366.0
-                                                   Mountain biking                                             1721.0
-                                                   Kite boarding                                                649.0
-                                                   Snowboarding                                                 458.0
-                                                   Parachuting                                                  428.0
-                                                   Other                                                        492.0
-                                                   None of these                                                 53.0
+dataset.variables()
+```
+```
+['gender',
+ 'agecat',
+ 'price_satisfaction',
+ 'numitems_satisfaction',
+ 'org_satisfaction',
+ 'service_satisfaction',
+ 'quality_satisfaction',
+ 'overall_satisfaction',
+ 'weight']
+```
+
+If you want more details on a variable, explore it's meta data.
+
+```
+dataset.meta('agecat')
+```
+
+
+<table border="1" class="dataframe">  <thead>    <tr style="text-align: right;">      <th>single</th>      <th>codes</th>      <th>texts</th>      <th>missing</th>    </tr>    <tr>      <th>agecat: Age category</th>      <th></th>      <th></th>      <th></th>    </tr>  </thead>  <tbody>    <tr>      <th>1</th>      <td>1</td>      <td>18-24</td>      <td>None</td>    </tr>    <tr>      <th>2</th>      <td>2</td>      <td>25-34</td>      <td>None</td>    </tr>    <tr>      <th>3</th>      <td>3</td>      <td>35-49</td>      <td>None</td>    </tr>    <tr>      <th>4</th>      <td>4</td>      <td>50-64</td>      <td>None</td>    </tr>    <tr>      <th>5</th>      <td>5</td>      <td>64+</td>      <td>None</td>    </tr>  </tbody></table>
+
+Quantipy knows out-of-the-box what SPSS's meta data means and uses it correctly. All codes and labels are the same as in the sav file.
+
+**Calculate some results, counts or percentages**
+
+```
+dataset.crosstab('price_satisfaction', 'gender')
+```
+
+<table border="1" class="dataframe">  <thead>    <tr>      <th></th>      <th>Question</th>      <th colspan="6" halign="left">agecat. Age category</th>    </tr>    <tr>      <th></th>      <th>Values</th>      <th>All</th>      <th>18-24</th>      <th>25-34</th>      <th>35-49</th>      <th>50-64</th>      <th>64+</th>    </tr>    <tr>      <th>Question</th>      <th>Values</th>      <th></th>      <th></th>      <th></th>      <th></th>      <th></th>      <th></th>    </tr>  </thead>  <tbody>    <tr>      <th rowspan="6" valign="top">price_satisfaction. Price satisfaction</th>      <th>All</th>      <td>582.0</td>      <td>46.0</td>      <td>127.0</td>      <td>230.0</td>      <td>147.0</td>      <td>32.0</td>    </tr>    <tr>      <th>Strongly Negative</th>      <td>72.0</td>      <td>8.0</td>      <td>20.0</td>      <td>22.0</td>      <td>17.0</td>      <td>5.0</td>    </tr>    <tr>      <th>Somewhat Negative</th>      <td>135.0</td>      <td>10.0</td>      <td>30.0</td>      <td>52.0</td>      <td>38.0</td>      <td>5.0</td>    </tr>    <tr>      <th>Neutral</th>      <td>140.0</td>      <td>9.0</td>      <td>32.0</td>      <td>59.0</td>      <td>36.0</td>      <td>4.0</td>    </tr>    <tr>      <th>Somewhat Positive</th>      <td>145.0</td>      <td>12.0</td>      <td>25.0</td>      <td>63.0</td>      <td>33.0</td>      <td>12.0</td>    </tr>    <tr>      <th>Strongly Positive</th>      <td>90.0</td>      <td>7.0</td>      <td>20.0</td>      <td>34.0</td>      <td>23.0</td>      <td>6.0</td>    </tr>  </tbody></table>
+
+You can also filter
+
+```
+dataset.crosstab('price_satisfaction', 'agecat', f={'gender':1})
+```
+
+and use a weight column
+
+```
+dataset.crosstab('price_satisfaction', 'agecat', f={'gender':1}, w="weight")
+
 ```
 
 Variables can be created, recoded or edited with DataSet methods, e.g. ``derive()``:
 ```python
-mapper = [(1,  'Any sports', {'q2': frange('1-6, 97')}),
-          (98, 'None of these', {'q2': 98})]
+mapper = [(1,  '18-35 year old', {'agecat': [1,2]}),
+          (2, '36 and older', {'agecat': [3,4,5]})]
 
-dataset.derive('q2_rc', 'single', dataset.text('q2'), mapper)
-dataset.meta('q2_rc')
+dataset.derive('two_age_groups', 'single', dataset.text("Older or younger than 35"), mapper)
+dataset.meta('two_age_groups')
 ```
 
 ```
-single                                              codes          texts missing
-q2_rc: Which, if any, of these other sports hav...
-1                                                       1     Any sports    None
-2                                                      98  None of these    None
+single                                              codes     texts              missing
+two_age_groups: "Older or youngar than 35"
+1                                                       1     18-35 years old    None
+2                                                       2     36 and older       None
 ```
 
 The  ``DataSet`` case data component can be inspected with the []-indexer, as known from a ``pd.DataFrame``:
 ```python
 
-dataset[['q2', 'q2_rc']].head(5)
+dataset[['gender', 'age']].head(5)
 ```
 
 ```
-        q2  q2_rc
-0  1;2;3;5;    1.0
-1      3;6;    1.0
-2       NaN    NaN
-3       NaN    NaN
-4       NaN    NaN
+        gender  age
+0       1.0    1.0
+1       2.0    1.0
+2       2.0    2.0
+3       1.0    NaN
+4       NaN    1.0
 ```
