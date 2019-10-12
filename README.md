@@ -6,12 +6,6 @@ Quantipy is an open-source data processing, analysis and reporting software proj
 ### Quantipy for Python 3
 This repository is a port of [Quantipy](https://www.github.com/quantipy/quantipy) from Python 2.x to Python 3.
 
-When adding features to classes such as DataSet, the test suite for DataSet can be run with the command, until the test suite is cleaned up.
-
-`python3 -m unittest tests.test_dataset`
-
-The DataSet suite of features are ready for production use, [the batch operations are not](SupportedFeaturesPython3.md).
-
 ### Key features
   - Reads plain .csv, converts from Dimensions, SPSS, Decipher, or Ascribe
   - Open metadata format to describe and manage datasets
@@ -163,3 +157,17 @@ dataset[['gender', 'age']].head(5)
 3       1.0    NaN
 4       NaN    1.0
 ```
+
+# Contributing
+
+The test suite for Quantipy can be run with the command
+
+`python3 -m unittest`
+
+But when developing a specific aspect of Quantipy, it might be quicker to run (e.g. for the DataSet)
+
+`python3 -m unittest tests.test_dataset`
+
+Tests for unsupported features are skipped, [see here for what tests are supported](SupportedFeaturesPython3.md).
+
+We welcome volunteers and supporters. Please include a test case with any pull request, especially those that run calculations.
