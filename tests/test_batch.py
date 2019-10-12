@@ -42,6 +42,7 @@ def _get_meta(batch):
 	name = batch.name
 	return batch._meta['sets']['batches'][name]
 
+@unittest.skip("Not yet supported in python 3")
 class TestBatch(unittest.TestCase):
 
 	def test_dataset_add_batch(self):
@@ -353,4 +354,3 @@ class TestBatch(unittest.TestCase):
 		for v in ['q1', 'q2']:
 			for ax in ['x', 'y']:
 				self.assertTrue(not b_meta['meta_edits'][v]['rules'][ax] == {})
-

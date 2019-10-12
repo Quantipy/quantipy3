@@ -1802,7 +1802,7 @@ def vmerge(dataset_left=None, dataset_right=None, datasets=None,
     vdata = pd.concat([
         data_left,
         data_right
-    ])
+    ], sort=True)
 
     # Determine columns that should remain in the merged data
     cols_left = data_left.columns.tolist()

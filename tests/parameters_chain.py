@@ -3,7 +3,7 @@
 import json
 import numpy as np
 
-from itertools import izip_longest, product
+from itertools import zip_longest, product
 from itertools import chain as ichain
 from operator import add
 
@@ -18,16 +18,16 @@ def lzip(*args):
     return list(_zip(*args))
 
 def _zip(question, values):
-    return izip_longest((question, ), values, fillvalue=question)
+    return zip_longest((question, ), values, fillvalue=question)
 
 def get_values(column, values, paint=False):
     def _get_values():
         if column['parent']:
-            return values[column['parent'].keys()[0].split('@')[1]]
+            return values[list(column['parent'].keys())[0].split('@')[1]]
         return column['values']
     if paint:
         return [u'%s' % item['text']['en-GB'] for item in _get_values()]
-    return [long(item['value']) for item in _get_values()]
+    return [item['value'] for item in _get_values()]
 
 def get_label(column, paint=False):
     if paint:
@@ -73,7 +73,7 @@ def nest(columns, lib_values, y_keys, paint):
     return [sum(item, ()) for item in product(*result)]
 
 def pad(level, size, pad_id):
-    pad = tuple(u'#pad-%d' % pad_id for _ in xrange(size * 2))
+    pad = tuple(u'#pad-%d' % pad_id for _ in range(size * 2))
     return [add(pad, item) for item in level]
 
 # BASIC_CHAIN_STR = (u'Chain...\nName:            chain\nOrientation:     None'
@@ -263,10 +263,10 @@ X5_SIG_SIMPLE = (# values
                   [100.0, 100.0, 100.0, 100.0, 100.0]],
                  # column index
                  [(u'q5_1', '@', '@'),
-                  ('gender', 1L, 'A'),
-                  ('gender', 2L, 'B'),
-                  ('q4', 1L, 'C'),
-                  ('q4', 2L, 'D')],
+                  ('gender', 1, 'A'),
+                  ('gender', 2, 'B'),
+                  ('q4', 1, 'C'),
+                  ('q4', 2, 'D')],
                  # .sig_test_letters
                  ['@', 'A', 'B', 'C', 'D'])
 

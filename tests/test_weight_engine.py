@@ -131,27 +131,29 @@ class TestEngine(unittest.TestCase):
         ''' Complex engine with meta - engine_B
         '''
         data = pd.read_csv(self.path_data_B)
-        meta = json.load(file(self.path_meta_B))
+        with open(self.path_meta_B) as f:
+            meta = json.load(f)
 
-        self.scheme_name_B1 = 'scheme_name_B1'
+            self.scheme_name_B1 = 'scheme_name_B1'
 
-        engine_B = WeightEngine(data=data, meta=meta)
+            engine_B = WeightEngine(data=data, meta=meta)
 
-        # Setup schemes to use in tests
-        self.scheme_B1 = Rim(self.scheme_name_B1)
-        self.scheme_B1.target_cols = ['profile_gender', 'age_group']
-        # self.scheme_B1.set_targets()
+            # Setup schemes to use in tests
+            self.scheme_B1 = Rim(self.scheme_name_B1)
+            self.scheme_B1.target_cols = ['profile_gender', 'age_group']
+            # self.scheme_B1.set_targets()
 
     def test_constructor(self):
         data = pd.read_csv(self.path_data_B)
-        meta = json.load(file(self.path_meta_B))
+        with open(self.path_meta_B) as f:
+            meta = json.load(f)
 
-        engine_B = WeightEngine(data=data, meta=meta)
+            engine_B = WeightEngine(data=data, meta=meta)
 
-        self.assertIsNotNone(engine_B._df)
-        self.assertTrue(engine_B.dropna)
-        self.assertEqual(engine_B.schemes, {})
-        self.assertIsInstance(engine_B.schemes, dict)
+            self.assertIsNotNone(engine_B._df)
+            self.assertTrue(engine_B.dropna)
+            self.assertEqual(engine_B.schemes, {})
+            self.assertIsInstance(engine_B.schemes, dict)
 
     def test_add_scheme_and_dataframe(self):
         #A list of scheme names used in setUp used for comparison
@@ -159,7 +161,7 @@ class TestEngine(unittest.TestCase):
 
         self.engine_A.add_scheme(scheme=self.scheme_A2, key='identity', verbose=False)
         # Should now contain a dict with scheme_name_A2 as the first key
-        self.assertEqual(self.engine_A.schemes.keys()[0], self.scheme_name_A2)
+        self.assertEqual(list(self.engine_A.schemes.keys())[0], self.scheme_name_A2)
 
         self.engine_A.add_scheme(scheme=self.scheme_A1, key='identity', verbose=False)
         # Should now contain a dict with scheme_name_A2 and scheme_name_A1 as keys
@@ -195,7 +197,8 @@ class TestEngine(unittest.TestCase):
 
     def test_group_targets(self):
         data = pd.read_csv(self.path_data_B)
-        meta = json.load(file(self.path_meta_B))
+        with open(self.path_meta_B) as f:
+            meta = json.load(f)
 
         weight = '_'.join(
             ['weights',
@@ -283,9 +286,9 @@ class TestEngine(unittest.TestCase):
 
         wdf = engine.dataframe('complex_filter')
 
-        self.assertTrue(wdf.columns.tolist() == ['unique_id', 'gender',
-                                                 'locality',
-                                                 'weights_complex_filter',
-                                                 'religion', 'Wave'])
+        self.assertEqual(wdf.columns.tolist(),
+            ['unique_id', 'gender',
+             'locality',
+             'weights_complex_filter', 'Wave',
+             'religion'])
         self.assertTrue(len(wdf.index) == 596)
-

@@ -5,13 +5,13 @@ import time
 import pandas as pd
 import numpy as np
 import quantipy as qp
-from itertools import count, izip
+from itertools import count
 
 from quantipy.sandbox.sandbox import ChainManager
 
 from pandas.util.testing import assert_frame_equal, assert_index_equal
 
-import parameters_chain as parameters
+import tests.parameters_chain as parameters
 
 # -----------------------------------------------------------------------------
 PATH_DATA = './tests/'
@@ -193,7 +193,7 @@ class TestChainGet:
         chains = complex_chain(stack, x, y, self._VIEWS, self._VIEW_KEYS, 'x',
                                incl_tests=False, incl_sum=False)
 
-        for chain, args in izip(chains, expected):
+        for chain, args in zip(chains, expected):
 
             values, index, columns, pindex, pcolumns, chain_str = args
 
@@ -361,4 +361,3 @@ class TestChainAddRepaint:
 
             assert_frame_equal(_chain.structure.fillna('*'),
                                _expected_structure)
-

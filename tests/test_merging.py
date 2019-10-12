@@ -48,7 +48,7 @@ class TestMerging(unittest.TestCase):
         # Load Example Data (A) data and meta into self
         name_data = '%s.csv' % (project_name)
         path_data = '%s%s' % (self.path, name_data)
-        self.example_data_A_data = pd.DataFrame.from_csv(path_data)
+        self.example_data_A_data = pd.read_csv(path_data)
         name_meta = '%s.json' % (project_name)
         path_meta = '%s%s' % (self.path, name_meta)
         self.example_data_A_meta = load_json(path_meta)
