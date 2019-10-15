@@ -12,6 +12,8 @@ This repository is a port of [Quantipy](https://www.github.com/quantipy/quantipy
   - Powerful, metadata-driven cleaning, editing, recoding and transformation of datasets
   - Computation and assessment of data weights
   - Easy-to-use analysis interface
+  
+  ### Features not yet supported in python3
   - Automated data aggregation using ``Batch`` defintions
   - Structured analysis and reporting via Chain and Cluster containers
   - Exports to SPSS, Dimensions ddf/mdd, MS Excel and Powerpoint with flexible layouts and various options
