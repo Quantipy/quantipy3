@@ -1,13 +1,12 @@
 #!/usr/bin/env python
-# coding: utf-8
 
 import sys
 from setuptools import setup, find_packages
 
-versions = dict(numpy='1.11.3',
-                scipy='0.18.1',
-                pandas='0.19.2',
-                ftfy='4.4.3')
+versions = dict(numpy='1.14.5',
+                scipy='1.2.1',
+                pandas='0.24.2',
+                ftfy='5.5.1')
 
 precisions = dict(numpy='==',
                   scipy='==',
@@ -40,9 +39,9 @@ else:
     INSTALL_REQUIRES = version_libs(libs, precisions, versions)
 
 setup(name='quantipy',
-      version='0.1.1',
-      # author='',
-      # author_email='',
+      version='0.2.1',
+      author='Geir Freysson',
+      author_email='geir@datasmoothie.com',
       packages=find_packages(exclude=['tests']),
       include_package_data=True,
       install_requires=INSTALL_REQUIRES,
