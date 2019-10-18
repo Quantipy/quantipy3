@@ -25,8 +25,7 @@ libs = ['numpy',
         'decorator',
         'watchdog',
         'requests',
-        'python-pptx',
-        'functools32']
+        'python-pptx']
 
 def version_libs(libs, precisions, versions):
     return [lib + precisions[lib] + versions[lib]
