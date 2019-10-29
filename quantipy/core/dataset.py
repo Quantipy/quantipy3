@@ -2168,7 +2168,10 @@ class DataSet(object):
         if text_key is None: text_key = self.text_key
         vals = self._get_value_loc(var)
         if non_mapped in ['codes', 'lists', None]:
-            codes = [int(v['value']) for v in vals]
+            try:
+                codes = [int(v['value']) for v in vals]
+            except Exception as e:
+                codes = [v['value'] for v in vals]
             if non_mapped == 'codes':
                 return codes
         if non_mapped in ['texts', 'lists', None]:
