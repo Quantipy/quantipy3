@@ -411,9 +411,24 @@ def get_meta_values(xml, column, data, map_values=True):
         values = [int(v) for v in byName_values]
         msg = 'Category values for {} will be taken byName.'.format(var_name)
     elif byProperty:
-        values = [int(v) for v in byProperty_values]
-        msg = 'Category values for {} will be taken byProperty using {}.'.format(
-                var_name, byProperty_key)
+        try:
+            if "NULL" not in byProperty_values:
+                values = [int(v) for v in byProperty_values]
+                msg = 'Category values for {} will be taken byProperty using {}.'.format(
+                        var_name, byProperty_key)
+            else:
+                values = []
+                for v in byProperty_values:
+                    if v == "NULL":
+                        values.append(-1)
+                    else:
+                        values.append(int(v))
+                msg = 'Null in category values for {} will be replaced with empty value.'.format(
+                        var_name)
+        except Exception as e:
+            values = range(1, len(categories)+1)
+            msg = 'NULL in values for {} will be replaced with empty value'.format(var_name)
+            warnings.warn(msg)
     else:
         values = list(range(1, len(categories)+1))
         msg = 'Category values for {} will be taken byPosition'.format(var_name)
@@ -536,7 +551,15 @@ def begin_column(xml, col_name, data):
     column = {}
 
     xpath_var = XPATH_DEFINITION+"//variable[@name='"+col_name+"']"
-    var = xml.xpath(xpath_var)[0]
+    try:
+        var = xml.xpath(xpath_var)[0]
+    except Exception as e:
+        column['name'] = col_name
+        column['properties'] = get_meta_properties(xml, xpath_var)
+        column['type'] = 'string'
+        column['parent'] = {}
+        column['text'] = 'meta-data missing'
+        return column
     column['name'] = col_name
     column['properties'] = get_meta_properties(xml, xpath_var)
     xpath__col_text = xpath_var+"//labels"
