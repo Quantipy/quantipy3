@@ -808,3 +808,17 @@ class TestDataSet(unittest.TestCase):
         dataset.crosstab(x)
         self.assertEqual(dataset._meta['columns'][x]['values'],
                          'lib@values@q14_1')
+
+    def test_tabulate(self):
+        x = 'q3'
+        y = 'gender'
+        dataset = self._get_dataset()
+        df1 = dataset.tabulate(x, y, show='count')
+        df2 = dataset.tabulate(x, y, show=['count', 'pct', 'base', 'ubase'], w='weight_a')
+        df3 = dataset.tabulate(x, y, show=['pct', 'base', 'ubase'], w='weight_a')
+        df4 = dataset.tabulate(x, y, show=['pct', 'base', 'ubase'], w='weight_a')
+        df5 = dataset.tabulate(x, y, show=['count', 'base', 'ubase'], w='weight_a')
+        df6 = dataset.tabulate(x, y, show=['count'], w='weight_a')
+        df7 = dataset.tabulate(x, y, show=['pct'], w='weight_a')
+        import pdb; pdb.set_trace()
+        self.assertEqual(True,True)
