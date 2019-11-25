@@ -1860,7 +1860,7 @@ class DataSet(object):
                     ubase = ubase.rename(index={"Weighted Total":"Unweighted Total"})
                     result = result.rename(index={"Total":"Weighted Total"})
                     result = pd.concat([ubase, result])
-                # we do this here because we can only drop the % from the index after styling isa applied
+                # we do this here because we can only drop the % from the index after styling is applied
                 result = result.style.format(lambda x: "{:.0%}".format(x) if x < 1 else "{:.0f}".format(x))
                 result.data = result.data.rename(index={"%":""})
 
@@ -1893,13 +1893,17 @@ class DataSet(object):
 
         else:
             if show == 'pct':
-                result = self.crosstab(x=x, y=y, f=f, w=w, decimals=decimals, pct=True)/100
+                result = self.crosstab(x=x, y=y, f=f, w=w, decimals=decimals, pct=True)[1:]/100
                 result = result.style.format(lambda x: "{:.0%}".format(x) if x < 1 else "{:.0f}".format(x))
             elif show == 'count':
                 result = self.crosstab(x=x, y=y, f=f, w=w, decimals=decimals, pct=False)
+                result = result.rename(index={"All":"Total"})
                 result = result.style.format(lambda x: "{:.0%}".format(x) if x < 1 else "{:.0f}".format(x))
             else:
                 raise ValueError("Tabulate must be called with either count or pct in show argument")
+        if y is None:
+            result.data = result.data.droplevel(axis=1, level=0).rename(columns={"@":"Total"})
+            #result.data = result.data[1:]
         return result
 
     def data(self):

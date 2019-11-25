@@ -820,5 +820,6 @@ class TestDataSet(unittest.TestCase):
         df5 = dataset.tabulate(x, y, show=['count', 'base', 'ubase'], w='weight_a')
         df6 = dataset.tabulate(x, y, show=['count'], w='weight_a')
         df7 = dataset.tabulate(x, y, show=['pct'], w='weight_a')
+        df8 = dataset.tabulate(x, show=['pct', 'base'], w='weight_a')
         import pdb; pdb.set_trace()
         self.assertEqual(True,True)
