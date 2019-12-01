@@ -1808,6 +1808,104 @@ class DataSet(object):
         return ct(org_copy.deepcopy(meta), data, x=x, y=y, get=get, weight=w,
                   show=show, rules=rules, xtotal=xtotal, decimals=decimals)
 
+    def tabulate(self, x, y=None, w=None, show='pct', decimals=1, f=None):
+        """
+        Calculate the crosstab of the given variables and return a Style object with nice formatting.
+
+        Parameters
+        ----------
+        x : str
+            The side variable
+        y : str
+            The top variable (optional)
+        w : str
+            Variable used to weight
+        f : Quantipy logical expression
+            A logical expression to filter with, e.g. {'gender': 1}.
+        show : str or list
+            A string or list of strings. Options are pct, count, base, ubase. ubase means unweighted base and is
+            only included if the w variable was set.
+        decimals : int
+            Number of decimals to return
+
+        Returns
+        -------
+        data : Style
+            A pandas Styler object with the resulting dataframe styled to show percentages and counts.
+        """
+        if type(show) is list:
+            if 'pct' not in show and 'count' not in show:
+                raise ValueError("Tabulate must be called with either count or pct in show argument")
+            if 'pct' in show:
+                pct = self.crosstab(x=x, y=y, f=f, w=w, decimals=decimals, pct=True)/100
+                pct.columns = pct.columns.set_levels(['%'], level=0)
+            if 'count' in show:
+                count = self.crosstab(x=x, y=y, f=f, w=w, decimals=decimals, pct=False)
+                count.columns = count.columns.set_levels([''], level=0)
+            if 'pct' in show and 'count' in show:
+                concatted = pd.concat([count,pct], axis =1).stack(level=0)
+                result = concatted[2:]
+                if 'base' in show:
+                    base = concatted[0:1]
+                    if w is not None:
+                        base = base.rename(index={"All":"Weighted Total"})
+                    else:
+                        base = base.rename(index={"All":"Total"})
+                    result = pd.concat([base,result])
+                if 'ubase' in show and w is not None:
+                    unweighted_count = self.crosstab(x=x, y=y, f=f, w=None, decimals=decimals, pct=False)
+                    ubase = unweighted_count[0:1]
+                    ubase.columns = base.columns
+                    ubase.index = base.index
+                    ubase = ubase.rename(index={"Weighted Total":"Unweighted Total"})
+                    result = result.rename(index={"Total":"Weighted Total"})
+                    result = pd.concat([ubase, result])
+                # we do this here because we can only drop the % from the index after styling is applied
+                result = result.style.format(lambda x: "{:.0%}".format(x) if x < 1 else "{:.0f}".format(x))
+                result.data = result.data.rename(index={"%":""})
+
+            elif 'pct' in show:
+                result = self.crosstab(x=x, y=y, f=f, w=w, decimals=decimals, pct=True)[1:]/100
+                if 'base' in show:
+                    count = self.crosstab(x=x, y=y, f=f, w=w, decimals=decimals, pct=False)
+                    base = count[0:1]
+                    if w is not None:
+                        base = base.rename({"All":"Weighted Total"})
+                    else:
+                        base = base.rename({"All":"Total"})
+                    result = pd.concat([base, result])
+                if 'ubase' in show and w is not None:
+                    unweighted_count = self.crosstab(x=x, y=y, f=f, w=None, decimals=decimals, pct=False)
+                    ubase = unweighted_count[0:1]
+                    ubase = ubase.rename(index={"All":"Unweighted Total"})
+                    result = pd.concat([ubase, result])
+                result = result.style.format(lambda x: "{:.0%}".format(x) if x < 1 else "{:.0f}".format(x))
+            elif 'count' in show:
+                result = self.crosstab(x=x, y=y, f=f, w=w, decimals=decimals, pct=False)
+                if 'base' in show:
+                    if w is not None:
+                        result = result.rename({"All":"Weighted Total"})
+                    else:
+                        result = result.rename({"All":"Total"})
+                else:
+                    result = result[1:]
+                    result = result.style.format(lambda x: "{:.0%}".format(x) if x < 1 else "{:.0f}".format(x))
+
+        else:
+            if show == 'pct':
+                result = self.crosstab(x=x, y=y, f=f, w=w, decimals=decimals, pct=True)[1:]/100
+                result = result.style.format(lambda x: "{:.0%}".format(x) if x < 1 else "{:.0f}".format(x))
+            elif show == 'count':
+                result = self.crosstab(x=x, y=y, f=f, w=w, decimals=decimals, pct=False)
+                result = result.rename(index={"All":"Total"})
+                result = result.style.format(lambda x: "{:.0%}".format(x) if x < 1 else "{:.0f}".format(x))
+            else:
+                raise ValueError("Tabulate must be called with either count or pct in show argument")
+        if y is None:
+            result.data = result.data.droplevel(axis=1, level=0).rename(columns={"@":"Total"})
+            #result.data = result.data[1:]
+        return result
+
     def data(self):
         """
         Return the ``data`` component of the ``DataSet`` instance.
