@@ -1838,9 +1838,11 @@ class DataSet(object):
                 raise ValueError("Tabulate must be called with either count or pct in show argument")
             if 'pct' in show:
                 pct = self.crosstab(x=x, y=y, f=f, w=w, decimals=decimals, pct=True)/100
+                multiindex = pct.columns
                 pct.columns = pct.columns.set_levels(['%'], level=0)
             if 'count' in show:
                 count = self.crosstab(x=x, y=y, f=f, w=w, decimals=decimals, pct=False)
+                multiindex = count.columns
                 count.columns = count.columns.set_levels([''], level=0)
             if 'pct' in show and 'count' in show:
                 concatted = pd.concat([count,pct], axis =1).stack(level=0)
@@ -1862,6 +1864,8 @@ class DataSet(object):
                     result = pd.concat([ubase, result])
                 # we do this here because we can only drop the % from the index after styling is applied
                 result = result.style.format(lambda x: "{:.0%}".format(x) if x < 1 else "{:.0f}".format(x))
+                if multiindex is not None:
+                    result.columns = multiindex
                 result.data = result.data.rename(index={"%":""})
 
             elif 'pct' in show:
@@ -1904,6 +1908,9 @@ class DataSet(object):
         if y is None:
             result.data = result.data.droplevel(axis=1, level=0).rename(columns={"@":"Total"})
             #result.data = result.data[1:]
+            if not isinstance(result.data.columns, pd.core.indexes.base.Index):
+                result.data = result.data.droplevel(axis=1, level=0).rename(columns={"@":"Total"})
+                result.data = result.data[1:]
         return result
 
     def data(self):
