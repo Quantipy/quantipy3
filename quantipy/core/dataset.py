@@ -1808,7 +1808,7 @@ class DataSet(object):
         return ct(org_copy.deepcopy(meta), data, x=x, y=y, get=get, weight=w,
                   show=show, rules=rules, xtotal=xtotal, decimals=decimals)
 
-    def tabulate(self, x, y=None, w=None, show='pct', decimals=1, f=None):
+    def tabulate(self, x, y=None, w=None, show=['pct', 'count', 'base', 'ubase'], decimals=1, f=None):
         """
         Calculate the crosstab of the given variables and return a Style object with nice formatting.
 

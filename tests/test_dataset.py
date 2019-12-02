@@ -817,3 +817,4 @@ class TestDataSet(unittest.TestCase):
         self.assertEqual(df1.data.shape, (10,3))
         df2 = dataset.tabulate(x, y, show=['count', 'pct', 'base', 'ubase'], w='weight_a')
         self.assertEqual(df2.data.shape, (20,3))
+        df3 = dataset.tabulate(x)
