@@ -1863,9 +1863,9 @@ class DataSet(object):
                     result = result.rename(index={"Total":"Weighted Total"})
                     result = pd.concat([ubase, result])
                 # we do this here because we can only drop the % from the index after styling is applied
-                result = result.style.format(lambda x: "{:.0%}".format(x) if x < 1 else "{:.0f}".format(x))
                 if multiindex is not None:
                     result.columns = multiindex
+                result = result.style.format(lambda x: "{:.0%}".format(x) if (x < 1 and x > 0) else "{:.0f}".format(x))
                 result.data = result.data.rename(index={"%":""})
 
             elif 'pct' in show:
@@ -1883,7 +1883,7 @@ class DataSet(object):
                     ubase = unweighted_count[0:1]
                     ubase = ubase.rename(index={"All":"Unweighted Total"})
                     result = pd.concat([ubase, result])
-                result = result.style.format(lambda x: "{:.0%}".format(x) if x < 1 else "{:.0f}".format(x))
+                result = result.style.format(lambda x: "{:.0%}".format(x) if (x < 1 and x > 0) else "{:.0f}".format(x))
             elif 'count' in show:
                 result = self.crosstab(x=x, y=y, f=f, w=w, decimals=decimals, pct=False)
                 if 'base' in show:
@@ -1893,7 +1893,7 @@ class DataSet(object):
                         result = result.rename({"All":"Total"})
                 else:
                     result = result[1:]
-                    result = result.style.format(lambda x: "{:.0%}".format(x) if x < 1 else "{:.0f}".format(x))
+                    result = result.style.format(lambda x: "{:.0%}".format(x) if (x < 1 and x > 0) else "{:.0f}".format(x))
 
         else:
             if show == 'pct':
@@ -1902,12 +1902,10 @@ class DataSet(object):
             elif show == 'count':
                 result = self.crosstab(x=x, y=y, f=f, w=w, decimals=decimals, pct=False)
                 result = result.rename(index={"All":"Total"})
-                result = result.style.format(lambda x: "{:.0%}".format(x) if x < 1 else "{:.0f}".format(x))
+                result = result.style.format(lambda x: "{:.0%}".format(x) if (x < 1 and x > 0) else "{:.0f}".format(x))
             else:
                 raise ValueError("Tabulate must be called with either count or pct in show argument")
         if y is None:
-            result.data = result.data.droplevel(axis=1, level=0).rename(columns={"@":"Total"})
-            #result.data = result.data[1:]
             if not isinstance(result.data.columns, pd.core.indexes.base.Index):
                 result.data = result.data.droplevel(axis=1, level=0).rename(columns={"@":"Total"})
                 result.data = result.data[1:]
