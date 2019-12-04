@@ -1838,14 +1838,19 @@ class DataSet(object):
                 raise ValueError("Tabulate must be called with either count or pct in show argument")
             if 'pct' in show:
                 pct = self.crosstab(x=x, y=y, f=f, w=w, decimals=decimals, pct=True)/100
-                multiindex = pct.columns
                 pct.columns = pct.columns.set_levels(['%'], level=0)
             if 'count' in show:
                 count = self.crosstab(x=x, y=y, f=f, w=w, decimals=decimals, pct=False)
-                multiindex = count.columns
                 count.columns = count.columns.set_levels([''], level=0)
             if 'pct' in show and 'count' in show:
                 concatted = pd.concat([count,pct], axis =1).stack(level=0)
+                if y is not None:
+                    concatted = concatted.reindex(columns=self.value_texts(y))
+                    crossbreak_name = count.columns.get_level_values(0)[0]
+                    new_column_index = pd.MultiIndex.from_product([[crossbreak_name] ,concatted.columns.tolist()])
+                else:
+                    new_column_index = pd.MultiIndex.from_product([['All'] ,concatted.columns.tolist()])
+                concatted.columns = new_column_index
                 result = concatted[2:]
                 if 'base' in show:
                     base = concatted[0:1]
@@ -1863,8 +1868,6 @@ class DataSet(object):
                     result = result.rename(index={"Total":"Weighted Total"})
                     result = pd.concat([ubase, result])
                 # we do this here because we can only drop the % from the index after styling is applied
-                if multiindex is not None:
-                    result.columns = multiindex
                 result = result.style.format(lambda x: "{:.0%}".format(x) if (x < 1 and x > 0) else "{:.0f}".format(x))
                 result.data = result.data.rename(index={"%":""})
 
@@ -1883,6 +1886,9 @@ class DataSet(object):
                     ubase = unweighted_count[0:1]
                     ubase = ubase.rename(index={"All":"Unweighted Total"})
                     result = pd.concat([ubase, result])
+                if y is None:
+                    result = result.droplevel(axis=1, level=0)
+                result.rename(columns={"@":"All"})
                 result = result.style.format(lambda x: "{:.0%}".format(x) if (x < 1 and x > 0) else "{:.0f}".format(x))
             elif 'count' in show:
                 result = self.crosstab(x=x, y=y, f=f, w=w, decimals=decimals, pct=False)
