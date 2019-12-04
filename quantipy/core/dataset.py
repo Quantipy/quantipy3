@@ -1845,7 +1845,7 @@ class DataSet(object):
             if 'pct' in show and 'count' in show:
                 concatted = pd.concat([count,pct], axis =1).stack(level=0)
                 if y is not None:
-                    concatted = concatted.reindex(columns=self.value_texts(y))
+                    concatted = concatted.reindex(columns=['All'] + self.value_texts(y))
                     crossbreak_name = count.columns.get_level_values(0)[0]
                     new_column_index = pd.MultiIndex.from_product([[crossbreak_name] ,concatted.columns.tolist()])
                 else:
