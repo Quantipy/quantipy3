@@ -84,7 +84,7 @@ def ddf_to_pandas(path_ddf):
     level_id_map = {}
     new_levels_index = ['HDATA']
     for table_name in levels.index[1:]:
-        new_table_name = levels.ix[table_name,'DSCTableName']
+        new_table_name = levels.loc[table_name,'DSCTableName']
         ddf[new_table_name] = sql[table_name]
         new_levels_index.append(new_table_name)
 
