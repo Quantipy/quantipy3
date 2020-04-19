@@ -36,7 +36,7 @@ MDD_TYPES_MAP = {
     '6': 'float',
     '7': 'boolean'
 }
-RE_GRID_SLICES = "[^{.]+(?=[}]|$|\[)"
+RE_GRID_SLICES = r'[^{.]+(?=[}]|$|\[)'
 XPATH_DEFINITION = '//definition'
 XPATH_VARIABLES = '//design//fields//variable'
 XPATH_LOOPS = '//design//fields//loop'
@@ -81,10 +81,10 @@ def ddf_to_pandas(path_ddf):
     levels = sql['Levels']
     table_name_map = dict(levels['DSCTableName'])
     table_name_map['L1'] = 'HDATA'
-    level_id_map = {}
+    # level_id_map = {}
     new_levels_index = ['HDATA']
     for table_name in levels.index[1:]:
-        new_table_name = levels.ix[table_name,'DSCTableName']
+        new_table_name = levels.loc[table_name,'DSCTableName']
         ddf[new_table_name] = sql[table_name]
         new_levels_index.append(new_table_name)
 
@@ -97,11 +97,9 @@ def ddf_to_pandas(path_ddf):
 
     return ddf
 
+def timestamp_to_ISO8610(timestamp, offset_date="1900-01-01",as_string=False, adjuster=None):
 
-def timestamp_to_ISO8610(timestamp, offset_date="1900-01-01",
-                         as_string=False, adjuster=None):
-
-    offset = np.datetime64(offset_date).astype("float") * DAYS_TO_MS
+    offset = np.datetime64(offset_date).astype("float64") * DAYS_TO_MS
     day = timestamp * DAYS_TO_MS
     date = (day + offset).astype("datetime64[ms]")
     if not adjuster is None:
@@ -110,7 +108,6 @@ def timestamp_to_ISO8610(timestamp, offset_date="1900-01-01",
         date = str(date)
 
     return date
-
 
 def get_datetime_values(var_df, adjuster, as_string=True):
 
@@ -125,7 +122,6 @@ def get_datetime_values(var_df, adjuster, as_string=True):
         return list(dates.str.encode('utf-8').values)
     else:
         return dates
-
 
 def quantipy_clean(ddf):
 
@@ -181,7 +177,7 @@ def quantipy_clean(ddf):
                 # Coerce column dtypes for expected Quantipy usage
                 # methods and functions by type
                 if 'single' in types_df.index:
-                    columns = types_df.ix['single','column']
+                    columns = types_df.loc['single','column']
                     if isinstance(columns, str):
                         columns = [columns]
                     for column in columns:
@@ -199,7 +195,7 @@ def quantipy_clean(ddf):
                     ddf[n_tab][column].replace(-1, np.NaN, inplace=True)
 
                 if 'date' in types_df.index:
-                    columns = types_df.ix['date','column']
+                    columns = types_df.loc['date','column']
                     if isinstance(columns, str):
                         columns = [columns]
                     for column in columns:
@@ -210,7 +206,7 @@ def quantipy_clean(ddf):
                         )
 
                 if 'boolean' in types_df.index:
-                    columns = types_df.ix['boolean','column']
+                    columns = types_df.loc['boolean','column']
                     if isinstance(columns, str):
                         columns = [columns]
                     for column in columns:
@@ -220,13 +216,11 @@ def quantipy_clean(ddf):
 
     return clean, ddf['Levels']
 
-
 def force_single_from_delimited(data):
 
     data = data.apply(lambda x: x.str.replace(';', ''))
     data = data.convert_objects(convert_numeric=True)
     return data
-
 
 def as_L1(child, parent=None, force_single=False):
 
@@ -294,7 +288,6 @@ def as_L1(child, parent=None, force_single=False):
 
     return child_as_L1
 
-
 def get_var_type(var):
 
     mdd_type = MDD_TYPES_MAP[var.get('type')]
@@ -305,7 +298,6 @@ def get_var_type(var):
             mdd_type = 'delimited set'
 
     return mdd_type
-
 
 def get_text_dict(source):
 
@@ -318,7 +310,6 @@ def get_text_dict(source):
             text[tk] = ""
     return text
 
-
 def get_meta_values(xml, column, data, map_values=True):
 
     if '.' in column['name']:
@@ -330,7 +321,7 @@ def get_meta_values(xml, column, data, map_values=True):
         var_name = column['name']
 
     column_values = []
-    column_factors = []
+    # column_factors = []
 
     if is_grid:
         # this protects against the scenario where multiple grids
@@ -345,7 +336,6 @@ def get_meta_values(xml, column, data, map_values=True):
         field_ref = field.get('ref')
         xpath_var = XPATH_DEFINITION+"//variable[@id='"+field_ref+"']"
         xpath_categories = xpath_var+"//categories//category"
-
     else:
         xpath_var = XPATH_DEFINITION+"//variable[@name='"+var_name+"']"
         xpath_categories = xpath_var+"//categories//category"
@@ -425,14 +415,14 @@ def get_meta_values(xml, column, data, map_values=True):
                         values.append(int(v))
                 msg = 'Null in category values for {} will be replaced with empty value.'.format(
                         var_name)
-        except Exception as e:
+        except Exception:
             values = range(1, len(categories)+1)
             msg = 'NULL in values for {} will be replaced with empty value'.format(var_name)
             warnings.warn(msg)
     else:
         values = list(range(1, len(categories)+1))
         msg = 'Category values for {} will be taken byPosition'.format(var_name)
-        warnings.warn(msg)
+        # warnings.warn(msg)    ' Uncomment this before shipping out
 
     # handy trouble-shooting printout for figuring out where category values
     # have come from.
@@ -474,7 +464,6 @@ def get_meta_values(xml, column, data, map_values=True):
 
     return column_values, value_map
 
-
 def remap_values(data, column, value_map):
     if column['type'] in ['single']:
         missing = [
@@ -504,7 +493,6 @@ def remap_values(data, column, value_map):
         return data[column['name']].copy()
 
     return False
-
 
 def map_delimited_values(y, value_map, col_name):
     """
@@ -545,7 +533,6 @@ def map_delimited_values(y, value_map, col_name):
 
     return y
 
-
 def begin_column(xml, col_name, data):
 
     column = {}
@@ -553,7 +540,7 @@ def begin_column(xml, col_name, data):
     xpath_var = XPATH_DEFINITION+"//variable[@name='"+col_name+"']"
     try:
         var = xml.xpath(xpath_var)[0]
-    except Exception as e:
+    except Exception:
         column['name'] = col_name
         column['properties'] = get_meta_properties(xml, xpath_var)
         column['type'] = 'string'
@@ -573,7 +560,6 @@ def begin_column(xml, col_name, data):
             column['type'] = 'single'
 
     return column
-
 
 def get_meta_properties(xml, xpath_var, exclude=None):
 
@@ -596,7 +582,6 @@ def get_meta_properties(xml, xpath_var, exclude=None):
         properties = {}
 
     return properties
-
 
 def map_cols_from_grid(xml, data):
 
@@ -644,7 +629,6 @@ def map_cols_from_grid(xml, data):
 
     return data
 
-
 def get_mdd_xml(path_mdd):
 
     #with open(path_mdd, 'r+') as f:
@@ -654,7 +638,6 @@ def get_mdd_xml(path_mdd):
     #xml = etree.XML(xml_text)
 
     return xml
-
 
 def get_grid_elements(xml, grid_name):
 
@@ -667,7 +650,6 @@ def get_grid_elements(xml, grid_name):
         elements = xml.xpath(xpath_elements)[0].getchildren()
 
     return elements, xpath_elements
-
 
 def get_columns_meta(xml, meta, data, map_values=True):
 
@@ -702,7 +684,7 @@ def get_columns_meta(xml, meta, data, map_values=True):
                 )
 
             if not mm_name in meta['masks']:
-#                 xpath_grid = "//design//grid[@name='%s']" % mm_name
+                # xpath_grid = "//design//grid[@name='%s']" % mm_name
                 xpath_grid = "//design//grid[@name='%s']" % mm_name.split('.')[0]
                 if not xml.xpath(xpath_grid):
                     xpath_grid = "//design//loop[@name='%s']" % mm_name.split('.')[0]
@@ -767,7 +749,6 @@ def get_columns_meta(xml, meta, data, map_values=True):
         columns[col_name] = column
 
     return meta, columns, data
-
 
 def mdd_to_quantipy(path_mdd, data, map_values=True):
 
@@ -949,10 +930,10 @@ def mdd_to_quantipy(path_mdd, data, map_values=True):
                     for item in meta['sets'][k]['items']
                     if item in mask_items
                 ]
-#                 meta['masks'][k]['items'] = [
-#                     {'source': i}
-#                     for i in meta['sets'][k]['items']
-#                 ]
+                # meta['masks'][k]['items'] = [
+                #     {'source': i}
+                #     for i in meta['sets'][k]['items']
+                # ]
 
     meta['sets']['data file']['items'] = updated_design_set
 
@@ -964,19 +945,17 @@ def mdd_to_quantipy(path_mdd, data, map_values=True):
 
     return meta, data
 
-
 def get_mask_item(mask, source, k):
     for item in mask['items']:
         if item['source']==source:
             return item
-
 
 def quantipy_from_dimensions(path_mdd, path_ddf, fields='all', grids=None):
 
     ddf, levels = quantipy_clean(ddf_to_pandas(path_ddf))
     L1 = ddf['HDATA'].copy()
     L1.drop('LevelId_HDATA', axis=1, inplace=True)
-#     L1.dropna(axis=1, how='all', inplace=True)
+    # L1.dropna(axis=1, how='all', inplace=True)
 
     if isinstance(fields, (list, tuple)):
         L1 = L1[['id_HDATA']+fields]
@@ -990,7 +969,7 @@ def quantipy_from_dimensions(path_mdd, path_ddf, fields='all', grids=None):
         empty_grids = []
         for grid_name in grids:
             if not any(levels['ParentName'].isin([grid_name])):
-                parent_name = levels.loc[grid_name, 'ParentName']
+                # parent_name = levels.loc[grid_name, 'ParentName']
                 if grid_name in list(ddf.keys()):
                     single_level.append(as_L1(child=ddf[grid_name]))
                 else:
@@ -1040,17 +1019,15 @@ def quantipy_from_dimensions(path_mdd, path_ddf, fields='all', grids=None):
                 datafile.remove(item)
     meta['sets']['data file']['items'] = datafile
 
-
     for key, col in meta['columns'].items():
         if col['type']=='string' and key in ddf:
             ddf[key] = ddf[key].apply(qp.core.tools.dp.io.unicoder)
         if col['type']=='int' and key in ddf:
             ddf[key] = ddf[key].replace('null', 0)
 
-    mdd, ddf = verify_columns(meta, ddf)
+    meta, ddf = verify_columns(meta, ddf)
 
     return meta, ddf
-
 
 def verify_columns(mdd, ddf):
     """
@@ -1068,7 +1045,6 @@ def verify_columns(mdd, ddf):
 
     return mdd, ddf
 
-
 def order_by_meta(data, columns, masks):
     """
     Check and re-order data.columns against meta['sets']['data file']['items'].
@@ -1085,5 +1061,5 @@ def order_by_meta(data, columns, masks):
         return result
     new_order = ["id_L1"]
     new_order.extend(_get_column_items(columns, masks))
-    #data = data.ix[:, new_order]
+    #data = data.loc[:, new_order]
     return data
