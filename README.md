@@ -1,5 +1,8 @@
 # Quantipy
 
+### Fork:
+The aim of this fork is to make quantipy compatible with newer Pandas and Numpy versions.
+
 ### Python for people data
 Quantipy is an open-source data processing, analysis and reporting software project that builds on the excellent pandas and numpy libraries. Aimed at people data, Quantipy offers support for native handling of special data types like multiple choice variables, statistical analysis using case or observation weights, DataFrame metadata and pretty data exports.
 
