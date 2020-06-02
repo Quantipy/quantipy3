@@ -580,8 +580,8 @@ class TestDataSet(unittest.TestCase):
 
     def test_uncode(self):
         dataset = self._get_dataset()
-        dataset.uncode('q8',{1: 1, 2:2, 5:5}, 'q8', intersect={'gender':1})
-        dataset.uncode('q8',{3: 3, 4:4, 98:98}, 'q8', intersect={'gender':2})
+        dataset.uncode('q8', {1: 1, 2:2, 5:5}, 'q8', intersect={'gender':1})
+        dataset.uncode('q8', {3: 3, 4:4, 98:98}, 'q8', intersect={'gender':2})
         df = dataset.crosstab('q8', 'gender')
         result = [[ 1797.,   810.,   987.],
                   [  476.,     0.,   476.],
@@ -600,16 +600,16 @@ class TestDataSet(unittest.TestCase):
                   for c in range(1, 4)]} for r in frange('1-5')]
         ds = dataset.derotate(levels, mapper, 'gender', 'record_number')
         df_h = ds._data.head(10)
-        df_val = [[x if not np.isnan(x) else 'nan' for x in line]
+        df_val = [[x if not np.isnan(x) else np.nan for x in line]
                   for line in df_h.values.tolist()]
         result_df = [[1.0, 2.0, 1.0, 4.0, 4.0, 4.0, 8.0, 1.0, 2.0, 4.0, 2.0, 3.0, 1.0],
                      [1.0, 2.0, 2.0, 4.0, 4.0, 4.0, 8.0, 3.0, 3.0, 2.0, 4.0, 3.0, 1.0],
-                     [1.0, 3.0, 1.0, 1.0, 1.0, 8.0, 'nan', 4.0, 3.0, 1.0, 3.0, 1.0, 2.0],
+                     [1.0, 3.0, 1.0, 1.0, 1.0, 8.0, np.nan, 4.0, 3.0, 1.0, 3.0, 1.0, 2.0],
                      [1.0, 4.0, 1.0, 5.0, 5.0, 4.0, 8.0, 2.0, 3.0, 2.0, 3.0, 1.0, 1.0],
                      [1.0, 4.0, 2.0, 4.0, 5.0, 4.0, 8.0, 2.0, 1.0, 3.0, 2.0, 1.0, 1.0],
                      [1.0, 5.0, 1.0, 3.0, 3.0, 5.0, 8.0, 4.0, 2.0, 2.0, 1.0, 3.0, 1.0],
                      [1.0, 5.0, 2.0, 5.0, 3.0, 5.0, 8.0, 3.0, 3.0, 3.0, 1.0, 2.0, 1.0],
-                     [1.0, 6.0, 1.0, 2.0, 2.0, 8.0, 'nan', 4.0, 2.0, 3.0, 4.0, 2.0, 1.0],
+                     [1.0, 6.0, 1.0, 2.0, 2.0, 8.0, np.nan, 4.0, 2.0, 3.0, 4.0, 2.0, 1.0],
                      [1.0, 7.0, 1.0, 3.0, 3.0, 3.0, 8.0, 2.0, 1.0, 3.0, 2.0, 4.0, 1.0],
                      [1.0, 7.0, 2.0, 3.0, 3.0, 3.0, 8.0, 3.0, 2.0, 1.0, 2.0, 3.0, 1.0]]
         result_columns = ['@1', 'record_number', 'visit', 'visit_levelled',

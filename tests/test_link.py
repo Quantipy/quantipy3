@@ -2,6 +2,7 @@ import unittest
 import os.path
 import pandas as pd
 # import numpy as np
+from quantipy import dataframe_fix_string_types
 from quantipy.core.link import Link
 from quantipy.core.stack import Stack
 from quantipy.core.helpers.functions import load_json
@@ -19,7 +20,8 @@ class TestLinkObject(unittest.TestCase):
         # Load Example Data (A) data and meta into self
         name_data = '%s.csv' % (project_name)
         path_data = '%s%s' % (self.path, name_data)
-        self.example_data_A_data = pd.read_csv(path_data)        
+        self.example_data_A_data = pd.read_csv(path_data)
+        self.example_data_A_data = dataframe_fix_string_types(self.example_data_A_data)
         name_meta = '%s.json' % (project_name)
         path_meta = '%s%s' % (self.path, name_meta)
         self.example_data_A_meta = load_json(path_meta)

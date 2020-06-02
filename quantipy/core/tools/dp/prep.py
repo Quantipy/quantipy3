@@ -5,6 +5,7 @@ import copy
 import re
 import warnings
 
+from quantipy.core.pandas_utility import dataframe_fix_string_types
 from quantipy.core.tools.dp.query import uniquify_list
 from quantipy.core.helpers.functions import (
     emulate_meta,
@@ -328,7 +329,7 @@ def condense_dichotomous_set(df, values_from_labels=True, sniff_single=False,
         lambda x: ';'.join([
             v
             for v in x.tolist()
-            if v != 'nan'
+            if v != 'nan' and v != np.nan
         ]),
         axis=1
     )
@@ -1678,6 +1679,7 @@ def vmerge(dataset_left=None, dataset_right=None, datasets=None,
                 verbose=verbose)
             dataset_left = (meta_vm, data_vm)
 
+        data_vm = dataframe_fix_string_types(data_vm)
         return meta_vm, data_vm
 
     if on is None and left_on is None and right_on is None:
@@ -1770,7 +1772,7 @@ def vmerge(dataset_left=None, dataset_right=None, datasets=None,
         if not left_id is None:
             if row_id_name in data_left.columns:
                 left_id_rows = data_left[row_id_name].isnull()
-                data_left.ix[left_id_rows, row_id_name] = left_id
+                data_left.loc[left_id_rows, row_id_name] = left_id
             else:
                 data_left[row_id_name] = left_id
         if not right_id is None:
@@ -1819,6 +1821,7 @@ def vmerge(dataset_left=None, dataset_right=None, datasets=None,
     if verbose:
         print('\n')
 
+    vadata = dataframe_fix_string_types(vdata)
     return meta_left, vdata
 
 def subset_dataset(meta, data, columns):

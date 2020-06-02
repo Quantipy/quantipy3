@@ -3992,7 +3992,9 @@ class Quantity(object):
             return 'simple'
 
     def _is_multicode_array(self, mask_element):
-        return self.d()[mask_element].dtype == 'object'
+        return (
+                self.d()[mask_element].dtype == 'str'
+                )
 
     def _get_wv(self):
         """
@@ -5217,8 +5219,8 @@ class Quantity(object):
     def _dummyfy(self, section=None):
         if section is not None:
             # i.e. Quantipy multicode data
-            if self.d()[section].dtype == 'object':
-                section_data = self.d()[section].str.get_dummies(';')
+            if self.d()[section].dtype == 'str' or self.d()[section].dtype == 'object':
+                section_data = self.d()[section].astype('str').str.get_dummies(';')
                 if self._uses_meta:
                     res_codes = self._get_response_codes(section)
                     section_data.columns = [int(col) for col in section_data.columns]
@@ -6077,7 +6079,7 @@ class Nest(object):
         return nest_info
 
     def _any_multicoded(self):
-        return any(self.data[self.variables].dtypes == 'object')
+        return any(self.data[self.variables].dtypes == 'str')
 
     def _get_code_maps(self):
         code_maps = []
@@ -6165,7 +6167,7 @@ class Multivariate(object):
         if drop_listwise:
             self._analysisdata.dropna(inplace=True)
             valid = self._analysisdata.index
-            self.ds._data = self.ds._data.ix[valid, :]
+            self.ds._data = self.ds._data.loc[valid, :]
         return None
 
     def _drop_missings(self):
@@ -6790,7 +6792,7 @@ class Relations(Multivariate):
         xprods, unbiased_ns = [], []
         for pair, means_pair in zip(pairs, means_paired):
             data = self._analysisdata.copy()
-            data = data.ix[:, [pair[0], pair[1], -1]].dropna().values
+            data = data.loc[:, [pair[0], pair[1], -1]].dropna().values
             m_diff = data[:, :-1] - means_pair
             xprods.append(np.nansum(m_diff[:, 0] * m_diff[:, 1] * data[:, -1]))
             unbiased_ns.append(np.nansum(data[:, -1]) - 1)

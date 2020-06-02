@@ -389,7 +389,7 @@ def add_pie_chart(
     chart_data.categories = dataframe.index
 
     for i, col in enumerate(dataframe.columns):
-        chart_data.add_series(col, (dataframe.ix[:, i].values), excel_num_format)
+        chart_data.add_series(col, (dataframe.iloc[:, i].values), excel_num_format)
 
     # Adding chart
     x, y, cx, cy = left, top, width, height
@@ -626,7 +626,7 @@ def add_bar_chart(
     chart_data.categories = dataframe.index
 
     for i, col in enumerate(dataframe.columns):
-        chart_data.add_series(col, (dataframe.ix[:, i].values), excel_num_format)
+        chart_data.add_series(col, (dataframe.iloc[:, i].values), excel_num_format)
 
     # add chart
     x, y, cx, cy = left, top, width, height
@@ -1079,7 +1079,7 @@ def add_line_chart(
     chart_data.categories = dataframe.index
 
     for i, col in enumerate(dataframe.columns):
-        chart_data.add_series(col, (dataframe.ix[:, i].values), excel_num_format)
+        chart_data.add_series(col, (dataframe.iloc[:, i].values), excel_num_format)
 
     # Adding chart
     x, y, cx, cy = left, top, width, height
@@ -1271,7 +1271,7 @@ def add_stacked_bar_chart(
     chart_data.categories = dataframe.index
 
     for i, col in enumerate(dataframe.columns):
-        chart_data.add_series(col, (dataframe.ix[:, i].values), excel_num_format)
+        chart_data.add_series(col, (dataframe.iloc[:, i].values), excel_num_format)
 
     # add chart to slide
     x, y, cx, cy = left, top, width, height

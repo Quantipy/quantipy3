@@ -3,7 +3,10 @@ import unittest
 import os.path
 import numpy
 import pandas as pd
+import numpy as np
 import json
+
+from quantipy import dataframe_fix_string_types
 from quantipy.core.weights.rim import Rim
 from quantipy.core.weights.weight_engine import WeightEngine
 
@@ -29,6 +32,7 @@ class TestEngine(unittest.TestCase):
 
         # Setup engine_A
         data = pd.read_csv(self.path_data_A)
+        data = dataframe_fix_string_types(data)
         self.engine_A = WeightEngine(data=data)
 
         self.scheme_name_A1 = 'scheme_name_A1'
@@ -131,6 +135,7 @@ class TestEngine(unittest.TestCase):
         ''' Complex engine with meta - engine_B
         '''
         data = pd.read_csv(self.path_data_B)
+        data = dataframe_fix_string_types(data)
         with open(self.path_meta_B) as f:
             meta = json.load(f)
 
@@ -145,6 +150,7 @@ class TestEngine(unittest.TestCase):
 
     def test_constructor(self):
         data = pd.read_csv(self.path_data_B)
+        data = dataframe_fix_string_types(data)
         with open(self.path_meta_B) as f:
             meta = json.load(f)
 
@@ -170,15 +176,15 @@ class TestEngine(unittest.TestCase):
             self.assertIn('identity', self.engine_A.schemes[key]['key'])
 
         # Sets weights_scheme_name_A1 and weights_scheme_name_A2 to ones
-        self.engine_A._df[self.scheme_A1._weight_name()] = pd.np.ones(len(self.engine_A._df))
-        self.engine_A._df[self.scheme_A2._weight_name()] = pd.np.ones(len(self.engine_A._df))
+        self.engine_A._df[self.scheme_A1._weight_name()] = np.ones(len(self.engine_A._df))
+        self.engine_A._df[self.scheme_A2._weight_name()] = np.ones(len(self.engine_A._df))
 
         for key in self.engine_A.schemes:
             weight_scheme = self.engine_A._df['weights_'+key]
-            boolean_vector = (weight_scheme == pd.np.ones(len(weight_scheme)))
+            boolean_vector = (weight_scheme == np.ones(len(weight_scheme)))
             self.assertTrue(boolean_vector.all())
             self.engine_A.run(schemes=[key])
-            boolean_vector = (weight_scheme == pd.np.ones(len(weight_scheme)))
+            boolean_vector = (weight_scheme == np.ones(len(weight_scheme)))
             self.assertFalse(boolean_vector.all())
 
     def test_add_scheme_no_key(self):
@@ -197,6 +203,7 @@ class TestEngine(unittest.TestCase):
 
     def test_group_targets(self):
         data = pd.read_csv(self.path_data_B)
+        data = dataframe_fix_string_types(data)
         with open(self.path_meta_B) as f:
             meta = json.load(f)
 
@@ -235,6 +242,7 @@ class TestEngine(unittest.TestCase):
 
     def test_vaidate_targets(self):
         data = pd.read_csv(self.path_data_exA)
+        data = dataframe_fix_string_types(data)
         engine = WeightEngine(data)
 
         targets_gender = [45.6, 54.4]
@@ -260,16 +268,17 @@ class TestEngine(unittest.TestCase):
 
     def test_wdf_structure(self):
         data = pd.read_csv(self.path_data_exA)
+        data = dataframe_fix_string_types(data)
         engine = WeightEngine(data)
 
         targets_gender = [45.6, 54.4]
         targets_locality = [10, 15, 20, 25, 30]
-        weight_targets =  [
+        weight_targets = [
                           {'gender': {code: prop for code, prop
                                       in enumerate(targets_gender, start=1)}},
                           {'locality': {code: prop for code, prop
                                         in enumerate(targets_locality, start=1)}}
-                          ]
+                         ]
 
         scheme = Rim('complex_filter')
 

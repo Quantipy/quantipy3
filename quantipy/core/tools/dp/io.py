@@ -12,6 +12,8 @@ import sys
 from ftfy import fix_text
 
 from collections import OrderedDict
+
+from quantipy.core.pandas_utility import dataframe_fix_string_types
 from quantipy.core.helpers.constants import DTYPE_MAP
 from quantipy.core.helpers.constants import MAPPED_PATTERN
 from itertools import product
@@ -151,6 +153,7 @@ def loads_json(json_text, hook=OrderedDict):
 def load_csv(path_csv):
 
     data = pd.read_csv(path_csv)
+    data = dataframe_fix_string_types(data)
     return data
 
 def save_json(obj, path_json, decode_str=False, decoder='UTF-8'):

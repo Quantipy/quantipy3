@@ -16,6 +16,7 @@ from quantipy.core.helpers.functions import parrot
 import quantipy.core.helpers.functions as helpers
 import quantipy.core.tools.dp as dp
 import quantipy.core.tools.view as v
+from quantipy.core.pandas_utility import dataframe_fix_string_types
 
 # from quantipy.sandbox import sandbox
 

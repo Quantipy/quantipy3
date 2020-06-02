@@ -1,9 +1,14 @@
 import pandas as pd
+import numpy as np
+
 
 from operator import lt, le, eq, ne, ge, gt
 __op_symbol__ = {lt: '<', le: '<=', eq: '', ne: '!=', ge: '>=', gt: '>'}
 
-from pandas.core.index import Index
+from pandas.core.dtypes.common import is_string_dtype
+from pandas.core.indexes.api import Index
+
+
 __index_symbol__ = {
     Index.union: ',',
     Index.intersection: '&',
@@ -62,10 +67,10 @@ def verify_logic_series(series, func_name):
     -------
     None
     """
-    if not series.dtype in ['object', 'int64', 'float64']:
+    if not series.dtype in ['object', 'str', 'int64', 'float64']:
         raise TypeError(
             "The series given to %s() must be a supported dtype. "
-            "Expected 'object', 'int64' or 'float64', found a '%s'." % (
+            "Expected 'object', 'str', 'int64' or 'float64', found a '%s'." % (
                 func_name,
                 series.dtype
             )
@@ -212,9 +217,9 @@ def _any_all(series, values, func_name, exclusive=False, _not=False):
         The index of series for rows containing any/all of the given values.
 
     """
-    if series.dtype=='object':
+    if series.dtype == 'str' or series.dtype == 'object':
         # Get the dichotomous version of series
-        dummies = series.str.get_dummies(';')
+        dummies = series.astype('str').str.get_dummies(';')
         # Slice the dummies column-wise for only the targeted values
         values = [str(v) for v in values]
         cols = [col for col in dummies.columns if col in values]
@@ -424,6 +429,8 @@ def _has_all(series, values, exclusive=False):
     index : pandas.index
         The index of series for rows containing all of the given values.
     """
+    if is_string_dtype(series) and series.dtype == object:
+        series = series.astype("str")
     verify_logic_series(series, 'has_all')
     return _any_all(series, values, "all", exclusive)
 
@@ -598,12 +605,14 @@ def _count(series, responses, exclusive=False, _not=False):
         The index of series for rows containing the given number of
         responses
     """
-    if series.dtype in ['object', 'int64', 'float64']:
+    #dtype was previously object, now string
+    if series.dtype in ['object', 'str', 'int64', 'float64']:
 
-        # Get the dichotomous version of series
-        dummies = series.astype('object').str.get_dummies(';')
-        if dummies.columns.dtype=='object':
-            dummies.columns = [int(float(col)) for col in dummies.columns]
+        # Get the dichotomous version of series, previously was 'object' not 'str'
+        dummies = series.dropna().astype('str').str.get_dummies(';')
+        if dummies.columns.dtype == 'str':
+            # This previously only allowed 'str' types and had no notna filter
+            dummies.columns = [int(float(col)) for col in dummies.columns if not np.isnan(col)]
         try:
             if isinstance(responses[0], tuple):
                 values = responses[1]
@@ -625,7 +634,7 @@ def _count(series, responses, exclusive=False, _not=False):
                         dummies.columns if not col in values
                     ]
                     other_dummies = dummies[other_cols]
-                    other_dummies = other_dummies[(other_dummies.T==1).any()]
+                    other_dummies = other_dummies[(other_dummies.T == 1).any()]
                 dummies = dummies[cols]
         except:
             pass
@@ -1413,5 +1422,5 @@ def get_logic_key(logic, data=None):
         logical block.
     """
 
-    idx, vkey = get_logic_index(pd.Series([]), logic, data)
+    idx, vkey = get_logic_index(pd.Series([], dtype=np.float64), logic, data)
     return vkey

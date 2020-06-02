@@ -313,7 +313,7 @@ def insert_values_to_labels(
     if all(add_values_to.columns == take_values_from.columns):
 
         # pull a given row's values
-        row_vals = take_values_from.ix[[index_position],:].values
+        row_vals = take_values_from.iloc[[index_position],:].values
         # flatten the list of values
         row_vals = row_vals.flatten()
         # get column labels

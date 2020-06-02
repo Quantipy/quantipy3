@@ -215,7 +215,7 @@ def paint_dataframe(meta, df, text_key=None, display_names=None,
             it = sorted(zip(levels, order), key=lambda x: x[1])
             df.index = pd.concat([
                 paint_dataframe(
-                    meta, df.ix[[level], :], text_key, display_names,
+                    meta, df.loc[[level], :], text_key, display_names,
                     transform_names, 'x', grp_text_map)
                 for level, _ in it],
                 axis=0).index
@@ -230,7 +230,7 @@ def paint_dataframe(meta, df, text_key=None, display_names=None,
         if len(df.columns.levels[0])>1:
             df.columns = pd.concat([
                 paint_dataframe(
-                    meta, df.ix[:, [level]], text_key, display_names,
+                    meta, df.loc[:, [level]], text_key, display_names,
                     transform_names, 'y', grp_text_map)
                 for level in df.columns.levels[0]],
                 axis=1).columns
@@ -1842,9 +1842,9 @@ def cat_to_dummies(data, limit_to=None, as_df=False):
     OR
     dummy_df : pd.DataFrame
     '''
-    if data.dtype == 'object':
+    if data.dtype == 'str' or data.dtype == 'object':
         # i.e. Quantipy multicode data
-        dummy_df = data.str.get_dummies(';')
+        dummy_df = data.astype('str').str.get_dummies(';')
         dummy_df.columns = [int(col) for col in dummy_df.columns]
         dummy_df.sort_index(axis=1).rename(columns={col: str(col) for col in dummy_df.columns}, inplace=True)
     else:
@@ -2115,7 +2115,7 @@ def make_default_num_view(data, x, y=None, weights=None, get_only=None):
             # changing column naming for x==y aggregations
             if not data.columns.is_unique:
                 data.columns = [x, y+'_', weight]
-            if data[y].dtype == 'object':
+            if data[y].dtype == 'str' or data[y].dtype == 'object':
                 # for Quantipy multicoded data on the y axis
                 dummy_y = cat_to_dummies(data[y], as_df=True)
                 dummy_y_data = pd.concat([data[[x, weight]], dummy_y], axis=1)

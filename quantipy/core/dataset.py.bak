@@ -97,7 +97,7 @@ class DataSet(object):
         var = self.unroll(var)
         if len(var) == 1: var = var[0]
         if sliced_access:
-            return self._data.ix[slicer, var]
+            return self._data.loc[slicer, var]
         else:
             return self._data[var]
 
@@ -365,7 +365,7 @@ class DataSet(object):
         return self._meta['columns'].get(name, {}).get('parent', False)
 
     def _is_multicode_array(self, mask_element):
-        return self[mask_element].dtype == 'object'
+        return self[mask_element].dtype == 'str'
 
     @verify(variables={'name': 'columns'})
     def is_like_numeric(self, name):
@@ -1606,8 +1606,8 @@ class DataSet(object):
         """
         if self.is_delimited_set(name):
             if not self._data[name].dropna().empty:
-                data_codes = self._data[name].str.get_dummies(';').columns.tolist()
-                data_codes = [int(c) for c in data_codes]
+                data_codes = self._data[name].astype('str').str.get_dummies(';').columns.tolist()
+                data_codes = [int(c) for c in data_codes if c != 'nan']
             else:
                 data_codes = []
         else:
@@ -1859,6 +1859,8 @@ class DataSet(object):
                 qptype = 'int'
             elif 'float' in pdtype:
                 qptype = 'float'
+            elif pdtype == 'str':
+                qptype = 'string'
             elif pdtype == 'object':
                 qptype = 'string'
             else:
@@ -1969,7 +1971,7 @@ class DataSet(object):
         for n in name:
             if len(self.codes(n)) == 1:
                 self.convert(n, 'single')
-                print msg.format(n)
+                print(msg.format(n))
         return None
 
     def _check_against_weak_dupes(self, name):

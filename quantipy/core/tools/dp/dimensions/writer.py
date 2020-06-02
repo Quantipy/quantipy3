@@ -411,7 +411,7 @@ def convert_categorical(categorical):
         resp_prefix = cat.name.split('[{')[0] + 'a'
     else:
         resp_prefix = categorical.name + 'a'
-    if not cat.dtype == 'object':
+    if not cat.dtype == 'str':
         cat = cat.apply(lambda x:
                         '{}{}'.format(resp_prefix, 
                                       int(x) if int(x) > -1 else

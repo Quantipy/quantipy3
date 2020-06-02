@@ -324,7 +324,7 @@ def condense_dichotomous_set(df, values_from_labels=True, sniff_single=False,
         # Convert to categorical set
         df_str[col].replace(
             {
-                'nan': 'nan', 
+                'nan': 'nan',
                 '{}.0'.format(no): 'nan',
                 '{}'.format(no): 'nan'
             }, 
@@ -342,7 +342,7 @@ def condense_dichotomous_set(df, values_from_labels=True, sniff_single=False,
         lambda x: ';'.join([
             val 
             for val in x.tolist() 
-            if val != 'nan'
+            if val != 'nan' and val != np.nan
         ]),
         axis=1
     )

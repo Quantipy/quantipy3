@@ -2,13 +2,14 @@ import unittest
 import os.path
 import numpy as np
 import pandas as pd
-from pandas.util.testing import assert_frame_equal
+from pandas.testing import assert_frame_equal
 import tests.test_helper
 import copy
 
 from operator import lt, le, eq, ne, ge, gt
 
-from pandas.core.index import Index
+from pandas.core.api import Index
+
 __index_symbol__ = {
     Index.union: ',',
     Index.intersection: '&',
@@ -17,6 +18,8 @@ __index_symbol__ = {
 }
 
 from collections import defaultdict, OrderedDict
+
+from quantipy import dataframe_fix_string_types
 from quantipy.core.stack import Stack
 from quantipy.core.chain import Chain
 from quantipy.core.link import Link
@@ -43,7 +46,8 @@ class TestRecodes(unittest.TestCase):
         # Load Example Data (A) data and meta into self
         name_data = '%s.csv' % (project_name)
         path_data = '%s%s' % (self.path, name_data)
-        self.example_data_A_data = pd.DataFrame.from_csv(path_data)
+        self.example_data_A_data = pd.read_csv(path_data)
+        self.example_data_A_data = dataframe_fix_string_types(self.example_data_A_data)
         name_meta = '%s.json' % (project_name)
         path_meta = '%s%s' % (self.path, name_meta)
         self.example_data_A_meta = load_json(path_meta)

@@ -2,13 +2,13 @@ import unittest
 import os.path
 import numpy as np
 import pandas as pd
-from pandas.util.testing import assert_frame_equal
+from pandas.testing import assert_frame_equal
 import tests.test_helper
 import copy
 
 from operator import lt, le, eq, ne, ge, gt
 
-from pandas.core.index import Index
+from pandas.core.api import Index
 __index_symbol__ = {
     Index.union: ',',
     Index.intersection: '&',
@@ -21,6 +21,8 @@ else:
     __index_symbol__[Index.symmetric_difference] = '^'
     pd_symmetric_difference = Index.symmetric_difference
 
+
+from quantipy import dataframe_fix_string_types
 from collections import defaultdict, OrderedDict
 from quantipy.core.stack import Stack
 from quantipy.core.chain import Chain
@@ -63,6 +65,7 @@ class TestStackObject(unittest.TestCase):
         name_data = '%s.csv' % (project_name)
         path_data = '%s%s' % (self.path, name_data)
         self.example_data_A_data = pd.read_csv(path_data)
+        self.example_data_A_data = dataframe_fix_string_types(self.example_data_A_data)
         name_meta = '%s.json' % (project_name)
         path_meta = '%s%s' % (self.path, name_meta)
         self.example_data_A_meta = load_json(path_meta)
@@ -148,13 +151,14 @@ class TestStackObject(unittest.TestCase):
             )
             # Test inverse index produced by not version
             not_idx = _not_any(q2, test_values)
-            not_resulting_columns = q2[not_idx].str.get_dummies(';').columns
+            not_resulting_columns = q2[not_idx].dropna().astype('str').str.get_dummies(';').columns
             self.assertTrue(all([
                 not int(col) in test_values
                 for col in not_resulting_columns
+                if col != 'nan'
             ]))
             self.confirm_inverse_index(q2, idx, not_idx, incl_na=True)
-        self.assertTrue((q2.fillna(0)==q2_verify_unchanged.fillna(0)).all())
+        self.assertTrue((q2.fillna(0) == q2_verify_unchanged.fillna(0)).all())
 
         # Test _has_any on single that is stored as int64
         gender = self.example_data_A_data['gender']
@@ -204,7 +208,7 @@ class TestStackObject(unittest.TestCase):
             str_test_values = [str(v) for v in test_values]
             # Test _has_all returns correct results
             idx = _has_any(q2, test_values, True)
-            resulting_columns = q2[idx].astype('object').str.get_dummies(';').columns
+            resulting_columns = q2[idx].astype('str').str.get_dummies(';').columns
             self.assertTrue(all([
                 int(col) in test_values
                 for col in resulting_columns
@@ -215,6 +219,7 @@ class TestStackObject(unittest.TestCase):
             self.assertTrue(all([
                 not int(col) in test_values
                 for col in not_resulting_columns
+                if col != 'nan'
             ]))
             self.assertTrue(len(idx.intersection(not_idx))==0)
             self.assertTrue(len(resulting_columns.intersection(not_resulting_columns))==0)
@@ -633,7 +638,7 @@ class TestStackObject(unittest.TestCase):
 
         # Test non-operator-lead logical comparisons
         for var_name in test_vars:
-            test_var = self.example_data_A_data[var_name]
+            test_var = self.example_data_A_data[var_name].dropna()
             response_tests = [
                 [1],
                 [1, 2],
@@ -655,7 +660,7 @@ class TestStackObject(unittest.TestCase):
                 # Count the number of resposnes per row
                 test_var_counts = dummies.sum(axis=1).unique()
 
-                if len(test_responses)==1:
+                if len(test_responses) == 1:
                     # Test single targeted response count
                     self.assertEqual(test_var_counts, [_min])
                 else:
@@ -725,6 +730,7 @@ class TestStackObject(unittest.TestCase):
                         incl_na = False
                     else:
                         incl_na = True
+                    incl_na = False
 
                     # Test inverse index produced by not version
                     not_idx = _not_count(test_var, test_responses)
@@ -765,7 +771,7 @@ class TestStackObject(unittest.TestCase):
                     for c in test_var_counts
                 ]))
                 # Negative test for exclusivity
-                all_dummies = test_var.astype('object').str.get_dummies(';')
+                all_dummies = test_var.astype('str').str.get_dummies(';')
                 other_cols = [
                     c for c in all_dummies.columns
                     if not c in dummies.columns
@@ -1343,7 +1349,6 @@ class TestStackObject(unittest.TestCase):
 ##################### Helper functions #####################
 
     def confirm_inverse_index(self, series, idx_a, idx_b, incl_na=False):
-
         self.assertEqual(
             len(idx_a.intersection(idx_b)),
             0
@@ -1362,7 +1367,7 @@ class TestStackObject(unittest.TestCase):
 
     def get_count_nums(self, series, test_responses):
 
-        dummies = series.astype('object').str.get_dummies(';')
+        dummies = series.astype('str').str.get_dummies(';')
 
         _min = test_responses[0]
 

@@ -2314,7 +2314,9 @@ class Nest(object):
         return nest_info
 
     def _any_multicoded(self):
-        return any(self.data[self.variables].dtypes == 'object')
+        return any(
+            (self.data[self.variables].dtypes == 'str')
+        )
 
     def _get_code_maps(self):
         code_maps = []

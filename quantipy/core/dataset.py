@@ -4,10 +4,10 @@ import numpy as np
 import pandas as pd
 import quantipy as qp
 
+from .pandas_utility import dataframe_fix_string_types
 from quantipy.core.tools.dp.io import (
     read_quantipy as r_quantipy,
     read_dimensions as r_dimensions,
-    read_decipher as r_decipher,
     read_spss as r_spss,
     read_ascribe as r_ascribe,
     write_spss as w_spss,
@@ -22,16 +22,14 @@ from quantipy.core.tools.qp_decorators import *
 
 from quantipy.core.tools.view.logic import (
     has_any, has_all, has_count,
-    not_any, not_all, not_count,
-    is_lt, is_ne, is_gt,
-    is_le, is_eq, is_ge,
+    not_count,
+    is_ge,
     union, intersection, get_logic_index)
 
 from quantipy.core.tools.dp.prep import (
     hmerge as _hmerge,
     vmerge as _vmerge,
     recode as _recode,
-    frequency as fre,
     crosstab as ct,
     frange,
     index_mapper)
@@ -45,9 +43,8 @@ import re
 import time
 import sys
 import os
-from itertools import product, chain
+from itertools import product
 from collections import OrderedDict, Counter
-import importlib
 
 VALID_TKS = [
     'en-GB', 'da-DK', 'fi-FI', 'nb-NO', 'sv-SE', 'de-DE', 'fr-FR', 'ar-AR',
@@ -59,6 +56,8 @@ VAR_SUFFIXES = [
 BLACKLIST_VARIABLES = [
     'batches', 'columns', 'info', 'items', 'lib', 'masks', 'name', 'parent',
     'properties', 'text', 'type', 'sets', 'subtype', 'values', 'filter']
+
+
 
 class DataSet(object):
     """
@@ -98,7 +97,7 @@ class DataSet(object):
         var = self.unroll(var)
         if len(var) == 1: var = var[0]
         if sliced_access:
-            return self._data.ix[slicer, var]
+            return self._data.loc[slicer, var]
         else:
             return self._data[var]
 
@@ -366,7 +365,7 @@ class DataSet(object):
         return self._meta['columns'].get(name, {}).get('parent', False)
 
     def _is_multicode_array(self, mask_element):
-        return self[mask_element].dtype == 'object'
+        return self[mask_element].dtype == 'str'
 
     @verify(variables={'name': 'columns'})
     def is_like_numeric(self, name):
@@ -502,6 +501,7 @@ class DataSet(object):
         if path_meta.endswith('.json'): path_meta = path_meta.replace('.json', '')
         if path_data.endswith('.csv'): path_data = path_data.replace('.csv', '')
         self._meta, self._data = r_quantipy(path_meta+'.json', path_data+'.csv')
+        self._data = dataframe_fix_string_types(self._data)
         self._set_file_info(path_data, path_meta, reset=reset)
         for col in self.columns():
             if self._dims_compat_arr_name(col) in self.masks():
@@ -542,6 +542,7 @@ class DataSet(object):
         if path_meta.endswith('.mdd'): path_meta = path_meta.replace('.mdd', '')
         if path_data.endswith('.ddf'): path_data = path_data.replace('.ddf', '')
         self._meta, self._data = r_dimensions(path_meta+'.mdd', path_data+'.ddf')
+        self._data = dataframe_fix_string_types(self._data)
         self._set_file_info(path_data, path_meta)
         if not self._dimensions_comp == 'ignore':
             d_comp = self._dimensions_comp
@@ -576,6 +577,7 @@ class DataSet(object):
         if path_meta.endswith('.xml'): path_meta = path_meta.replace('.xml', '')
         if path_data.endswith('.txt'): path_data = path_data.replace('.txt', '')
         self._meta, self._data = r_ascribe(path_meta+'.xml', path_data+'.txt', text_key)
+        self._data = dataframe_fix_string_types(self._data)
         self._set_file_info(path_data, path_meta)
         self._rename_blacklist_vars()
         return None
@@ -599,6 +601,7 @@ class DataSet(object):
         """
         if path_sav.endswith('.sav'): path_sav = path_sav.replace('.sav', '')
         self._meta, self._data = r_spss(path_sav+'.sav', **kwargs)
+        self._data = dataframe_fix_string_types(self._data)
         self._set_file_info(path_sav)
         self._rename_blacklist_vars()
         return None
@@ -1125,6 +1128,7 @@ class DataSet(object):
         """
 
         xlsx = pd.read_excel(path_xlsx, sheetname=None)
+        
 
         if not len(list(xlsx.keys())) == 1:
             raise KeyError("The XLSX must have exactly 1 sheet.")
@@ -1139,6 +1143,7 @@ class DataSet(object):
         new_ds._meta = new_ds.start_meta()
         for col in sheet.columns.tolist():
             new_ds.add_meta(col, 'int', col)
+        sheet = dataframe_fix_string_types(sheet)
         new_ds._data = sheet
 
         if merge:
@@ -1607,8 +1612,8 @@ class DataSet(object):
         """
         if self.is_delimited_set(name):
             if not self._data[name].dropna().empty:
-                data_codes = self._data[name].str.get_dummies(';').columns.tolist()
-                data_codes = [int(c) for c in data_codes]
+                data_codes = self._data[name].astype('str').str.get_dummies(';').columns.tolist()
+                data_codes = [int(c) for c in data_codes if c != 'nan']
             else:
                 data_codes = []
         else:
@@ -1969,6 +1974,8 @@ class DataSet(object):
                 qptype = 'int'
             elif 'float' in pdtype:
                 qptype = 'float'
+            elif pdtype == 'str':
+                qptype = 'string'
             elif pdtype == 'object':
                 qptype = 'string'
             else:
@@ -3731,6 +3738,7 @@ class DataSet(object):
             merged_data[right_on] = id_backup
         if inplace:
             self._data = merged_data
+            self._data = dataframe_fix_string_types(self._data)
             self._meta = merged_meta
             return None
         else:
@@ -3765,6 +3773,7 @@ class DataSet(object):
         merged_meta, merged_data = _hmerge(
             ds_left, ds_right, on=on, from_set='update', verbose=False)
         self._meta, self._data = merged_meta, merged_data
+        self._data = dataframe_fix_string_types(self._data)
         del self._meta['sets']['update']
         return None
 
@@ -3843,6 +3852,7 @@ class DataSet(object):
             from_set=from_set, reset_index=reset_index, verbose=verbose)
         if inplace:
             self._data = merged_data
+            self._data = dataframe_fix_string_types(self._data)
             self._meta = merged_meta
             if uniquify_key:
                 self._make_unique_key(uniquify_key, row_id_name)
@@ -4596,6 +4606,7 @@ class DataSet(object):
                                 default, append, intersect, initialize, fillna)
         if inplace:
             self._data[target] = recode_series
+            self._data = dataframe_fix_string_types(self._data)
             if not self._is_numeric(target):
                 self._verify_data_vs_meta_codes(target)
             return None
@@ -5207,7 +5218,7 @@ class DataSet(object):
             else:
                 original_column = "!;" + original_column + ";!"
 
-            original_column = original_column.replace(pd.np.nan,'')
+            original_column = original_column.replace(np.nan,'')
             original_column = original_column.str.replace("; ",";")
             original_column = original_column.str.replace(" ;",";")
 
@@ -7255,12 +7266,14 @@ class DataSet(object):
             vartype = self._get_type(var)
             if vartype == 'delimited set':
                 try:
-                    dummy_data = self[var].str.get_dummies(';')
+                    dummy_data = self[var].astype('str').str.get_dummies(';')
                 except:
                     dummy_data = self._data[[var]]
                     dummy_data.columns = [0]
                 if self.meta is not None:
                     var_codes = self._get_valuemap(var, non_mapped='codes')
+                    valid_columns = [col for col in dummy_data.columns if col != 'nan']
+                    dummy_data = dummy_data[valid_columns]
                     dummy_data.columns = [int(col) for col in dummy_data.columns]
                     dummy_data = dummy_data.reindex(columns=var_codes)
                     dummy_data.replace(np.NaN, 0, inplace=True)

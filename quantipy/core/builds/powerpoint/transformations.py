@@ -315,7 +315,7 @@ def place_vals_in_labels(old_df, base_position=0, orientation='side', drop_posit
 
     if orientation == 'side':
         #grab desired column's values, normally index 0
-        col_vals = old_df.ix[:,[base_position]].values
+        col_vals = old_df.iloc[:,[base_position]].values
         #col_vals returns a list of list which needs flattening
         flatten_col_vals = [item for sublist in col_vals for item in sublist]
         #grab row labels
@@ -332,7 +332,7 @@ def place_vals_in_labels(old_df, base_position=0, orientation='side', drop_posit
 
     else:
         #grab desired row's values, normally index 0
-        row_vals = old_df.ix[[base_position],:].values
+        row_vals = old_df.iloc[[base_position],:].values
         #row_vals returns a list of list which needs flattening
         flatten_col_vals = [item for sublist in row_vals for item in sublist]
         #grab row labels
@@ -531,10 +531,10 @@ def get_selection_by_index(df, position, orientation='side'):
 
     if orientation == 'side':
         #will return a single row
-        df = df.ix[[position],:]
+        df = df.iloc[[position],:]
     else:
         #will return a single col
-        df = df.ix[:,[position]]
+        df = df.iloc[:,[position]]
 
     return df
 

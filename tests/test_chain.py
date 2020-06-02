@@ -9,7 +9,7 @@ from itertools import count
 
 from quantipy.sandbox.sandbox import ChainManager
 
-from pandas.util.testing import assert_frame_equal, assert_index_equal
+from pandas.testing import assert_frame_equal, assert_index_equal
 
 import tests.parameters_chain as parameters
 

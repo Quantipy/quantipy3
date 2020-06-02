@@ -7,6 +7,7 @@ from collections import OrderedDict
 import re
 
 from quantipy.core.dataset import DataSet
+from ..pandas_utility import dataframe_fix_string_types
 
 
 class WeightEngine:
@@ -25,6 +26,7 @@ class WeightEngine:
 
         self.dataset = None
         self._df = data.copy()
+        self._df = dataframe_fix_string_types(self._df)
 
         self.schemes = {}
 

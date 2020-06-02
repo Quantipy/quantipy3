@@ -7,6 +7,8 @@ import numpy as np
 import pandas as pd
 
 from collections import OrderedDict
+
+from quantipy import dataframe_fix_string_types
 from quantipy.core.view_generators.view_maps import QuantipyViews
 from quantipy.core.view import View
 from quantipy.core.stack import Stack
@@ -45,6 +47,7 @@ class TestViewObject(unittest.TestCase):
         name_data = '%s.csv' % (project_name)
         path_data = '%s%s' % (self.path, name_data)
         self.example_data_A_data = pd.read_csv(path_data)
+        self.example_data_A_data = dataframe_fix_string_types(self.example_data_A_data)
         name_meta = '%s.json' % (project_name)
         path_meta = '%s%s' % (self.path, name_meta)
         self.example_data_A_meta = load_json(path_meta)

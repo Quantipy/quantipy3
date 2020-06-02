@@ -84,7 +84,7 @@ def ddf_to_pandas(path_ddf):
     level_id_map = {}
     new_levels_index = ['HDATA']
     for table_name in levels.index[1:]:
-        new_table_name = levels.ix[table_name,'DSCTableName']
+        new_table_name = levels.loc[table_name,'DSCTableName']
         ddf[new_table_name] = sql[table_name]
         new_levels_index.append(new_table_name)
 
@@ -181,7 +181,7 @@ def quantipy_clean(ddf):
                 # Coerce column dtypes for expected Quantipy usage
                 # methods and functions by type
                 if 'single' in types_df.index:
-                    columns = types_df.ix['single','column']
+                    columns = types_df.loc['single', 'column']
                     if isinstance(columns, str):
                         columns = [columns]
                     for column in columns:
@@ -199,7 +199,7 @@ def quantipy_clean(ddf):
                     ddf[n_tab][column].replace(-1, np.NaN, inplace=True)
 
                 if 'date' in types_df.index:
-                    columns = types_df.ix['date','column']
+                    columns = types_df.loc['date', 'column']
                     if isinstance(columns, str):
                         columns = [columns]
                     for column in columns:
@@ -210,7 +210,7 @@ def quantipy_clean(ddf):
                         )
 
                 if 'boolean' in types_df.index:
-                    columns = types_df.ix['boolean','column']
+                    columns = types_df.loc['boolean', 'column']
                     if isinstance(columns, str):
                         columns = [columns]
                     for column in columns:

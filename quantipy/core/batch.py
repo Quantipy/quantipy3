@@ -553,11 +553,11 @@ class Batch(qp.DataSet):
         Get a list of codes that exist in (batch filtered) data.
         """
         slicer = self.manifest_filter(self.filter)
-        data = self._data.copy().ix[slicer, name]
+        data = self._data.copy().loc[slicer, name]
         if self.is_delimited_set(name):
             if not data.dropna().empty:
                 data_codes = data.str.get_dummies(';').columns.tolist()
-                data_codes = [int(c) for c in data_codes]
+                data_codes = [int(c) for c in data_codes and c != 'nan']
             else:
                 data_codes = []
         else:

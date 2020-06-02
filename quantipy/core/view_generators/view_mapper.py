@@ -224,6 +224,8 @@ class ViewMapper(OrderedDict):
                     types.append('int')
                 elif 'float' in dtype:
                     types.append('float')
+                elif 'str' in dtype:
+                    types.append('single') # 'single' uses value_counts
                 elif 'object' in dtype:
                     types.append('single') # 'single' uses value_counts
                 elif 'date' in dtype:

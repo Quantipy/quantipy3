@@ -510,7 +510,7 @@ def replace_chart_data_in_prs(pres_path, slide_num, chart_name, df):
                     chart_data.categories = single_df.index
  
                     for col_idx, col in enumerate(single_df.columns):
-                        chart_data.add_series(col, (single_df.ix[:, col_idx].values))            
+                        chart_data.add_series(col, (single_df.iloc[:, col_idx].values))
                      
                     shp.chart.replace_data(chart_data)
                     
@@ -599,7 +599,7 @@ def replace_chart_data(shape, df):
     chart_data.categories = df.index
 
     for col_idx, col in enumerate(df.columns):
-        chart_data.add_series(col, (df.ix[:, col_idx].values))            
+        chart_data.add_series(col, (df.iloc[:, col_idx].values))
      
     shape.chart.replace_data(chart_data)
 

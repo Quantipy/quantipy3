@@ -215,7 +215,7 @@ class Rim:
 
 
     def _adjust_groups(self):
-        adj_w_vec = pd.Series()
+        adj_w_vec = pd.Series(dtype=np.float64)
         for group in self.groups:
             w_vec = self._df.query(self.groups[group][self._FILTER_DEF])[self._weight_name()]
             if self.total > 0:
@@ -307,7 +307,7 @@ class Rim:
         filter_cols = self._get_scheme_filter_cols()
         columns = list(set([key] + self.target_cols + filter_cols))
         self._df = self._df[columns]
-        self._df[self._weight_name()] = pd.np.zeros(len(self._df))
+        self._df[self._weight_name()] = np.zeros(len(self._df))
         self._check_targets(verbose)
 
     def dataframe(self, df, key_column=None):
@@ -429,7 +429,7 @@ class Rim:
                 miss_in_targets = [code for code in sample_codes
                                    if code not in target_codes]
 
-                if self._df[target_col].dtype == 'object':
+                if self._df[target_col].dtype == 'str':
                     raise ValueError(vartype_err.format(self.name, group, target_col))
 
                 if miss_in_sample:
@@ -502,7 +502,7 @@ class Rake:
             raise Exception(
                 "Unknown data type (%s). Should be <pandas.DataFrame>.",
                 type(dataframe))
-        self.pre_weight = pd.np.ones(len(self.dataframe))
+        self.pre_weight = np.ones(len(self.dataframe))
 
         #Parse the targets
         self.rowcount = len(self.dataframe)
@@ -518,7 +518,7 @@ class Rake:
         self.keys_row = self.keys[0:len(self.keys):2]
         self.keys_col = self.keys[1:len(self.keys):2]
 
-        if pd.np.isnan(self.dataframe[self.weight_column_name]).sum() > 0:
+        if np.isnan(self.dataframe[self.weight_column_name]).sum() > 0:
             raise Exception("Seed weights cannot have missing values, use filter to eliminate missing values or substitute 1 for missing cases.")
         if cap <= 1 and _use_cap:
             raise Exception("Cap may not be less than or equal to 1.")
@@ -609,12 +609,12 @@ class Rake:
                 if min_cap is None:
                     while self.dataframe[self.weight_column_name].max() > max_cap:
                         self.dataframe.loc[self.dataframe[self.weight_column_name] > max_cap, self.weight_column_name] = max_cap
-                        self.dataframe[self.weight_column_name] = self.dataframe[self.weight_column_name]/pd.np.mean(self.dataframe[self.weight_column_name])
+                        self.dataframe[self.weight_column_name] = self.dataframe[self.weight_column_name]/np.mean(self.dataframe[self.weight_column_name])
                 else:
                     while (self.dataframe[self.weight_column_name].min() < min_cap) or (self.dataframe[self.weight_column_name].max() > max_cap):
                         self.dataframe.loc[self.dataframe[self.weight_column_name] < min_cap, self.weight_column_name] = min_cap
                         self.dataframe.loc[self.dataframe[self.weight_column_name] > max_cap, self.weight_column_name] = max_cap
-                        self.dataframe[self.weight_column_name] = self.dataframe[self.weight_column_name]/pd.np.mean(self.dataframe[self.weight_column_name])
+                        self.dataframe[self.weight_column_name] = self.dataframe[self.weight_column_name]/np.mean(self.dataframe[self.weight_column_name])
 
             diff_error_old = diff_error
             diff_error = sum(abs(self.dataframe[self.weight_column_name]-old_weights))

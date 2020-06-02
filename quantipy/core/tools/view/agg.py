@@ -149,7 +149,7 @@ def make_default_num_view(data, x, y=None, weights=None, drop=None, rescale=None
             # changing column naming for x==y aggregations
             if not data.columns.is_unique:
                 data.columns = [x, y+'_', weight]
-            if data[y].dtype == 'object':
+            if data[y].dtype == 'str' or data[y].dtype == 'object':
                 # for Quantipy multicoded data on the y axis
                 dummy_y = _cat_to_dummies(data[y], as_df=True)
                 dummy_y_data = pd.concat([data[[x, weight]], dummy_y], axis=1)
@@ -551,9 +551,9 @@ def _cat_to_dummies(data, limit_to=None, style='freq', as_df=False):
     OR
     dummy_df : pd.DataFrame
     '''
-    if data.dtype == 'object':
+    if data.dtype == 'str' or data.dtype == 'object':
         # i.e. Quantipy multicode data
-        dummy_df = data.str.get_dummies(';')
+        dummy_df = data.astype('str').str.get_dummies(';')
         dummy_df.columns = [int(col) for col in dummy_df.columns]
         if style == 'freq':
             dummy_df.sort_index(axis=1, inplace=True)
@@ -1714,9 +1714,9 @@ def _make_dummies(data, limit_to=None, exclude=None, rescale=None, style='freq',
     OR
     dummy_df : pd.DataFrame
     '''
-    if data.dtype == 'object':
+    if data.dtype == 'str' or data.dtype == 'object':
         # i.e. Quantipy multicode data
-        dummy_df = data.str.get_dummies(';')
+        dummy_df = data.astype('str').str.get_dummies(';')
         dummy_df.columns = [int(col) for col in dummy_df.columns]
         # if style == 'freq':
         #     dummy_df.sort_index(axis=1, inplace=True)
@@ -2135,10 +2135,10 @@ def verify_logic_series(series, func_name):
     -------
     None
     """
-    if not series.dtype in ['object', 'int64', 'float64']:
+    if not series.dtype in ['object', 'str', 'int64', 'float64']:
         raise TypeError(
             "The series given to has_%s() must be a supported dtype. "
-            "Expected 'object', 'int64' or 'float64', found a '%s'." % (
+            "Expected 'object', 'str', 'int64' or 'float64', found a '%s'." % (
                 func_name,
                 series.dtype
             )
@@ -2213,9 +2213,9 @@ def _any_all_none(series, values, func_name):
         The index of series for rows containing any/all of the given values.
 
     """
-    if series.dtype=='object':
+    if series.dtype == 'str' or series.dtype == 'object':
         # Get the dichotomous version of series
-        dummies = series.str.get_dummies(';')
+        dummies = series.astype('str').str.get_dummies(';')
         # Slice the dummies column-wise for only the targeted values
         values = [str(v) for v in values]
         cols = [col for col in dummies.columns if col in values]
@@ -2440,10 +2440,10 @@ def _count(series, responses):
     """
     verify_logic_series(series, 'none')
 
-    if series.dtype in ['object', 'int64', 'float64']:
+    if series.dtype in ['object', 'str', 'int64', 'float64']:
 
         # Get the dichotomous version of series
-        dummies = series.str.get_dummies(';')
+        dummies = series.astype('str').str.get_dummies(';')
         try:
             # Slice the dummies column-wise for only the targeted values
             values = [str(v) for v in responses[2]]

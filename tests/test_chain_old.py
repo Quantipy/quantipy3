@@ -2,7 +2,7 @@ import unittest
 import os.path
 import tests.test_helper
 import pandas as pd
-from pandas.util.testing import assert_frame_equal
+from pandas.testing import assert_frame_equal
 
 from quantipy.core.stack import Stack
 from quantipy.core.chain import Chain
