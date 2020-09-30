@@ -1,4 +1,4 @@
-# Quantipy
+# Quantipy3
 
 ### Python for people data
 Quantipy is an open-source data processing, analysis and reporting software project that builds on the excellent pandas and numpy libraries. Aimed at people data, Quantipy offers support for native handling of special data types like multiple choice variables, statistical analysis using case or observation weights, DataFrame metadata and pretty data exports.
@@ -20,21 +20,21 @@ This repository is a port of [Quantipy](https://www.github.com/quantipy/quantipy
 
 #### Contributors
 - Alexander Buchhammer, Alasdair Eaglestone, James Griffiths, Kerstin Müller : https://yougov.co.uk
-- Datasmoothie’s Birgir Hrafn Sigurðsson and Geir Freysson: http://www.datasmoothie.com
+- Datasmoothie’s Birgir Hrafn Sigurðsson and [Geir Freysson](http://www.twitter.com/@geirfreysson): http://www.datasmoothie.com
 
 ## Installation
-Quantipy is currently not published on pip (there's an [issue](https://github.com/Quantipy/quantipy3/issues/1) for that, if you want to help out.)
 
-To start using Quantipy we
+`pip install quantipy3`
 
-1. Create a virtual environment
-1. Download or clone the library
-1. Install the required packages
+or
 
-#### 1. Create a virtual envirionment
+`python3 -m pip install quantipy3`
 
+Note that the package is called __quantipy3__ on pip.
 
-Create a virtual environment:
+#### Create a virtual envirionment
+
+If you want to create a virtual environment when using Quantipy:
 
 conda
 ```python
@@ -45,25 +45,6 @@ with venv
 ```python
 python -m venv [your_env_name]
  ```
-
-#### 2. Download or clone library
-
-```
-git clone https://github.com/Quantipy/quantipy3.git
-```
-
-Add the quantipy3 folder that is created to your path, so you can import quantipy from wherever you are working.
-
-#### 3. Install required libraries
-
-Activate your virtual environment and install all the required packages.
-
-```
-source [yourenv]/bin/activate
-pip install -r quantipy3/requirements.txt
-```
-
-You're all set, now you can start crunching your survey data with ease.
 
 ## 5-minutes to Quantipy
 
@@ -156,6 +137,53 @@ dataset[['gender', 'age']].head(5)
 3       1.0    NaN
 4       NaN    1.0
 ```
+
+#### Weighting
+If your data hasn't been weighted yet, you can use Quantipy's RIM weighting algorithm.
+
+Assuming we have the same variables as before, `gender` and `agecat` we can weight the dataset with these two variables:
+
+```
+from quantipy.core.weights.rim import Rim
+
+targets = {}
+targets['agecat'] = {1:5.0, 2:30.0, 3:26.0, 4:19.0, 5:20.0}
+targets['gender'] = {0:49, 1:51}
+scheme = Rim('age and gender')
+scheme.set_targets(targets=[targets])
+dataset.weight(scheme,
+               unique_key='respondentId',
+               weight_name="my_new_weight",
+               inplace=True)
+```
+Quantipy will show you a weighting report:
+```
+Weight variable       weights_gender and age weights
+Weight group                          _default_name_
+Weight filter                                   None
+Total: unweighted                         582.000000
+Total: weighted                           582.000000
+Weighting efficiency                       67.314896
+Iterations required                         5.000000
+Mean weight factor                          1.000000
+Minimum weight factor                       0.632609
+Maximum weight factor                       3.637500
+Weight factor ratio                         5.750000
+```
+
+And you can test whether the weighting has worked by running crosstabs:
+
+```
+dataset.crosstab('agecat', pct=True, w='my_new_weight')
+```
+
+<table border="1" class="dataframe">  <thead>    <tr>      <th></th>      <th>Question</th>      <th>agecat. Age category</th>    </tr>        <tr>      <th>Question</th>      <th>Values</th>      <th></th>    </tr>  </thead>  <tbody>    <tr>      <th rowspan="6" valign="top">agecat. Age category</th>      <th>All</th>      <td>100.0</td>    </tr>    <tr>      <th>18-24</th>      <td>5.0</td>    </tr>    <tr>      <th>25-34</th>      <td>30.0</td>    </tr>    <tr>      <th>35-49</th>      <td>26.0</td>    </tr>    <tr>      <th>50-64</th>      <td>19.0</td>    </tr>    <tr>      <th>64+</th>      <td>20.0</td>    </tr>  </tbody></table>
+
+```
+dataset.crosstab('gender', pct=True, w='my_new_weight')
+```
+
+<table border="1" class="dataframe">  <thead>    <tr>      <th></th>      <th>Question</th>      <th>gender. Gender</th>    </tr>        <tr>      <th>Question</th>      <th>Values</th>      <th></th>    </tr>  </thead>  <tbody>    <tr>      <th rowspan="3" valign="top">gender. Gender</th>      <th>All</th>      <td>100.0</td>    </tr>    <tr>      <th>Male</th>      <td>32.6</td>    </tr>    <tr>      <th>Female</th>      <td>67.4</td>    </tr>  </tbody></table>
 
 # Contributing
 
