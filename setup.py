@@ -37,7 +37,7 @@ if sys.platform == 'win32':
 else:
     INSTALL_REQUIRES = version_libs(libs, precisions, versions)
 
-setup(name='quantipy',
+setup(name='quantipy3',
       version='0.2.1',
       author='Geir Freysson',
       author_email='geir@datasmoothie.com',
