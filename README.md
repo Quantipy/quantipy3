@@ -146,29 +146,27 @@ Assuming we have the same variables as before, `gender` and `agecat` we can weig
 ```
 from quantipy.core.weights.rim import Rim
 
-targets = {}
-targets['agecat'] = {1:5.0, 2:30.0, 3:26.0, 4:19.0, 5:20.0}
-targets['gender'] = {0:49, 1:51}
-scheme = Rim('age and gender')
-scheme.set_targets(targets=[targets])
-dataset.weight(scheme,
-               unique_key='respondentId',
-               weight_name="my_new_weight",
+age_targets = {'agecat':{1:5.0, 2:30.0, 3:26.0, 4:19.0, 5:20.0}}
+gender_targets = {'gender':{0:49, 1:51}}
+scheme = Rim('gender_and_age')
+scheme.set_targets(targets=[age_targets, gender_targets])
+dataset.weight(scheme,unique_key='respondentId',
+               weight_name="my_weight",
                inplace=True)
 ```
 Quantipy will show you a weighting report:
 ```
-Weight variable       weights_gender and age weights
-Weight group                          _default_name_
-Weight filter                                   None
-Total: unweighted                         582.000000
-Total: weighted                           582.000000
-Weighting efficiency                       67.314896
-Iterations required                         5.000000
-Mean weight factor                          1.000000
-Minimum weight factor                       0.632609
-Maximum weight factor                       3.637500
-Weight factor ratio                         5.750000
+Weight variable       weights_gender_and_age
+Weight group                  _default_name_
+Weight filter                           None
+Total: unweighted                 582.000000
+Total: weighted                   582.000000
+Weighting efficiency               60.009826
+Iterations required                14.000000
+Mean weight factor                  1.000000
+Minimum weight factor               0.465818
+Maximum weight factor               6.187700
+Weight factor ratio                13.283522
 ```
 
 And you can test whether the weighting has worked by running crosstabs:
@@ -183,7 +181,7 @@ dataset.crosstab('agecat', pct=True, w='my_new_weight')
 dataset.crosstab('gender', pct=True, w='my_new_weight')
 ```
 
-<table border="1" class="dataframe">  <thead>    <tr>      <th></th>      <th>Question</th>      <th>gender. Gender</th>    </tr>        <tr>      <th>Question</th>      <th>Values</th>      <th></th>    </tr>  </thead>  <tbody>    <tr>      <th rowspan="3" valign="top">gender. Gender</th>      <th>All</th>      <td>100.0</td>    </tr>    <tr>      <th>Male</th>      <td>32.6</td>    </tr>    <tr>      <th>Female</th>      <td>67.4</td>    </tr>  </tbody></table>
+<table border="1" class="dataframe">  <thead>    <tr>      <th></th>      <th>Question</th>      <th>gender. Gender</th>        <tr>      <th>Question</th>      <th>Values</th>      <th></th>    </tr>  </thead>  <tbody>    <tr>      <th rowspan="3" valign="top">gender. Gender</th>      <th>All</th>      <td>100.0</td>    </tr>    <tr>      <th>Male</th>      <td>49.0</td>    </tr>    <tr>      <th>Female</th>      <td>51.0</td>    </tr>  </tbody></table>
 
 # Contributing
 
