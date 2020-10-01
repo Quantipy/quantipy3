@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 import quantipy as qp
 import pickle as cp
+import platform
 
 from PIL import ImageFont
 from .excel_formats import ExcelFormats, _Format
@@ -693,7 +694,10 @@ class _Sheet(Worksheet):
     def truetype(self):
         fn = self.excel._formats.default_attributes['font_name']
         fs = self.excel._formats.default_attributes['font_size']
-        return ImageFont.truetype('%s.ttf' % fn.lower(), fs)
+        if platform.system() == "Windows":
+            return ImageFont.truetype('%s.ttf' % fn.lower(), fs)
+        else:
+            return ImageFont.truetype('%s.ttf' % fn, fs)
 
     def set_row(self, row, height, label=None, font_name=None, font_size=None):
         padding = 5
@@ -1180,8 +1184,10 @@ class _Box(object):
                 else:
                     if rel_y not in self._columns:
                         if base and not x_contents['is_weighted']:
-                            if data <= self.excel.italicise_level:
-                                self._italic.append(rel_y)
+                            # should rel_y replace data here?
+                            if type(data) != str:
+                                if data <= self.excel.italicise_level:
+                                    self._italic.append(rel_y)
                             self._columns.append(rel_y)
                 if rel_y in self._italic:
                     format_ = cp.loads(cp.dumps(format_, cp.HIGHEST_PROTOCOL))

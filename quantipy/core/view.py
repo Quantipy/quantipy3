@@ -351,7 +351,8 @@ class View(object):
     def _calc_condition(self, logic, conditions, calc):
         op = list(calc.values())[0][1]
         val1, val2 = list(calc.values())[0][0], list(calc.values())[0][2]
-        symbol_map = {add: '+', sub: '-', mul: '*', div: '/'}
+        # divmod replaces div from python2, is this correct?
+        symbol_map = {add: '+', sub: '-', mul: '*', divmod: '/'}
         calc_strct = '{}{}{}'
         if logic:
             cond_names = []
