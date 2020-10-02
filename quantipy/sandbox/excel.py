@@ -701,7 +701,7 @@ class _Sheet(Worksheet):
             else:
                 return ImageFont.truetype('%s.ttf' % fn, fs)
         except Exception as e:
-            return  ImageFont.truetype()
+            return  ImageFont.load_default()
 
     def set_row(self, row, height, label=None, font_name=None, font_size=None):
         padding = 5
