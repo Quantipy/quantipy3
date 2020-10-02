@@ -298,11 +298,11 @@ def chain_manager(stack):
 @pytest.yield_fixture(
     scope='class',
     params=[
-        (
-           'basic', p.PATH_BASIC,
-           p.SHEET_PROPERTIES_BASIC, None, None, False, None, None,
-           p.FORMATS_BASIC, None, p.SHEET_PROPERTIES_EXCEL_BASIC
-        ),
+#       (
+#           'basic', p.PATH_BASIC,
+#           p.SHEET_PROPERTIES_BASIC, None, None, False, None, None,
+#           p.FORMATS_BASIC, None, p.SHEET_PROPERTIES_EXCEL_BASIC
+#        ),
 #        (
 #            'complex', p.PATH_COMPLEX_0,
 #            None, None, None, False, None, None,
