@@ -37,7 +37,6 @@ from quantipy.core.tools.dp.prep import (
 from quantipy.core.tools.dp.query import request_views
 from quantipy.core.tools.view.query import get_dataframe
 
-@unittest.skip("Not yet supported in python 3")
 class TestBankedChains(unittest.TestCase):
 
     def setUp(self):
