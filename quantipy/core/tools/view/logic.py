@@ -1304,6 +1304,8 @@ def resolve_logic(series, logic, data):
 
     if isinstance(logic, dict):
         wildcard, logic = list(logic.keys())[0], list(logic.values())[0]
+        if type(wildcard) == bytes:
+            wildcard = wildcard.decode('utf8')
         if isinstance(logic, str):
             idx = data[data[wildcard]==logic].index
             vkey = logic
