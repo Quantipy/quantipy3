@@ -1741,7 +1741,7 @@ def ExcelPainter(path_excel,
                             if all(conditions):
                                 a = view.dataframe.values[0]
                                 for cbindex, cb in np.ndenumerate(a):
-                                    if cb < italicise_level:
+                                    if italicise_level and cb < italicise_level:
                                         xk = view.meta()['x']['name']
                                         xkc = list(coordmap['x'][xk].values())
                                         x_loc = list(itertools.chain(*xkc))
