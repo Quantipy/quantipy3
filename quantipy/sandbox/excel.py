@@ -695,10 +695,13 @@ class _Sheet(Worksheet):
     def truetype(self):
         fn = self.excel._formats.default_attributes['font_name']
         fs = self.excel._formats.default_attributes['font_size']
-        if platform.system() == "Windows":
-            return ImageFont.truetype('%s.ttf' % fn.lower(), fs)
-        else:
-            return ImageFont.truetype('%s.ttf' % fn, fs)
+        try:
+            if platform.system() == "Windows":
+                return ImageFont.truetype('%s.ttf' % fn.lower(), fs)
+            else:
+                return ImageFont.truetype('%s.ttf' % fn, fs)
+        except Exception as e:
+            return  ImageFont.truetype()
 
     def set_row(self, row, height, label=None, font_name=None, font_size=None):
         padding = 5
@@ -1155,7 +1158,7 @@ class _Box(object):
                 name = 'counts'
             else:
                 name = self._row_format_name(**x_contents)
-            
+
             if rel_y == 0:
                 sig_level_row = data != '' and name in ['propstest', 'meanstest']
                 if data == '' or sig_level_row:
