@@ -547,7 +547,7 @@ class TestStackObject(unittest.TestCase):
             views=['counts'])
 
         new_vk = self.stack.describe()['view'].unique()
-        self.assertEqual(new_vk.tolist(), ['x|default|:|||default', 'x|f|:|||counts'])
+        self.assertEqual(sorted(new_vk.tolist()), sorted(['x|default|:|||default', 'x|f|:|||counts']))
 
         # Test lazy y-keys when 1 x key is given
         self.stack.add_link(x=xk[0], views=['cbase'])
