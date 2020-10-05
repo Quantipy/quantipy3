@@ -5,7 +5,7 @@ from setuptools import setup, find_packages
 
 versions = dict(numpy='1.14.5',
                 scipy='1.2.1',
-                pandas='0.24.2',
+                pandas='0.25.3',
                 ftfy='5.5.1')
 
 precisions = dict(numpy='==',
