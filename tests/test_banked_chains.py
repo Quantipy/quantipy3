@@ -47,7 +47,7 @@ class TestBankedChains(unittest.TestCase):
         # Load Example Data (A) data and meta into self
         name_data = '%s.csv' % (project_name)
         path_data = '%s%s' % (self.path, name_data)
-        self.data = pd.DataFrame.from_csv(path_data)
+        self.data = pd.read_csv(path_data)
 
         name_meta = '%s.json' % (project_name)
         path_meta = '%s%s' % (self.path, name_meta)

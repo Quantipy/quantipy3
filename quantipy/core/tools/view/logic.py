@@ -601,7 +601,10 @@ def _count(series, responses, exclusive=False, _not=False):
     if series.dtype in ['object', 'int64', 'float64']:
 
         # Get the dichotomous version of series
-        dummies = series.astype('object').str.get_dummies(';')
+        dummies = series.astype('str').str.get_dummies(';')
+        # pd 0.25 includes a dummy col for 'nan' but 0.24 didn't
+        if 'nan' in dummies.columns:
+            dummies = dummies.drop('nan', axis=1)
         if dummies.columns.dtype=='object':
             dummies.columns = [int(float(col)) for col in dummies.columns]
         try:
