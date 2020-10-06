@@ -765,7 +765,7 @@ class TestStackObject(unittest.TestCase):
                     for c in test_var_counts
                 ]))
                 # Negative test for exclusivity
-                all_dummies = test_var.astype('object').str.get_dummies(';')
+                all_dummies = test_var.astype('str').str.get_dummies(';')
                 other_cols = [
                     c for c in all_dummies.columns
                     if not c in dummies.columns
@@ -1362,7 +1362,7 @@ class TestStackObject(unittest.TestCase):
 
     def get_count_nums(self, series, test_responses):
 
-        dummies = series.astype('object').str.get_dummies(';')
+        dummies = series.astype('str').str.get_dummies(';')
 
         _min = test_responses[0]
 
