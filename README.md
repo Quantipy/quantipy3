@@ -187,7 +187,7 @@ dataset.crosstab('gender', pct=True, w='my_new_weight')
 
 The test suite for Quantipy can be run with the command
 
-`python3 -m unittest`
+`python3 -m pytest tests`
 
 But when developing a specific aspect of Quantipy, it might be quicker to run (e.g. for the DataSet)
 
