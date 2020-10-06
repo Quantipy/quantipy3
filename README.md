@@ -13,9 +13,10 @@ This repository is a port of [Quantipy](https://www.github.com/quantipy/quantipy
   - Computation and assessment of data weights
   - Easy-to-use analysis interface
 
-  ### Features not yet supported in python3
+  ### Features not yet supported in Python 3 version
   - Structured analysis and reporting via Chain and Cluster containers
   - Exports to SPSS, Dimensions ddf/mdd, MS Excel and Powerpoint with flexible layouts and various options
+  - Python 3.8 is not yet fully supported, but 3.5, 3.6, and 3.7 are.
 
 #### Contributors
 - Alexander Buchhammer, Alasdair Eaglestone, James Griffiths, Kerstin Müller : https://yougov.co.uk
