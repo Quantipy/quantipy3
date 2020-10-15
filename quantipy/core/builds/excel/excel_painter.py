@@ -1442,7 +1442,7 @@ def ExcelPainter(path_excel,
                                         values = helpers.emulate_meta(meta, values)
                                     y_values = [
                                         int(v)
-                                        for v in zip(*[c for c in df.columns])[1]]
+                                        for v in list(zip(*[c for c in df.columns]))[1]]
                                     values = [
                                         [
                                             value for value in values
@@ -1741,7 +1741,7 @@ def ExcelPainter(path_excel,
                             if all(conditions):
                                 a = view.dataframe.values[0]
                                 for cbindex, cb in np.ndenumerate(a):
-                                    if cb < italicise_level:
+                                    if italicise_level and cb < italicise_level:
                                         xk = view.meta()['x']['name']
                                         xkc = list(coordmap['x'][xk].values())
                                         x_loc = list(itertools.chain(*xkc))
@@ -1824,8 +1824,8 @@ def ExcelPainter(path_excel,
                             if 'test' in view.meta()['agg']['method']:
                                 if view.meta()['y']['name'] in testcol_labels:
                                     tdf = view.dataframe
-                                    y_values = [int(v) for v in zip(
-                                        *[c for c in tdf.columns])[1]]
+                                    y_values = [int(v) for v in list(zip(
+                                        *[c for c in tdf.columns]))[1]]
                                     code_idx = testcol_labels.index(
                                         view.meta()['y']['name'])
                                     for i, code in enumerate(y_values):

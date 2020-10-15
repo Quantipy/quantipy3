@@ -601,7 +601,10 @@ def _count(series, responses, exclusive=False, _not=False):
     if series.dtype in ['object', 'int64', 'float64']:
 
         # Get the dichotomous version of series
-        dummies = series.astype('object').str.get_dummies(';')
+        dummies = series.astype('str').str.get_dummies(';')
+        # pd 0.25 includes a dummy col for 'nan' but 0.24 didn't
+        if 'nan' in dummies.columns:
+            dummies = dummies.drop('nan', axis=1)
         if dummies.columns.dtype=='object':
             dummies.columns = [int(float(col)) for col in dummies.columns]
         try:
@@ -1304,6 +1307,8 @@ def resolve_logic(series, logic, data):
 
     if isinstance(logic, dict):
         wildcard, logic = list(logic.keys())[0], list(logic.values())[0]
+        if type(wildcard) == bytes:
+            wildcard = wildcard.decode('utf8')
         if isinstance(logic, str):
             idx = data[data[wildcard]==logic].index
             vkey = logic
