@@ -19,6 +19,7 @@ from itertools import product
 from quantipy.core.tools.dp.dimensions.reader import quantipy_from_dimensions
 from quantipy.core.tools.dp.dimensions.writer import dimensions_from_quantipy
 from quantipy.core.tools.dp.decipher.reader import quantipy_from_decipher
+from quantipy.core.tools.dp.confirmit.reader import quantipy_from_confirmit
 from quantipy.core.tools.dp.spss.reader import parse_sav_file
 from quantipy.core.tools.dp.spss.writer import save_sav
 from quantipy.core.tools.dp.ascribe.reader import quantipy_from_ascribe
@@ -321,6 +322,10 @@ def write_dimensions(meta, data, path_mdd, path_ddf, text_key=None,
 def read_decipher(path_json, path_txt, text_key='main'):
 
     meta, data = quantipy_from_decipher(path_json, path_txt, text_key)
+    return meta, data
+
+def read_confirmit(path_meta, path_data):
+    meta, data = quantipy_from_confirmit(path_meta, path_data)
     return meta, data
 
 def read_spss(path_sav, **kwargs):

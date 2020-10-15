@@ -10,6 +10,7 @@ from quantipy.core.tools.dp.io import (
     read_decipher as r_decipher,
     read_spss as r_spss,
     read_ascribe as r_ascribe,
+    read_confirmit as r_confirmit,
     write_spss as w_spss,
     write_quantipy as w_quantipy,
     write_dimensions as w_dimensions)
@@ -579,6 +580,22 @@ class DataSet(object):
         self._set_file_info(path_data, path_meta)
         self._rename_blacklist_vars()
         return None
+
+    def read_confirmit(self, path_meta, path_data):
+        """Read confirmit data
+
+        Parameters
+        ----------
+        path_meta : str
+            Path to the meta data json file.
+        path_data : type
+            Path to the data json file.
+
+        Returns
+        -------
+        None
+        """
+        self._meta, self._data = r_confirmit(path_meta, path_data)
 
     def read_spss(self, path_sav, **kwargs):
         """
