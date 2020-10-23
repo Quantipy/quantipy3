@@ -16,10 +16,12 @@ def test_reader():
     assert dataset_that_works.by_type().shape == (56, 9)
     assert type(dataset_that_works._data) == pd.DataFrame
 
-    print("This is what the dataset.meta() function should return")
+    print("NOTE: This is what the dataset.meta() function should return")
     print(dataset_that_works.meta('gender'))
-    print("\n\nthis is what a crosstab should look like")
+    print("\n\nNOTE: this is what a crosstab should look like")
     print(dataset_that_works.crosstab('q4', 'gender'))
+    print("\n\nNOTE: this is what the _data object should look like")
+    print(dataset_that_works._data.iloc[:,4:13].head())
 
     columns = set(dataset_that_works._meta['columns'].keys())
     meta_columns = set(dataset_that_works._meta['columns'].keys())
