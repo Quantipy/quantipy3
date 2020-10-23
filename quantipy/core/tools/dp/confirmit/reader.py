@@ -6,7 +6,7 @@ from quantipy.core.tools.dp.prep import start_meta
 data_json_path = "./confirmit_data.json"
 meta_json_path = "./confirmit_meta.json"
 
-def quantipy_from_confirmit(data_json, meta_json, text_key='en-GB'):
+def quantipy_from_confirmit(meta_json, data_json, text_key='en-GB'):
     types_translations = {
         'numeric': 'float',
         'text': 'string',
