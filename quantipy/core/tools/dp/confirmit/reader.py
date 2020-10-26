@@ -65,10 +65,11 @@ def quantipy_from_confirmit(meta_json, data_json, text_key='en-GB'):
         variable_obj = {
             "name": variable['name'],
             "parent": {},
-            "type": var_type,
-            "properties": {}
+            "type": var_type
+            # "properties": {}
         }
-
+        if var_type != 'float':
+           variable_obj['properties'] = {}
         if var_type == 'array':
             variable_obj['items'] = get_grid_items(variable)
             if variable['variableType'] == 'numeric':
@@ -165,5 +166,6 @@ def quantipy_from_confirmit(meta_json, data_json, text_key='en-GB'):
                old_values = data.pop(nav['parent'])
                for k, v in old_values.items():
                    data[nav['parent'] + '_' + k] = v
-
-    return output_obj, data_parsed
+    
+    df = pd.DataFrame.from_dict(data=data_parsed)
+    return output_obj, df

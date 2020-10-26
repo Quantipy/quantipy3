@@ -1,5 +1,6 @@
 import quantipy as qp
 import pandas as pd
+import json
 from quantipy.core.tools.dp.io import read_confirmit
 
 def test_reader():
@@ -28,12 +29,86 @@ def test_reader():
     # check that every column in the data (columns) is also in the meta
     assert columns.issubset(meta_columns)
 
+
+def test_single_type():
     dataset = qp.DataSet("confirmit")
     dataset.read_confirmit('tests/confirmit_meta.json',
                            'tests/confirmit_data.json'
                             )
-
-
+    # single type - no loop reference
+    assert dataset.meta()['columns']['q39'] == json.loads("""{
+            "name": "q39",
+            "parent": {},
+            "text": {
+                "en-GB": "Use script to set values"
+            },
+            "values": [
+                {
+                    "text": {
+                        "en-GB": "yes"
+                    },
+                    "value": "1"
+                },
+                {
+                    "text": {
+                        "en-GB": "no"
+                    },
+                    "value": "2"
+                }
+            ],
+            "type": "single",
+            "properties": {}
+        }""")
+    # single type - with loop reference
+    assert dataset.meta()['columns']['q55']['values'][1] == json.loads("""{
+                    "text": {
+                        "en-GB": "loopAns1"
+                    },
+                    "value": {
+                        "name": "l2",
+                        "parent": {},
+                        "text": {
+                            "en-GB": "Loop  l2 title"
+                        },
+                        "variables": [
+                            {
+                                "type": "string",
+                                "name": "q56",
+                                "parent": {},
+                                "properties": {}
+                            }
+                        ],
+                        "texts": [
+                            {
+                                "text": "Loop  l2 title",
+                                "languageId": 9
+                            }
+                        ],
+                        "values": [
+                            {
+                                "text": {
+                                    "en-GB": "loopAns1"
+                                },
+                                "value": "1"
+                            },
+                            {
+                                "text": {
+                                    "en-GB": "loopAns2"
+                                },
+                                "value": "2"
+                            },
+                            {
+                                "text": {
+                                    "en-GB": "loopAns3"
+                                },
+                                "value": "3"
+                            }
+                        ],
+                        "type": "single",
+                        "properties": {}
+                    }
+                }""")
+    
     # TODO: assert that dataset.crosstab(single) returns correct shaped
     #       dataframe
     #       assert dataset.crosstab('q39').shape == (1,1)
