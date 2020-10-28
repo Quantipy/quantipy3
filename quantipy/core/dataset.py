@@ -780,6 +780,18 @@ class DataSet(object):
         -------
         None
         """
+
+        class NumpyEncoder(json.JSONEncoder):
+            def default(self, obj):
+                if isinstance(obj, np.integer):
+                    return int(obj)
+                elif isinstance(obj, np.floating):
+                    return float(obj)
+                elif isinstance(obj, np.ndarray):
+                    return obj.tolist()
+                else:
+                    return super(NumpyEncoder, self).default(obj)
+
         meta = self._meta
         if key: k = '@{}'.format(key)
         col = {'columns': 'columns{}'.format(k if key else ''),
@@ -803,7 +815,7 @@ class DataSet(object):
         ds_path = '../' if self.path == '/' else self.path
         path = os.path.join(ds_path, ''.join([self.name, '_', name, '.json']))
         with open(path, 'w') as file:
-            json.dump(obj, file)
+            json.dump(obj, file, cls=NumpyEncoder)
         print('create: {}'.format(path))
         return None
 
