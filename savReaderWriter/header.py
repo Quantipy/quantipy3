@@ -30,7 +30,10 @@ class Header(Generic):
         """Constructor"""
         super(Header, self).__init__(savFileName, ioUtf8, ioLocale)
         self.spssio = self.loadLibrary()
-        self.libc = cdll.LoadLibrary(ctypes.util.find_library("c"))
+        if os.name == 'nt':
+            self.libc = cdll.LoadLibrary('msvcrt')
+        else:
+            self.libc = cdll.LoadLibrary(ctypes.util.find_library('c'))
         self.fh = super(Header, self).openSavFile(savFileName, mode,
                                                   refSavFileName)
         self.varNames, self.varTypes = self.varNamesTypes
