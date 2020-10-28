@@ -130,7 +130,7 @@ class Generic(object):
     def errcheck(self, res, func, args):
         """This function checks for errors during the execution of
         function <func>"""
-        if not res:
+        if res == -1:
             msg = "Error performing %r operation on file %r."
             raise IOError(msg % (func.__name__, self.savFileName))
         return res
@@ -187,7 +187,7 @@ class Generic(object):
             fdopen = self.libc._fdopen  # Windows
         except AttributeError:
             fdopen = self.libc.fdopen   # Linux and others
-        fdopen.argtypes, fdopen.restype = [c_int, c_char_p], c_void_p
+        fdopen.argtypes, fdopen.restype = [c_int, c_char_p], c_int
         fdopen.errcheck = self.errcheck
         mode_ = b"wb" if mode == b"cp" else mode
         with open(savFileName, mode_.decode("utf-8")) as f:
