@@ -12,6 +12,7 @@ import math
 import locale
 import encodings
 import collections
+import traceback
 
 from savReaderWriter import *
 from py3k import *
@@ -27,7 +28,10 @@ class Generic(object):
         be set once"""
         locale.setlocale(locale.LC_ALL, "")
         self.savFileName = savFileName
-        self.libc = cdll.LoadLibrary(ctypes.util.find_library("c"))
+        if os.name == 'nt':
+            self.libc = cdll.LoadLibrary('msvcrt')
+        else:
+            self.libc = cdll.LoadLibrary(ctypes.util.find_library('c'))
         self.spssio = self.loadLibrary()
 
         self.wholeCaseIn = self.spssio.spssWholeCaseIn
@@ -383,6 +387,8 @@ class Generic(object):
     def ioLocale(self, localeName=""):
         if not localeName:
             localeName = ".".join(locale.getlocale())
+        if os.name == 'nt' and localeName == 'en_US.UTF-8':
+            localeName = 'english'
         func = self.spssio.spssSetLocale
         func.restype = c_char_p
         self.setLocale = func(c_int(locale.LC_ALL), c_char_py3k(localeName))
