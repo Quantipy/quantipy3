@@ -4,9 +4,6 @@ import json
 from quantipy.core.tools.dp.io import read_confirmit
 
 def test_reader():
-    [meta, data] = read_confirmit('tests/confirmit_meta.json',
-                                  'tests/confirmit_data.json' )
-
 
     dataset_that_works = qp.DataSet("quantipy test data")
     dataset_that_works.read_quantipy('tests/Example Data (A).json',
@@ -36,78 +33,39 @@ def test_single_type():
                            'tests/confirmit_data.json'
                             )
     # single type - no loop reference
-    assert dataset.meta()['columns']['q39'] == json.loads("""{
-            "name": "q39",
-            "parent": {},
-            "text": {
-                "en-GB": "Use script to set values"
-            },
-            "values": [
-                {
-                    "text": {
-                        "en-GB": "yes"
-                    },
-                    "value": "1"
-                },
-                {
-                    "text": {
-                        "en-GB": "no"
-                    },
-                    "value": "2"
-                }
-            ],
-            "type": "single",
-            "properties": {}
-        }""")
+    print(dataset.meta('q39'))
+    print(dataset.meta('q21'))
+    print(dataset.crosstab('q39', 'q21'))
+    assert dataset.meta()['columns']['q39'] == json.loads("""
+    {"name": "q39", 
+    "parent": {}, 
+    "type": "single", 
+    "values": [
+        {"text": {"en-GB": "yes"}, 
+        "value": "1"},
+        {"text": {"en-GB": "no"}, 
+        "value": "2"}],
+    "text": {"en-GB": "Use script to set values"}}""")
     # single type - with loop reference
-    assert dataset.meta()['columns']['q55']['values'][1] == json.loads("""{
-                    "text": {
-                        "en-GB": "loopAns1"
-                    },
-                    "value": {
-                        "name": "l2",
-                        "parent": {},
-                        "text": {
-                            "en-GB": "Loop  l2 title"
-                        },
-                        "variables": [
-                            {
-                                "type": "string",
-                                "name": "q56",
-                                "parent": {},
-                                "properties": {}
-                            }
-                        ],
-                        "texts": [
-                            {
-                                "text": "Loop  l2 title",
-                                "languageId": 9
-                            }
-                        ],
-                        "values": [
-                            {
-                                "text": {
-                                    "en-GB": "loopAns1"
-                                },
-                                "value": "1"
-                            },
-                            {
-                                "text": {
-                                    "en-GB": "loopAns2"
-                                },
-                                "value": "2"
-                            },
-                            {
-                                "text": {
-                                    "en-GB": "loopAns3"
-                                },
-                                "value": "3"
-                            }
-                        ],
-                        "type": "single",
-                        "properties": {}
-                    }
-                }""")
+    assert dataset.meta()['columns']['q55']['values'][1] == json.loads("""
+    {"text": {"en-GB": "loopAns1"},
+    "value":
+    {"name": "l2",
+    "parent": {},
+    "type": "single",
+    "values": [
+        {"text": {"en-GB": "loopAns1"},
+        "value": "1"},
+        {"text": {"en-GB": "loopAns2"},
+        "value": "2"},
+        {"text": {"en-GB": "loopAns3"}, "value": "3"}],
+        "text": {"en-GB": "Loop  l2 title"},
+        "texts": [{"languageId": 9,
+        "text": "Loop  l2 title"}],
+        "variables": [{"name": "q56",
+        "parent": {},
+        "type": "string",
+        "properties": {}}]}}""")
     
     # TODO: assert that dataset.crosstab(single) returns correct shaped
     #       dataframe

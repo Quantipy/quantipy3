@@ -68,7 +68,7 @@ def quantipy_from_confirmit(meta_json, data_json, text_key='en-GB'):
             "type": var_type
             # "properties": {}
         }
-        if var_type != 'float':
+        if var_type != 'float' and var_type != 'single':
            variable_obj['properties'] = {}
         if var_type == 'array':
             variable_obj['items'] = get_grid_items(variable)
@@ -110,11 +110,17 @@ def quantipy_from_confirmit(meta_json, data_json, text_key='en-GB'):
 
     columns_output = {}
     grid_vars = []
+    single_vars = []
     vars_arr = meta_parsed.get('root').get('variables')
     children_vars = meta_parsed.get('root').get('children')
     for variable in vars_arr:
         if variable['variableType'] == 'singleChoice':
-            columns_output[variable['name']] = get_main_info(variable, 'single')
+            try:
+                int(variable['options'][0]['code'])
+                single_vars.append(variable['name'])
+                columns_output[variable['name']] = get_main_info(variable, 'single')
+            except ValueError:
+                pass
         if variable['variableType'] == 'multiChoice':
             columns_output[variable['name']] = get_main_info(variable, 'delimited set')
         if variable['variableType'] == 'numeric':
@@ -149,7 +155,7 @@ def quantipy_from_confirmit(meta_json, data_json, text_key='en-GB'):
             "text": "Converted from SAV file .",
             "from_source": {"pandas_reader": "sav"}
         },
-        "lib": {"values": {}, "default text": "main"},
+        "lib": {"values": {}, "default text": "en-GB"},
         "masks": {},
         "sets": {
             "data_file": {
@@ -166,6 +172,9 @@ def quantipy_from_confirmit(meta_json, data_json, text_key='en-GB'):
                old_values = data.pop(nav['parent'])
                for k, v in old_values.items():
                    data[nav['parent'] + '_' + k] = v
+        for single in single_vars:
+            if data.get(single):
+                data[single] = int(data[single])
     
     df = pd.DataFrame.from_dict(data=data_parsed)
     return output_obj, df

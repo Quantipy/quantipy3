@@ -581,7 +581,7 @@ class DataSet(object):
         self._rename_blacklist_vars()
         return None
 
-    def read_confirmit(self, path_meta, path_data):
+    def read_confirmit(self, path_meta, path_data, reset=True):
         """Read confirmit data
 
         Parameters
@@ -596,6 +596,7 @@ class DataSet(object):
         None
         """
         self._meta, self._data = r_confirmit(path_meta, path_data)
+        self._set_file_info(path_data, path_meta, reset=reset)
 
     def read_spss(self, path_sav, **kwargs):
         """
