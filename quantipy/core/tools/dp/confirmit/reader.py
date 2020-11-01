@@ -111,6 +111,7 @@ def quantipy_from_confirmit(meta_json, data_json, text_key='en-GB'):
     columns_output = {}
     grid_vars = []
     single_vars = []
+    delimited_set_vars = []
     vars_arr = meta_parsed.get('root').get('variables')
     children_vars = meta_parsed.get('root').get('children')
     for variable in vars_arr:
@@ -122,6 +123,7 @@ def quantipy_from_confirmit(meta_json, data_json, text_key='en-GB'):
             except ValueError:
                 pass
         if variable['variableType'] == 'multiChoice':
+            delimited_set_vars.append(variable['name'])
             columns_output[variable['name']] = get_main_info(variable, 'delimited set')
         if variable['variableType'] == 'numeric':
             if variable.get('fields'):
@@ -158,7 +160,7 @@ def quantipy_from_confirmit(meta_json, data_json, text_key='en-GB'):
         "lib": {"values": {}, "default text": "en-GB"},
         "masks": {},
         "sets": {
-            "data_file": {
+            "data file": {
                 "text": {"en-GB": "Variable order in source file"},
                 "items": columns_array
             }
@@ -175,6 +177,17 @@ def quantipy_from_confirmit(meta_json, data_json, text_key='en-GB'):
         for single in single_vars:
             if data.get(single):
                 data[single] = int(data[single])
-    
+            else:
+                data[single] = None
+
+        for delset_var in delimited_set_vars:
+            str_true_var = ''
+            if data.get(delset_var) and data[delset_var].get('true'):
+                for true_var in data[delset_var]['true']:
+                    str_true_var += str(true_var) + ';'
+                data[delset_var] = str_true_var
+            else:
+                data[delset_var] = None
+
     df = pd.DataFrame.from_dict(data=data_parsed)
     return output_obj, df

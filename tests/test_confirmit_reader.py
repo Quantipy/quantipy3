@@ -13,7 +13,6 @@ def test_reader():
     assert dataset_that_works.variables() == ['record_number', 'unique_id', 'age', 'birth_day', 'birth_month', 'birth_year', 'gender', 'locality', 'ethnicity', 'religion', 'q1', 'q2', 'q2b', 'q3', 'q4', 'q5.q5_grid', 'q6.q6_grid', 'q7.q7_grid', 'q8', 'q8a', 'q9', 'q9a', 'Wave', 'weight_a', 'weight_b', 'start_time', 'end_time', 'duration', 'q14_1.q14_1_grid', 'q14_2.q14_2_grid', 'q14_3.q14_3_grid', 'RecordNo']
     assert dataset_that_works.by_type().shape == (56, 9)
     assert type(dataset_that_works._data) == pd.DataFrame
-
     print("NOTE: This is what the dataset.meta() function should return")
     print(dataset_that_works.meta('gender'))
     print("\n\nNOTE: this is what a crosstab should look like")
@@ -34,8 +33,21 @@ def test_single_type():
                             )
     # single type - no loop reference
     print(dataset.meta('q39'))
+    assert dataset.crosstab('q39').shape == (3,1)
     print(dataset.meta('q21'))
+    assert dataset.crosstab('q21').shape == (5,1)
     print(dataset.crosstab('q39', 'q21'))
+    assert dataset.crosstab('q39', 'q21').shape == (3,5)
+    element = dataset._data.iloc[:10,22]
+    assert element[0] == 2.0
+    assert element[1] == 2.0
+    assert element[2] == 2.0
+    assert element[3] == 1.0
+    assert element[4] == 1.0
+    assert element[5] == 2.0
+    assert element[6] == 1.0
+    assert element[8] == 2.0
+    print(element)
     assert dataset.meta()['columns']['q39'] == json.loads("""
     {"name": "q39", 
     "parent": {}, 
@@ -73,3 +85,38 @@ def test_single_type():
 
     # TODO: more assertions for numbers, grids etc. these can be in different
     #       test functions if that is needed
+
+def test_delimited_set_type():
+    dataset = qp.DataSet("confirmit")
+    dataset.read_confirmit('tests/confirmit_meta.json',
+                           'tests/confirmit_data.json')
+    print(dataset.meta('q1'))
+    assert dataset.meta()['columns']['q1'] == json.loads("""
+    {"name": "q1",
+    "parent": {},
+    "type": "delimited set",
+    "properties": {},
+    "values": [
+        {"text": {"en-GB": "ans1"}, "value": "1"},
+        {"text": {"en-GB": "ans2"}, "value": "2"},
+        {"text": {"en-GB": "ans3"}, "value": "3"}],
+        "text": {"en-GB": "multi - default options"}}""")
+    assert dataset.crosstab('q1').shape == (4,1)
+    print(dataset.crosstab('q1', 'q22'))
+    assert dataset.crosstab('q1', 'q22').shape == (4,5)
+
+def test_number_type():
+    dataset = qp.DataSet("confirmit")
+    dataset.read_confirmit('tests/confirmit_meta.json',
+                           'tests/confirmit_data.json')
+    print(dataset.meta('q73'))
+    print(dataset.crosstab('q73'))
+    assert dataset.meta()['columns']['q73'] == json.loads("""
+    {"name": "q73",
+    "parent": {},
+    "type": "float",
+    "text": {"en-GB": "open - numeric"}}
+    """)
+    assert dataset.crosstab('q73').shape == (71, 1)
+    assert dataset.crosstab('q73', 'q39').shape == (71, 3)
+    # import pdb; pdb.set_trace()
