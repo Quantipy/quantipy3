@@ -17,6 +17,9 @@ This repository is a port of [Quantipy](https://www.github.com/quantipy/quantipy
   - Structured analysis and reporting via Chain and Cluster containers
   - Exports to SPSS, Dimensions ddf/mdd, MS Excel and Powerpoint with flexible layouts and various options
   - Python 3.8 is not yet fully supported, but 3.5, 3.6, and 3.7 are.
+  
+#### Origins
+- Quantipy was concieved of and instigated by Gary Nelson: http://www.datasmoothie.com
 
 #### Contributors
 - Alexander Buchhammer, Alasdair Eaglestone, James Griffiths, Kerstin Müller : https://yougov.co.uk
