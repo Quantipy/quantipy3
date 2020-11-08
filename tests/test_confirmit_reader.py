@@ -120,3 +120,28 @@ def test_number_type():
     assert dataset.crosstab('q73').shape == (71, 1)
     assert dataset.crosstab('q73', 'q39').shape == (71, 3)
     # import pdb; pdb.set_trace()
+
+def test_array_type():
+    dataset = qp.DataSet("confirmit")
+    dataset.read_confirmit('tests/confirmit_meta.json',
+                           'tests/confirmit_data.json')
+    print(dataset.meta()['columns']['q5'])
+    print(dataset.meta('q5_1'))
+    print(dataset.crosstab('q5_1', 'q39').shape) == (52, 3)
+    assert dataset.meta()['columns']['q5'] == json.loads("""
+    {"name": "q5",
+    "parent": {},
+    "type": "array",
+    "properties": {},
+    "items": [
+        {"properties": {},
+        "source": "columns@q5_1",
+        "text": {"en-GB": "ans1"}},
+        {"properties": {},
+        "source": "columns@q5_2",
+        "text": {"en-GB": "ans2"}},
+        {"properties": {},
+        "source": "columns@q5_3",
+        "text": {"en-GB": "ans3"}}],
+        "subtypes": "float",
+        "text": {"en-GB": "numeric list"}}""")
