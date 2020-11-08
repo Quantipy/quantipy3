@@ -26,9 +26,10 @@ def quantipy_from_confirmit(meta_json, data_json, text_key='en-GB'):
     def fill_items_arr(parsed_meta):
         try:
             var_idx = columns_array.index('columns@' + parsed_meta['name'])
+            columns_array.pop(var_idx)
             for item in parsed_meta['items']:
-                var_idx += 1
                 columns_array.insert(var_idx, item['source'])
+                var_idx += 1
         except ValueError:
             var_idx = None
 
@@ -171,9 +172,9 @@ def quantipy_from_confirmit(meta_json, data_json, text_key='en-GB'):
     for data in data_parsed:
         for nav in grid_vars:
             if nav['parent'] in data:
-               old_values = data.pop(nav['parent'])
-               for k, v in old_values.items():
-                   data[nav['parent'] + '_' + k] = v
+                old_values = data.pop(nav['parent'])
+                for k, v in old_values.items():
+                    data[nav['parent'] + '_' + k] = v
         for single in single_vars:
             if data.get(single):
                 data[single] = int(data[single])
