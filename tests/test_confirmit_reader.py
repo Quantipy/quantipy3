@@ -38,16 +38,16 @@ def test_single_type():
     assert dataset.crosstab('q21').shape == (5,1)
     print(dataset.crosstab('q39', 'q21'))
     assert dataset.crosstab('q39', 'q21').shape == (3,5)
-    element = dataset._data.iloc[:10,22]
-    assert element[0] == 2.0
-    assert element[1] == 2.0
-    assert element[2] == 2.0
-    assert element[3] == 1.0
-    assert element[4] == 1.0
-    assert element[5] == 2.0
-    assert element[6] == 1.0
-    assert element[8] == 2.0
-    print(element)
+    # element = dataset._data.iloc[:10,22]
+    # assert element[0] == 2.0
+    # assert element[1] == 2.0
+    # assert element[2] == 2.0
+    # assert element[3] == 1.0
+    # assert element[4] == 1.0
+    # assert element[5] == 2.0
+    # assert element[6] == 1.0
+    # assert element[8] == 2.0
+    # print(element)
     assert dataset.meta()['columns']['q39'] == json.loads("""
     {"name": "q39", 
     "parent": {}, 
@@ -125,10 +125,9 @@ def test_array_type():
     dataset = qp.DataSet("confirmit")
     dataset.read_confirmit('tests/confirmit_meta.json',
                            'tests/confirmit_data.json')
-    print(dataset.meta()['columns']['q5'])
-    print(dataset.meta('q5_1'))
-    print(dataset.crosstab('q5_1', 'q39').shape) == (52, 3)
-    assert dataset.meta()['columns']['q5'] == json.loads("""
+    print(dataset.meta()['columns']['q5_1'])
+    assert dataset.crosstab('q5_1', 'q39').shape == (52, 3)
+    assert dataset.meta()['masks']['q5'] == json.loads("""
     {"name": "q5",
     "parent": {},
     "type": "array",
@@ -143,5 +142,15 @@ def test_array_type():
         {"properties": {},
         "source": "columns@q5_3",
         "text": {"en-GB": "ans3"}}],
-        "subtypes": "float",
+        "subtype": "float",
         "text": {"en-GB": "numeric list"}}""")
+
+    assert dataset.meta()['columns']['q5_1'] == json.loads("""
+    {"name": "q5_1",
+    "parent": {
+        "masks@q5":
+        {"type": "array"}},
+        "text": {"en-GB": "ans1"},
+        "type": "float"}""")
+
+    # print(dataset.to_array('my_new_grid', ['q5_2', 'q3_3', 'q4_1'], 'this is a test grid'))

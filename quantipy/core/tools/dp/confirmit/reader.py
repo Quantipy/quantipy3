@@ -13,23 +13,27 @@ def quantipy_from_confirmit(meta_json, data_json, text_key='en-GB'):
         'singleChoice': 'single',
         'multiChoice': 'delimited set' 
     }
-    def create_subvar_meta(parsed_meta, subvar):
+    def create_subvar_meta(parsed_meta, subvar, values=False):
         parent_key = 'masks@' + parsed_meta['name']
         name = subvar['source'].replace('columns@', '')
-        return {
+        subvar_obj = {
             'name': name,
             'parent': {parent_key: {'type': parsed_meta['type']}},
             'text': subvar['text'],
-            'type': parsed_meta['subtypes'] 
+            'type': parsed_meta['subtype']
         }
+        if values:
+            subvar_obj['values'] = 'lib@values@' + parsed_meta['name']
+        return subvar_obj
 
     def fill_items_arr(parsed_meta):
         try:
             var_idx = columns_array.index('columns@' + parsed_meta['name'])
-            columns_array.pop(var_idx)
+            columns_array[var_idx] = 'masks@' + parsed_meta['name']
+            children_arr = []
             for item in parsed_meta['items']:
-                columns_array.insert(var_idx, item['source'])
-                var_idx += 1
+                children_arr.append(item['source'])
+            sets[parsed_meta['name']] = {'items': children_arr}
         except ValueError:
             var_idx = None
 
@@ -74,9 +78,14 @@ def quantipy_from_confirmit(meta_json, data_json, text_key='en-GB'):
         if var_type == 'array':
             variable_obj['items'] = get_grid_items(variable)
             if variable['variableType'] == 'numeric':
-                variable_obj['subtypes'] = 'float'
+                variable_obj['subtype'] = 'float'
             if variable['variableType'] == 'text':
-                variable_obj['subtypes'] = 'string'
+                variable_obj['subtype'] = 'string'
+            if variable['variableType'] == 'rating':
+                variable_obj['subtype'] = 'single'
+                lib['values'][variable['name']] = get_options(variable["options"], var_type, is_child)
+                variable_obj['values'] = 'lib@values@' + variable['name']
+
         if var_type != 'float' and var_type != 'array' and var_type != 'string':
             variable_obj['values'] = get_options(variable["options"], var_type, is_child)
         if variable.get('titles'):
@@ -109,11 +118,17 @@ def quantipy_from_confirmit(meta_json, data_json, text_key='en-GB'):
             sub_data_array.append(v)
         data_array.append(sub_data_array)
 
+    lib = {"default text": "en-GB", "values": {}}
+    sets = {}
     columns_output = {}
+    masks_output = {}
     grid_vars = []
     single_vars = []
     delimited_set_vars = []
-    vars_arr = meta_parsed.get('root').get('variables')
+    root_vars = meta_parsed.get('root')
+    vars_arr = root_vars.get('variables')
+    for key_var in root_vars.get('keys'):
+        vars_arr.append(key_var)
     children_vars = meta_parsed.get('root').get('children')
     for variable in vars_arr:
         if variable['variableType'] == 'singleChoice':
@@ -129,7 +144,7 @@ def quantipy_from_confirmit(meta_json, data_json, text_key='en-GB'):
         if variable['variableType'] == 'numeric':
             if variable.get('fields'):
                 parsed_meta = get_main_info(variable, 'array')
-                columns_output[variable['name']] = parsed_meta
+                masks_output[variable['name']] = parsed_meta
                 fill_items_arr(parsed_meta)
                 numeric_children_arr = []
                 for subvar in parsed_meta['items']:
@@ -142,7 +157,7 @@ def quantipy_from_confirmit(meta_json, data_json, text_key='en-GB'):
         if variable['variableType'] == 'text':
             if variable.get('fields'):
                 parsed_meta = get_main_info(variable, 'array')
-                columns_output[variable['name']] = parsed_meta
+                masks_output[variable['name']] = parsed_meta
                 fill_items_arr(parsed_meta)
                 text_children_arr = []
                 for subvar in parsed_meta['items']:
@@ -152,20 +167,29 @@ def quantipy_from_confirmit(meta_json, data_json, text_key='en-GB'):
                 grid_vars.append({'parent': variable['name'], 'children': text_children_arr})
             else:
                 columns_output[variable['name']] = get_main_info(variable, 'string')
+        if variable['variableType'] == 'rating':
+            parsed_meta = get_main_info(variable, 'array')
+            masks_output[variable['name']] = parsed_meta
+            fill_items_arr(parsed_meta)
+            single_children_arr = []
+            for subvar in parsed_meta['items']:
+                parsed_subvar_meta = create_subvar_meta(parsed_meta, subvar, True)
+                columns_output[parsed_subvar_meta['name']] = parsed_subvar_meta
+                single_children_arr.append(parsed_subvar_meta['name'])
+            grid_vars.append({'parent': variable['name'], 'children': single_children_arr})
     
+    sets['data file'] = {
+        "text": {"en-GB": "Variable order in source file"},
+        "items": columns_array
+    }
     output_obj = {
         "info": {
             "text": "Converted from SAV file .",
             "from_source": {"pandas_reader": "sav"}
         },
-        "lib": {"values": {}, "default text": "en-GB"},
-        "masks": {},
-        "sets": {
-            "data file": {
-                "text": {"en-GB": "Variable order in source file"},
-                "items": columns_array
-            }
-        },
+        "lib": lib,
+        "masks": masks_output,
+        "sets": sets,
         "type": "pandas.DataFrame",
         "columns": columns_output
     }
