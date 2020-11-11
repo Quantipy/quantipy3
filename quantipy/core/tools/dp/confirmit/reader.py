@@ -85,6 +85,8 @@ def quantipy_from_confirmit(meta_json, data_json, text_key='en-GB'):
                 variable_obj['subtype'] = 'single'
                 lib['values'][variable['name']] = get_options(variable["options"], var_type, is_child)
                 variable_obj['values'] = 'lib@values@' + variable['name']
+            if variable['variableType'] == 'ranking':
+                variable_obj['subtype'] = 'int'
 
         if var_type != 'float' and var_type != 'array' and var_type != 'string':
             variable_obj['values'] = get_options(variable["options"], var_type, is_child)
@@ -177,6 +179,16 @@ def quantipy_from_confirmit(meta_json, data_json, text_key='en-GB'):
                 columns_output[parsed_subvar_meta['name']] = parsed_subvar_meta
                 single_children_arr.append(parsed_subvar_meta['name'])
             grid_vars.append({'parent': variable['name'], 'children': single_children_arr})
+        if variable['variableType'] == 'ranking':
+            parsed_meta = get_main_info(variable, 'array')
+            masks_output[variable['name']] = parsed_meta
+            fill_items_arr(parsed_meta)
+            int_children_arr = []
+            for subvar in parsed_meta['items']:
+                parsed_subvar_meta = create_subvar_meta(parsed_meta, subvar)
+                columns_output[parsed_subvar_meta['name']] = parsed_subvar_meta
+                int_children_arr.append(parsed_subvar_meta['name'])
+            grid_vars.append({'parent': variable['name'], 'children': int_children_arr})
     
     sets['data file'] = {
         "text": {"en-GB": "Variable order in source file"},

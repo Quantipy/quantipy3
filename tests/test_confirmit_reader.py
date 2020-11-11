@@ -153,4 +153,127 @@ def test_array_type():
         "text": {"en-GB": "ans1"},
         "type": "float"}""")
 
-    # print(dataset.to_array('my_new_grid', ['q5_2', 'q3_3', 'q4_1'], 'this is a test grid'))
+    # dataset.to_array('my_new_grid', ['q73', 'delete3', 'q9'], 'this is a test grid')
+    # print(dataset.meta()['masks']['my_new_grid'])
+    # import pdb; pdb.set_trace()
+
+def test_rating_type():
+    dataset = qp.DataSet("confirmit")
+    dataset.read_confirmit('tests/confirmit_meta.json',
+                           'tests/confirmit_data.json')
+    print(dataset.meta()['columns']['q14_1'])
+    assert dataset.crosstab('q14_1', 'q39').shape == (4, 3)
+    print(dataset.meta()['masks']['q14'])
+    assert dataset.meta()['masks']['q14'] == json.loads("""
+    {
+        "name": "q14",
+        "parent": {},
+        "type": "array",
+        "properties": {},
+        "items": [{
+            "properties": {},
+            "source": "columns@q14_1",
+            "text": {"en-GB": "ans1"}
+        },
+        {
+            "properties": {},
+            "source": "columns@q14_2",
+            "text": {"en-GB": "ans2"}
+        },
+        {
+            "properties": {},
+            "source": "columns@q14_3",
+            "text": {"en-GB": "ans3"}
+        }],
+        "subtype": "single",
+        "values": "lib@values@q14",
+        "text": {"en-GB": "grid - numeric precodes"}
+    }""")
+
+    assert dataset.meta()['columns']['q14_1'] == json.loads("""
+    {
+        "name": "q14_1",
+        "parent": {
+            "masks@q14": {"type": "array"}
+        },
+        "text": {"en-GB": "ans1"},
+        "type": "single",
+        "values": "lib@values@q14"
+    }""")
+
+def test_ranking_type():
+    dataset = qp.DataSet("confirmit")
+    dataset.read_confirmit('tests/confirmit_meta.json',
+                           'tests/confirmit_data.json')
+    print(dataset.meta()['columns']['q2_1'])
+    assert dataset.crosstab('q2_1', 'q39').shape == (11, 3)
+    print(dataset.meta()['masks']['q2'])
+    assert dataset.meta()['masks']['q2'] == json.loads("""
+    {
+        "name": "q2",
+        "parent": {},
+        "type": "array",
+        "properties": {},
+        "items": [{
+            "properties": {},
+            "source": "columns@q2_1",
+            "text": {"en-GB": "ans1"}
+        },
+        {
+            "properties": {},
+            "source": "columns@q2_2",
+            "text": {"en-GB": "ans2"}
+        },
+        {
+            "properties": {},
+            "source": "columns@q2_3",
+            "text": {"en-GB": "ans3"}
+        },
+        {
+            "properties": {},
+            "source": "columns@q2_4",
+            "text": {"en-GB": "ans4"}
+        },
+        {
+            "properties": {},
+            "source": "columns@q2_5",
+            "text": {"en-GB": "ans5"}
+        },
+        {
+            "properties": {},
+            "source": "columns@q2_6",
+            "text": {"en-GB": "ans6"}
+        },
+        {
+            "properties": {},
+            "source": "columns@q2_7",
+            "text": {"en-GB": "ans7"}
+        },
+        {
+            "properties": {},
+            "source": "columns@q2_8",
+            "text": {"en-GB": "ans8"}
+        },
+        {
+            "properties": {},
+            "source": "columns@q2_9",
+            "text": {"en-GB": "ans9"}
+        },
+        {
+            "properties": {},
+            "source": "columns@q2_10",
+            "text": {"en-GB": "ans10"}
+        }],
+        "subtype": "int",
+        "text": {"en-GB": "ranking- ordered (10 answers)"}
+    }""")
+
+    assert dataset.meta()['columns']['q2_1'] == json.loads("""
+    {
+        "name": "q2_1",
+        "parent": {
+            "masks@q2": {"type": "array"}
+        },
+        "text": {"en-GB": "ans1"},
+        "type": "int"
+    }""")
