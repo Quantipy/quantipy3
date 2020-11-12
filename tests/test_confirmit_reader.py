@@ -276,3 +276,36 @@ def test_ranking_type():
         "text": {"en-GB": "ans1"},
         "type": "int"
     }""")
+
+def test_multigrid_type():
+    dataset = qp.DataSet("confirmit")
+    dataset.read_confirmit('tests/confirmit_meta.json',
+                           'tests/confirmit_data.json')
+    print(dataset.meta()['masks']['g56'])
+    print(dataset.crosstab('g56_1'))
+    assert dataset.crosstab('g56_1', 'q39').shape == (3, 3)
+    print(dataset.meta()['masks']['g56'])
+    assert dataset.meta()['masks']['g56'] == json.loads("""
+    {
+        "name": "g56",
+        "parent": {},
+        "type": "array",
+        "properties": {},
+        "items": [{
+            "properties": {},
+            "source": "columns@g56_1",
+            "text": {"en-GB": "a"}
+        },
+        {
+            "properties": {},
+            "source": "columns@g56_2",
+            "text": {"en-GB": "b"}
+        },
+        {
+            "properties": {},
+            "source": "columns@g56_3",
+            "text": {"en-GB": "c"}
+        }],
+        "subtype": "delimited set"
+        }
+    """)
