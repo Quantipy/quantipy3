@@ -25,7 +25,6 @@ def test_reader():
     # check that every column in the data (columns) is also in the meta
     assert columns.issubset(meta_columns)
 
-
 def test_single_type():
     dataset = qp.DataSet("confirmit")
     dataset.read_confirmit('tests/confirmit_meta.json',
@@ -54,9 +53,9 @@ def test_single_type():
     "type": "single", 
     "values": [
         {"text": {"en-GB": "yes"}, 
-        "value": "1"},
+        "value": 1},
         {"text": {"en-GB": "no"}, 
-        "value": "2"}],
+        "value": 2}],
     "text": {"en-GB": "Use script to set values"}}""")
     # single type - with loop reference
     assert dataset.meta()['columns']['q55']['values'][1] == json.loads("""
@@ -67,10 +66,10 @@ def test_single_type():
     "type": "single",
     "values": [
         {"text": {"en-GB": "loopAns1"},
-        "value": "1"},
+        "value": 1},
         {"text": {"en-GB": "loopAns2"},
-        "value": "2"},
-        {"text": {"en-GB": "loopAns3"}, "value": "3"}],
+        "value": 2},
+        {"text": {"en-GB": "loopAns3"}, "value": 3}],
         "text": {"en-GB": "Loop  l2 title"},
         "texts": [{"languageId": 9,
         "text": "Loop  l2 title"}],
@@ -97,9 +96,9 @@ def test_delimited_set_type():
     "type": "delimited set",
     "properties": {},
     "values": [
-        {"text": {"en-GB": "ans1"}, "value": "1"},
-        {"text": {"en-GB": "ans2"}, "value": "2"},
-        {"text": {"en-GB": "ans3"}, "value": "3"}],
+        {"text": {"en-GB": "ans1"}, "value": 1},
+        {"text": {"en-GB": "ans2"}, "value": 2},
+        {"text": {"en-GB": "ans3"}, "value": 3}],
         "text": {"en-GB": "multi - default options"}}""")
     assert dataset.crosstab('q1').shape == (4,1)
     print(dataset.crosstab('q1', 'q22'))
@@ -200,7 +199,7 @@ def test_rating_type():
         "type": "single",
         "values": "lib@values@q14"
     }""")
-
+    # import pdb; pdb.set_trace()
 def test_ranking_type():
     dataset = qp.DataSet("confirmit")
     dataset.read_confirmit('tests/confirmit_meta.json',

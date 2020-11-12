@@ -39,12 +39,14 @@ def quantipy_from_confirmit(meta_json, data_json, text_key='en-GB'):
 
     def get_grid_items(variable):
         children_array = []
-        for field in variable['fields']:
-            children_array.append({
-                'properties': {},
-                'source': 'columns@' + variable['name'] + '_' + field['code'],
-                'text': {'en-GB': field['texts'][0]['text']}
-            })
+        fields = variable.get('fields')
+        if fields:
+            for field in fields:
+                children_array.append({
+                    'properties': {},
+                    'source': 'columns@' + variable['name'] + '_' + field['code'],
+                    'text': {'en-GB': field['texts'][0]['text']}
+                })
         return children_array
         
 
@@ -57,8 +59,15 @@ def quantipy_from_confirmit(meta_json, data_json, text_key='en-GB'):
                 child_var = list(filtered_loop_ref)
                 col_values_val = get_main_info(child_var[0], var_type, is_child=True)
             else:
-                col_values_val = value["code"]
-            col_values_arr.append({"text": {"en-GB": value["texts"][0]["text"]}, "value": col_values_val})
+                try:
+                    col_values_val = int(value["code"])
+                except ValueError:
+                    col_values_val = value["code"]
+                
+            values_dict = {"text": {"en-GB": value["texts"][0]["text"]}, "value": col_values_val}
+            if value.get('score'):
+                values_dict["factor"] = value.get('score')
+            col_values_arr.append(values_dict)
         return col_values_arr
 
     def get_main_info(variable_meta, var_type, is_child=False):
@@ -127,12 +136,36 @@ def quantipy_from_confirmit(meta_json, data_json, text_key='en-GB'):
     grid_vars = []
     single_vars = []
     delimited_set_vars = []
+    multigrid_vars = {}
+    grid3d_vars = {}
     root_vars = meta_parsed.get('root')
     vars_arr = root_vars.get('variables')
     for key_var in root_vars.get('keys'):
         vars_arr.append(key_var)
     children_vars = meta_parsed.get('root').get('children')
     for variable in vars_arr:
+        has_parent = variable.get('parentVariableName')
+        if has_parent:
+            if has_parent in multigrid_vars:
+                multigrid_vars[has_parent]['children'].append(variable['name'])
+            elif has_parent in grid3d_vars:
+                grid3d_vars[has_parent]['children'].append(variable['name'])
+            else:
+                filtered_parent_iter = filter(lambda x: x['name'] == has_parent, vars_arr)
+                filtered_parent = next(filtered_parent_iter)
+                if filtered_parent['variableType'] == 'multiGrid':
+                    if has_parent not in multigrid_vars:
+                        multigrid_vars[has_parent] = {
+                            'parent': has_parent,
+                            'children': [variable['name']]
+                        }
+                if filtered_parent['variableType'] == 'grid3D':
+                    if has_parent not in grid3d_vars:
+                        grid3d_vars[has_parent] = {
+                            'parent': has_parent,
+                            'children': [variable['name']]
+                        }    
+
         if variable['variableType'] == 'singleChoice':
             try:
                 int(variable['options'][0]['code'])
@@ -189,6 +222,12 @@ def quantipy_from_confirmit(meta_json, data_json, text_key='en-GB'):
                 columns_output[parsed_subvar_meta['name']] = parsed_subvar_meta
                 int_children_arr.append(parsed_subvar_meta['name'])
             grid_vars.append({'parent': variable['name'], 'children': int_children_arr})
+        if variable['variableType'] == 'multiGrid':
+            if variable['name'] not in multigrid_vars:
+                multigrid_vars[variable['name']] = {
+                    'parent': variable['name'],
+                    'children': []
+                }
     
     sets['data file'] = {
         "text": {"en-GB": "Variable order in source file"},
