@@ -75,7 +75,7 @@ def quantipy_from_confirmit(meta_json, data_json, text_key='en-GB'):
             col_values_arr.append(values_dict)
         return col_values_arr
 
-    def get_main_info(variable_meta, var_type, is_child=False):
+    def get_main_info(variable_meta, var_type, is_child=False, complex_grid=False):
         if is_child:
             variable = variable_meta.get('keys')[0]
         else:
@@ -103,6 +103,9 @@ def quantipy_from_confirmit(meta_json, data_json, text_key='en-GB'):
                 variable_obj['subtype'] = 'int'
             if variable.get('variableType') == 'multiGrid':
                 variable_obj['subtype'] = 'delimited set'
+                if complex_grid:
+                    lib['values'][variable['name']] = get_options(variable["options"], var_type, is_child)
+                    variable_obj['values'] = 'lib@values@' + variable['name']
 
         if var_type != 'float' and var_type != 'array' and var_type != 'string':
             variable_obj['values'] = get_options(variable["options"], var_type, is_child)
@@ -173,6 +176,7 @@ def quantipy_from_confirmit(meta_json, data_json, text_key='en-GB'):
                             'name': has_parent,
                             'variableType': variable['variableType'],
                             'complex-grid': True,
+                            'options': variable.get('options'),
                             'fields': [{
                                 'code': variable['name'],
                                 'texts': [{
@@ -186,6 +190,7 @@ def quantipy_from_confirmit(meta_json, data_json, text_key='en-GB'):
                             'name': has_parent,
                             'variableType': variable['variableType'],
                             'complex-grid': True,
+                            'options': variable.get('options'),
                             'fields': [{
                                 'code': variable['name'],
                                 'texts': [{
@@ -256,11 +261,12 @@ def quantipy_from_confirmit(meta_json, data_json, text_key='en-GB'):
                     'name': variable['name'],
                     'variableType': variable['variableType'],
                     'complex-grid': True,
+                    'options': variable.get('options'),
                     'fields': []
                 }
     
     for k, v in multigrid_vars.items():
-        parsed_meta = get_main_info(v, 'array')
+        parsed_meta = get_main_info(v, 'array', complex_grid=True)
         masks_output[v['name']] = parsed_meta
         fill_items_arr(parsed_meta)
         multigrid_children_arr = []

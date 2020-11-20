@@ -306,6 +306,7 @@ def test_multigrid_type():
             "source": "columns@g56_3",
             "text": {"en-GB": "c"}
         }],
-        "subtype": "delimited set"
+        "subtype": "delimited set",
+        "values": "lib@values@g56"
         }
     """)
