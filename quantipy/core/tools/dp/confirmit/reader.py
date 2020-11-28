@@ -2,6 +2,8 @@ import json
 import pandas as pd
 from quantipy.core.helpers.functions import load_json
 from quantipy.core.tools.dp.prep import start_meta
+from .languages_file import languages
+
 
 data_json_path = "./confirmit_data.json"
 meta_json_path = "./confirmit_meta.json"
@@ -45,12 +47,18 @@ def quantipy_from_confirmit(meta_json, data_json, text_key='en-GB'):
             for field in fields:
                 if variable.get('complex-grid'):
                     source = 'columns@' + field['code']
+                    language_text = field['texts'][0]['text']
                 else:
                     source = 'columns@' + variable['name'] + '_' + field['code']
+                    language_code = field['texts'][0].get('languageId')
+                    language_text = {}
+                    if language_code:
+                        language_text[languages[language_code]] = field['texts'][0]['text']
+
                 children_array.append({
                     'properties': {},
                     'source': source,
-                    'text': {'en-GB': field['texts'][0]['text']}
+                    'text': language_text
                 })
         return children_array
         
@@ -68,8 +76,9 @@ def quantipy_from_confirmit(meta_json, data_json, text_key='en-GB'):
                     col_values_val = int(value["code"])
                 except ValueError:
                     col_values_val = value["code"]
-                
-            values_dict = {"text": {"en-GB": value["texts"][0]["text"]}, "value": col_values_val}
+
+            language_code = value["texts"][0]["languageId"]
+            values_dict = {"text": { languages[language_code]: value["texts"][0]["text"]}, "value": col_values_val}
             if value.get('score'):
                 values_dict["factor"] = value.get('score')
             col_values_arr.append(values_dict)
@@ -110,10 +119,13 @@ def quantipy_from_confirmit(meta_json, data_json, text_key='en-GB'):
         if var_type != 'float' and var_type != 'array' and var_type != 'string':
             variable_obj['values'] = get_options(variable["options"], var_type, is_child)
         if variable.get('titles'):
-            variable_obj['text'] = {"en-GB": variable['titles'][0]["text"]}
+            language_code = variable['titles'][0].get("languageId")
+            if language_code:
+                variable_obj['text'] = { languages[language_code]: variable['titles'][0]["text"] }
         else:
             if variable.get('texts'):
-                variable_obj['text'] = {"en-GB": variable['texts'][0]["text"]}
+                language_code = variable['texts'][0]["languageId"]
+                variable_obj['text'] = { languages[language_code]: variable['texts'][0]["text"] }
 
         if is_child:
             variable_obj.update({
@@ -139,7 +151,9 @@ def quantipy_from_confirmit(meta_json, data_json, text_key='en-GB'):
             sub_data_array.append(v)
         data_array.append(sub_data_array)
 
-    lib = {"default text": "en-GB", "values": {}}
+    global_language_code = meta_parsed.get("languages")[0].get("confirmitLanguageId")
+    global_language = languages[global_language_code]
+    lib = {"default text": global_language, "values": {}}
     sets = {}
     columns_output = {}
     masks_output = {}
@@ -157,45 +171,57 @@ def quantipy_from_confirmit(meta_json, data_json, text_key='en-GB'):
         has_parent = variable.get('parentVariableName')
         if has_parent:
             if has_parent in multigrid_vars:
+                language_code = variable.get('texts')[0].get('languageId')
+                language_text = { 'text': {} }
+                if language_code:
+                    language_text['text'] = { languages[language_code]: variable['texts'][0]['text'] }
                 multigrid_vars[has_parent]['fields'].append(
                     {
                         'code': variable['name'],
-                        'texts': [{'text': variable['texts'][0]['text']}]
+                        'texts': [language_text]
                     })
             elif has_parent in grid3d_vars:
+                language_code = variable.get('titles')[0].get('languageId')
+                language_text = { 'text': {} }
+                if language_code:
+                    language_text['text'] = { languages[language_code]: variable['titles'][0]['text'] }
                 grid3d_vars[has_parent]['fields'].append({
                         'code': variable['name'],
-                        'texts': [{'text': variable['titles'][0]['text']}]
+                        'texts': [language_text]
                     })
             else:
                 filtered_parent_iter = filter(lambda x: x['name'] == has_parent, vars_arr)
                 filtered_parent = next(filtered_parent_iter)
                 if filtered_parent['variableType'] == 'multiGrid':
                     if has_parent not in multigrid_vars:
+                        language_code = variable.get('texts')[0].get('languageId')
+                        language_text = { 'text': {} }
+                        if language_code:
+                            language_text['text'] = { languages[language_code]: variable['texts'][0]['text'] }
                         multigrid_vars[has_parent] = {
                             'name': has_parent,
-                            'variableType': variable['variableType'],
+                            'variableType': filtered_parent['variableType'],
                             'complex-grid': True,
-                            'options': variable.get('options'),
+                            'options': filtered_parent.get('options'),
                             'fields': [{
                                 'code': variable['name'],
-                                'texts': [{
-                                    'text': variable['texts'][0]['text']
-                                }]
+                                'texts': [language_text]
                             }]
                         }
                 if filtered_parent['variableType'] == 'grid3D':
                     if has_parent not in grid3d_vars:
+                        language_code = variable.get('titles')[0].get('languageId')
+                        language_text = { 'text': {} }
+                        if language_code:
+                            language_text['text'] = { languages[language_code]: variable['titles'][0]['text'] }
                         grid3d_vars[has_parent] = {
                             'name': has_parent,
-                            'variableType': variable['variableType'],
+                            'variableType': filtered_parent['variableType'],
                             'complex-grid': True,
-                            'options': variable.get('options'),
+                            'options': filtered_parent.get('options'),
                             'fields': [{
                                 'code': variable['name'],
-                                'texts': [{
-                                    'text': variable['titles'][0]['text']
-                                }]
+                                'texts': [language_text]
                             }]
                         }    
 
@@ -276,7 +302,7 @@ def quantipy_from_confirmit(meta_json, data_json, text_key='en-GB'):
             multigrid_children_arr.append(parsed_subvar_meta['name'])
 
     sets['data file'] = {
-        "text": {"en-GB": "Variable order in source file"},
+        "text": { global_language: "Variable order in source file" },
         "items": columns_array
     }
     output_obj = {

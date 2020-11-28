@@ -324,7 +324,7 @@ def read_decipher(path_json, path_txt, text_key='main'):
     meta, data = quantipy_from_decipher(path_json, path_txt, text_key)
     return meta, data
 
-def read_confirmit(path_meta, path_data):
+def read_confirmit_from_files(path_meta, path_data):
     meta, data = quantipy_from_confirmit(path_meta, path_data)
     return meta, data
 

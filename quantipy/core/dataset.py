@@ -10,7 +10,7 @@ from quantipy.core.tools.dp.io import (
     read_decipher as r_decipher,
     read_spss as r_spss,
     read_ascribe as r_ascribe,
-    read_confirmit as r_confirmit,
+    read_confirmit_from_files as r_confirmit_from_files,
     write_spss as w_spss,
     write_quantipy as w_quantipy,
     write_dimensions as w_dimensions)
@@ -52,7 +52,7 @@ import importlib
 
 VALID_TKS = [
     'en-GB', 'da-DK', 'fi-FI', 'nb-NO', 'sv-SE', 'de-DE', 'fr-FR', 'ar-AR',
-    'es-ES', 'it-IT', 'pl-PL']
+    'es-ES', 'it-IT', 'pl-PL', 'en']
 
 VAR_SUFFIXES = [
     '_rc', '_net', ' (categories', ' (NET', '_rec']
@@ -581,7 +581,7 @@ class DataSet(object):
         self._rename_blacklist_vars()
         return None
 
-    def read_confirmit(self, path_meta, path_data, reset=True):
+    def read_confirmit_from_files(self, path_meta, path_data, reset=True):
         """Read confirmit data
 
         Parameters
@@ -595,7 +595,7 @@ class DataSet(object):
         -------
         None
         """
-        self._meta, self._data = r_confirmit(path_meta, path_data)
+        self._meta, self._data = r_confirmit_from_files(path_meta, path_data)
         self._set_file_info(path_data, path_meta, reset=reset)
 
     def read_spss(self, path_sav, **kwargs):
