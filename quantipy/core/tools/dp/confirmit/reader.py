@@ -5,9 +5,6 @@ from quantipy.core.tools.dp.prep import start_meta
 from .languages_file import languages
 
 
-data_json_path = "./confirmit_data.json"
-meta_json_path = "./confirmit_meta.json"
-
 def quantipy_from_confirmit(meta_json, data_json, text_key='en-GB'):
     types_translations = {
         'numeric': 'float',
@@ -116,7 +113,7 @@ def quantipy_from_confirmit(meta_json, data_json, text_key='en-GB'):
                     lib['values'][variable['name']] = get_options(variable["options"], var_type, is_child)
                     variable_obj['values'] = 'lib@values@' + variable['name']
 
-        if var_type != 'float' and var_type != 'array' and var_type != 'string':
+        if var_type != 'float' and var_type != 'array' and var_type != 'string' and var_type != 'date':
             variable_obj['values'] = get_options(variable["options"], var_type, is_child)
         if variable.get('titles'):
             language_code = variable['titles'][0].get("languageId")
@@ -138,11 +135,17 @@ def quantipy_from_confirmit(meta_json, data_json, text_key='en-GB'):
     data_array = []
     sub_data_array = []
     columns_array = []
-    with open(data_json, "r") as read_data_file:
-        data_parsed = json.load(read_data_file)
+    if isinstance(data_json, list):
+        data_parsed = data_json
+    else:
+        with open(data_json, "r") as read_data_file:
+            data_parsed = json.load(read_data_file)
 
-    with open(meta_json, "r") as read_meta_file:
-        meta_parsed = json.load(read_meta_file)
+    if isinstance(meta_json, dict):
+        meta_parsed = meta_json
+    else:
+        with open(meta_json, "r") as read_meta_file:
+            meta_parsed = json.load(read_meta_file)
 
     for idx, element in enumerate(data_parsed):
         for k, v in element.items():
@@ -167,6 +170,8 @@ def quantipy_from_confirmit(meta_json, data_json, text_key='en-GB'):
     for key_var in root_vars.get('keys'):
         vars_arr.append(key_var)
     children_vars = meta_parsed.get('root').get('children')
+    for children_var in children_vars:
+        vars_arr.append(children_var['keys'][0])
     for variable in vars_arr:
         has_parent = variable.get('parentVariableName')
         if has_parent:
@@ -225,17 +230,20 @@ def quantipy_from_confirmit(meta_json, data_json, text_key='en-GB'):
                             }]
                         }    
 
-        if variable['variableType'] == 'singleChoice':
+        if variable.get('variableType') == 'singleChoice':
             try:
                 int(variable['options'][0]['code'])
-                single_vars.append(variable['name'])
-                columns_output[variable['name']] = get_main_info(variable, 'single')
             except ValueError:
                 pass
-        if variable['variableType'] == 'multiChoice':
+
+            single_vars.append(variable['name'])
+            columns_output[variable['name']] = get_main_info(variable, 'single')
+        if variable.get('variableType') == 'multiChoice':
             delimited_set_vars.append(variable['name'])
             columns_output[variable['name']] = get_main_info(variable, 'delimited set')
-        if variable['variableType'] == 'numeric':
+        if variable.get('variableType') == 'dateTime':
+            columns_output[variable['name']] = get_main_info(variable, 'date')
+        if variable.get('variableType') == 'numeric':
             if variable.get('fields'):
                 parsed_meta = get_main_info(variable, 'array')
                 masks_output[variable['name']] = parsed_meta
@@ -248,7 +256,7 @@ def quantipy_from_confirmit(meta_json, data_json, text_key='en-GB'):
                 grid_vars.append({'parent': variable['name'], 'children': numeric_children_arr})
             else:
                 columns_output[variable['name']] = get_main_info(variable, 'float')
-        if variable['variableType'] == 'text':
+        if variable.get('variableType') == 'text':
             if variable.get('fields'):
                 parsed_meta = get_main_info(variable, 'array')
                 masks_output[variable['name']] = parsed_meta
@@ -261,7 +269,7 @@ def quantipy_from_confirmit(meta_json, data_json, text_key='en-GB'):
                 grid_vars.append({'parent': variable['name'], 'children': text_children_arr})
             else:
                 columns_output[variable['name']] = get_main_info(variable, 'string')
-        if variable['variableType'] == 'rating':
+        if variable.get('variableType') == 'rating':
             parsed_meta = get_main_info(variable, 'array')
             masks_output[variable['name']] = parsed_meta
             fill_items_arr(parsed_meta)
@@ -271,7 +279,7 @@ def quantipy_from_confirmit(meta_json, data_json, text_key='en-GB'):
                 columns_output[parsed_subvar_meta['name']] = parsed_subvar_meta
                 single_children_arr.append(parsed_subvar_meta['name'])
             grid_vars.append({'parent': variable['name'], 'children': single_children_arr})
-        if variable['variableType'] == 'ranking':
+        if variable.get('variableType') == 'ranking':
             parsed_meta = get_main_info(variable, 'array')
             masks_output[variable['name']] = parsed_meta
             fill_items_arr(parsed_meta)
@@ -281,7 +289,7 @@ def quantipy_from_confirmit(meta_json, data_json, text_key='en-GB'):
                 columns_output[parsed_subvar_meta['name']] = parsed_subvar_meta
                 int_children_arr.append(parsed_subvar_meta['name'])
             grid_vars.append({'parent': variable['name'], 'children': int_children_arr})
-        if variable['variableType'] == 'multiGrid':
+        if variable.get('variableType') == 'multiGrid':
             if variable['name'] not in multigrid_vars:
                 multigrid_vars[variable['name']] = {
                     'name': variable['name'],
@@ -324,7 +332,10 @@ def quantipy_from_confirmit(meta_json, data_json, text_key='en-GB'):
                     data[nav['parent'] + '_' + k] = v
         for single in single_vars:
             if data.get(single):
-                data[single] = int(data[single])
+                try:
+                    data[single] = int(data[single])
+                except:
+                    pass
             else:
                 data[single] = None
 
