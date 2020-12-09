@@ -75,7 +75,8 @@ def test_single_type(confirmit_dataset):
         "variables": [{"name": "q56",
         "parent": {},
         "type": "string",
-        "properties": {}}]}}""")
+        "properties": {},
+        "text": {"en": ""}}]}}""")
     
     # TODO: assert that dataset.crosstab(single) returns correct shaped
     #       dataframe
@@ -286,7 +287,8 @@ def test_multigrid_type(confirmit_dataset):
             "text": {"en": "c"}
         }],
         "subtype": "delimited set",
-        "values": "lib@values@g56"
+        "values": "lib@values@g56",
+        "text": {"en": ""}
         }
     """)
 

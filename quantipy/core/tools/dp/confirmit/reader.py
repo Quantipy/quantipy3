@@ -123,7 +123,8 @@ def quantipy_from_confirmit(meta_json, data_json, text_key='en-GB'):
             if variable.get('texts'):
                 language_code = variable['texts'][0]["languageId"]
                 variable_obj['text'] = { languages[language_code]: variable['texts'][0]["text"] }
-
+            else:
+                variable_obj['text'] = { global_language: "" }
         if is_child:
             variable_obj.update({
                 'texts': variable_meta.get('texts'),
