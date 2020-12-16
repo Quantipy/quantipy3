@@ -60,25 +60,28 @@ def quantipy_from_confirmit(meta_json, data_json, text_key='en-GB'):
         return children_array
         
 
-    def get_options(variable, var_type, is_child):
+    def get_options(variable, var_type, is_child, has_nodes):
         col_values_arr = []
         for value in variable:
-            loopReference = value.get('loopReference')
-            if(loopReference and var_type == 'single'):
-                filtered_loop_ref = filter(lambda x: x['name']  == loopReference, children_vars) 
-                child_var = list(filtered_loop_ref)
-                col_values_val = get_main_info(child_var[0], var_type, is_child=True)
+            if has_nodes:
+                pass
             else:
-                try:
-                    col_values_val = int(value["code"])
-                except ValueError:
-                    col_values_val = value["code"]
+                loopReference = value.get('loopReference')
+                if(loopReference and var_type == 'single'):
+                    filtered_loop_ref = filter(lambda x: x['name']  == loopReference, children_vars) 
+                    child_var = list(filtered_loop_ref)
+                    col_values_val = get_main_info(child_var[0], var_type, is_child=True)
+                else:
+                    try:
+                        col_values_val = int(value["code"])
+                    except ValueError:
+                        col_values_val = value["code"]
 
-            language_code = value["texts"][0]["languageId"]
-            values_dict = {"text": { languages[language_code]: value["texts"][0]["text"]}, "value": col_values_val}
-            if value.get('score'):
-                values_dict["factor"] = value.get('score')
-            col_values_arr.append(values_dict)
+                language_code = value["texts"][0]["languageId"]
+                values_dict = {"text": { languages[language_code]: value["texts"][0]["text"]}, "value": col_values_val}
+                if value.get('score'):
+                    values_dict["factor"] = value.get('score')
+                col_values_arr.append(values_dict)
         return col_values_arr
 
     def get_main_info(variable_meta, var_type, is_child=False, complex_grid=False):
@@ -86,6 +89,13 @@ def quantipy_from_confirmit(meta_json, data_json, text_key='en-GB'):
             variable = variable_meta.get('keys')[0]
         else:
             variable = variable_meta
+
+        has_nodes = False
+        if variable.get('options'):
+            options = variable["options"]
+        if variable.get('nodes'):
+            options = variable["nodes"]
+            has_nodes = True
 
         variable_obj = {
             "name": variable['name'],
@@ -103,18 +113,18 @@ def quantipy_from_confirmit(meta_json, data_json, text_key='en-GB'):
                 variable_obj['subtype'] = 'string'
             if variable.get('variableType') == 'rating':
                 variable_obj['subtype'] = 'single'
-                lib['values'][variable['name']] = get_options(variable["options"], var_type, is_child)
+                lib['values'][variable['name']] = get_options(options, var_type, is_child, has_nodes)
                 variable_obj['values'] = 'lib@values@' + variable['name']
             if variable.get('variableType') == 'ranking':
                 variable_obj['subtype'] = 'int'
             if variable.get('variableType') == 'multiGrid':
                 variable_obj['subtype'] = 'delimited set'
                 if complex_grid:
-                    lib['values'][variable['name']] = get_options(variable["options"], var_type, is_child)
+                    lib['values'][variable['name']] = get_options(options, var_type, is_child, has_nodes)
                     variable_obj['values'] = 'lib@values@' + variable['name']
 
         if var_type != 'float' and var_type != 'array' and var_type != 'string' and var_type != 'date':
-            variable_obj['values'] = get_options(variable["options"], var_type, is_child)
+            variable_obj['values'] = get_options(options, var_type, is_child, has_nodes)
         if variable.get('titles'):
             language_code = variable['titles'][0].get("languageId")
             if language_code:
@@ -170,9 +180,10 @@ def quantipy_from_confirmit(meta_json, data_json, text_key='en-GB'):
     vars_arr = root_vars.get('variables')
     for key_var in root_vars.get('keys'):
         vars_arr.append(key_var)
-    children_vars = meta_parsed.get('root').get('children')
-    for children_var in children_vars:
-        vars_arr.append(children_var['keys'][0])
+    children_vars = root_vars.get('children')
+    if children_vars:
+        for children_var in children_vars:
+            vars_arr.append(children_var['keys'][0])
     for variable in vars_arr:
         has_parent = variable.get('parentVariableName')
         if has_parent:
@@ -232,10 +243,16 @@ def quantipy_from_confirmit(meta_json, data_json, text_key='en-GB'):
                         }    
 
         if variable.get('variableType') == 'singleChoice':
-            try:
-                int(variable['options'][0]['code'])
-            except ValueError:
-                pass
+            if variable.get('options'):
+                try:
+                    int(variable['options'][0]['code'])
+                except ValueError:
+                    pass
+            if variable.get('nodes'):
+                try:
+                    int(variable['nodes'][0]['code'])
+                except ValueError:
+                    pass
 
             single_vars.append(variable['name'])
             columns_output[variable['name']] = get_main_info(variable, 'single')
