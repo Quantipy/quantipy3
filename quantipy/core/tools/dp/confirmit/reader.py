@@ -64,7 +64,9 @@ def quantipy_from_confirmit(meta_json, data_json, text_key='en-GB'):
         col_values_arr = []
         for value in variable:
             if has_nodes:
-                pass
+                children = value.get('children')
+                # for child in children:
+                # col_values_val = get_main_info(child_var[0], var_type, is_child=True)
             else:
                 loopReference = value.get('loopReference')
                 if(loopReference and var_type == 'single'):
@@ -84,18 +86,16 @@ def quantipy_from_confirmit(meta_json, data_json, text_key='en-GB'):
                 col_values_arr.append(values_dict)
         return col_values_arr
 
-    def get_main_info(variable_meta, var_type, is_child=False, complex_grid=False):
+    def get_main_info(variable_meta, var_type, has_nodes=False, is_child=False, complex_grid=False):
         if is_child:
             variable = variable_meta.get('keys')[0]
         else:
             variable = variable_meta
 
-        has_nodes = False
-        if variable.get('options'):
-            options = variable["options"]
-        if variable.get('nodes'):
-            options = variable["nodes"]
-            has_nodes = True
+        if has_nodes:
+            options = variable.get("nodes")
+        else:
+            options = variable.get("options")
 
         variable_obj = {
             "name": variable['name'],
@@ -211,7 +211,10 @@ def quantipy_from_confirmit(meta_json, data_json, text_key='en-GB'):
                 filtered_parent = next(filtered_parent_iter)
                 if filtered_parent['variableType'] == 'multiGrid':
                     if has_parent not in multigrid_vars:
-                        language_code = variable.get('texts')[0].get('languageId')
+                        try:
+                            language_code = variable.get('texts')[0].get('languageId')
+                        except TypeError:
+                            language_code = None
                         language_text = { 'text': {} }
                         if language_code:
                             language_text['text'] = { languages[language_code]: variable['texts'][0]['text'] }
@@ -227,7 +230,10 @@ def quantipy_from_confirmit(meta_json, data_json, text_key='en-GB'):
                         }
                 if filtered_parent['variableType'] == 'grid3D':
                     if has_parent not in grid3d_vars:
-                        language_code = variable.get('titles')[0].get('languageId')
+                        try:
+                            language_code = variable.get('titles')[0].get('languageId')
+                        except TypeError:
+                            language_code = None
                         language_text = { 'text': {} }
                         if language_code:
                             language_text['text'] = { languages[language_code]: variable['titles'][0]['text'] }
@@ -243,19 +249,21 @@ def quantipy_from_confirmit(meta_json, data_json, text_key='en-GB'):
                         }    
 
         if variable.get('variableType') == 'singleChoice':
+            has_nodes = False
             if variable.get('options'):
                 try:
                     int(variable['options'][0]['code'])
                 except ValueError:
                     pass
             if variable.get('nodes'):
+                has_nodes = True
                 try:
                     int(variable['nodes'][0]['code'])
                 except ValueError:
                     pass
 
             single_vars.append(variable['name'])
-            columns_output[variable['name']] = get_main_info(variable, 'single')
+            columns_output[variable['name']] = get_main_info(variable, 'single', has_nodes)
         if variable.get('variableType') == 'multiChoice':
             delimited_set_vars.append(variable['name'])
             columns_output[variable['name']] = get_main_info(variable, 'delimited set')
@@ -346,8 +354,11 @@ def quantipy_from_confirmit(meta_json, data_json, text_key='en-GB'):
         for nav in grid_vars:
             if nav['parent'] in data:
                 old_values = data.pop(nav['parent'])
-                for k, v in old_values.items():
-                    data[nav['parent'] + '_' + k] = v
+                try:
+                    for k, v in old_values.items():
+                        data[nav['parent'] + '_' + k] = v
+                except AttributeError:
+                   data[nav['parent']] = old_values 
         for single in single_vars:
             if data.get(single):
                 try:
