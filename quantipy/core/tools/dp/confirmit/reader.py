@@ -62,11 +62,27 @@ def quantipy_from_confirmit(meta_json, data_json, text_key='en-GB'):
 
     def get_options(variable, var_type, is_child, has_nodes):
         col_values_arr = []
+        def get_nodes_children(value):
+            node_obj = {}
+            node_obj['text'] = {}
+            try:
+                confirmit_texts = value.get('texts')[0]
+                language_id = confirmit_texts.get('languageId')
+                if language_id:
+                    node_obj['text'] = { languages[language_id]: confirmit_texts.get('text') }
+            except (TypeError, KeyError):
+                pass
+            node_obj['value'] = value.get('code')
+
+            col_values_arr.append(node_obj)
+            children = value.get('children')
+            if children:
+                for child in children:
+                    get_nodes_children(child)
+
         for value in variable:
             if has_nodes:
-                children = value.get('children')
-                # for child in children:
-                # col_values_val = get_main_info(child_var[0], var_type, is_child=True)
+               get_nodes_children(value) 
             else:
                 loopReference = value.get('loopReference')
                 if(loopReference and var_type == 'single'):

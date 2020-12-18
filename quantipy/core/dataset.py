@@ -599,7 +599,7 @@ class DataSet(object):
         self._meta, self._data = r_confirmit_from_files(path_meta, path_data)
         self._set_file_info(path_data, path_meta, reset=reset)
 
-    def read_confirmit_api(self, projectid, public_url, idp_url=None, client_id=None, client_secret=None):
+    def read_confirmit_api(self, projectid, public_url, idp_url=None, client_id=None, client_secret=None, reset=True):
         """Read confirmit data from confirmit api
 
         Parameters
@@ -621,7 +621,7 @@ class DataSet(object):
             client_secret = os.getenv('CLIENT_SECRET')
 
         self._meta, self._data = r_confirmit_api(projectid, public_url, idp_url, client_id, client_secret)
-        # self._set_file_info(path_data, path_meta, reset=reset)
+        self._set_file_info('', reset=reset)
 
     def read_spss(self, path_sav, **kwargs):
         """
