@@ -10,6 +10,8 @@ from quantipy.core.tools.dp.io import (
     read_decipher as r_decipher,
     read_spss as r_spss,
     read_ascribe as r_ascribe,
+    read_confirmit_from_files as r_confirmit_from_files,
+    read_confirmit_api as r_confirmit_api,
     write_spss as w_spss,
     write_quantipy as w_quantipy,
     write_dimensions as w_dimensions)
@@ -51,7 +53,7 @@ import importlib
 
 VALID_TKS = [
     'en-GB', 'da-DK', 'fi-FI', 'nb-NO', 'sv-SE', 'de-DE', 'fr-FR', 'ar-AR',
-    'es-ES', 'it-IT', 'pl-PL']
+    'es-ES', 'it-IT', 'pl-PL', 'en']
 
 VAR_SUFFIXES = [
     '_rc', '_net', ' (categories', ' (NET', '_rec']
@@ -579,6 +581,47 @@ class DataSet(object):
         self._set_file_info(path_data, path_meta)
         self._rename_blacklist_vars()
         return None
+
+    def read_confirmit_from_files(self, path_meta, path_data, reset=True):
+        """Read confirmit data
+
+        Parameters
+        ----------
+        path_meta : str
+            Path to the meta data json file.
+        path_data : type
+            Path to the data json file.
+
+        Returns
+        -------
+        None
+        """
+        self._meta, self._data = r_confirmit_from_files(path_meta, path_data)
+        self._set_file_info(path_data, path_meta, reset=reset)
+
+    def read_confirmit_api(self, projectid, public_url, idp_url=None, client_id=None, client_secret=None, reset=True):
+        """Read confirmit data from confirmit api
+
+        Parameters
+        ----------
+        path_meta : str
+            Path to the meta data json file.
+        path_data : type
+            Path to the data json file.
+
+        Returns
+        -------
+        None
+        """
+        if not idp_url:
+            idp_url = os.getenv('IDP_URL')
+        if not client_id:
+            client_id = os.getenv('CLIENT_ID')
+        if not client_secret:
+            client_secret = os.getenv('CLIENT_SECRET')
+
+        self._meta, self._data = r_confirmit_api(projectid, public_url, idp_url, client_id, client_secret)
+        self._set_file_info('', reset=reset)
 
     def read_spss(self, path_sav, **kwargs):
         """
