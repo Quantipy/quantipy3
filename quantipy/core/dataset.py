@@ -582,7 +582,7 @@ class DataSet(object):
         self._rename_blacklist_vars()
         return None
 
-    def read_confirmit_from_files(self, path_meta, path_data, reset=True):
+    def read_confirmit_from_files(self, path_meta, path_data, reset=True, verbose=False):
         """Read confirmit data
 
         Parameters
@@ -596,10 +596,10 @@ class DataSet(object):
         -------
         None
         """
-        self._meta, self._data = r_confirmit_from_files(path_meta, path_data)
+        self._meta, self._data = r_confirmit_from_files(path_meta, path_data, verbose)
         self._set_file_info(path_data, path_meta, reset=reset)
 
-    def read_confirmit_api(self, projectid, public_url, idp_url=None, client_id=None, client_secret=None, reset=True):
+    def read_confirmit_api(self, projectid, public_url, idp_url=None, client_id=None, client_secret=None, reset=True, verbose=False):
         """Read confirmit data from confirmit api
 
         Parameters
@@ -620,7 +620,7 @@ class DataSet(object):
         if not client_secret:
             client_secret = os.getenv('CLIENT_SECRET')
 
-        self._meta, self._data = r_confirmit_api(projectid, public_url, idp_url, client_id, client_secret)
+        self._meta, self._data = r_confirmit_api(projectid, public_url, idp_url, client_id, client_secret, verbose)
         self._set_file_info('', reset=reset)
 
     def read_spss(self, path_sav, **kwargs):

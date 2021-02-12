@@ -11,6 +11,14 @@ def confirmit_dataset():
                             )
     return dataset
 
+@pytest.fixture
+def confirmit_dataset_verbose():
+    dataset = qp.DataSet("confirmit")
+    dataset.read_confirmit_from_files('tests/confirmit_meta.json',
+                           'tests/confirmit_data.json', verbose=True
+                            )
+    return dataset
+
 
 @pytest.fixture
 def quantipy_dataset():
@@ -37,6 +45,11 @@ def test_reader(quantipy_dataset):
     assert columns.issubset(meta_columns)
     # import pdb; pdb.set_trace()
 
+def test_external_data(confirmit_dataset_verbose):
+    confirmit_external = confirmit_dataset_verbose.meta()["info"]["has_external"]["confirmit"]["meta"]["columns"]
+    assert confirmit_external["status"]["name"] == "status"
+    assert confirmit_external["q27"]["name"] == "q27"
+    assert confirmit_external["g59"]["name"] == "g59"
 
 def test_single_type(confirmit_dataset):
     # single type - no loop reference

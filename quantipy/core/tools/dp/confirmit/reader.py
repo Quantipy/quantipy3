@@ -5,7 +5,7 @@ from quantipy.core.tools.dp.prep import start_meta
 from .languages_file import languages
 
 
-def quantipy_from_confirmit(meta_json, data_json, text_key='en-GB'):
+def quantipy_from_confirmit(meta_json, data_json, verbose, text_key='en-GB'):
     types_translations = {
         'numeric': 'float',
         'text': 'string',
@@ -162,6 +162,7 @@ def quantipy_from_confirmit(meta_json, data_json, text_key='en-GB'):
     data_array = []
     sub_data_array = []
     columns_array = []
+    confirmit_info = {}
     if isinstance(data_json, list):
         data_parsed = data_json
     else:
@@ -201,6 +202,8 @@ def quantipy_from_confirmit(meta_json, data_json, text_key='en-GB'):
         for children_var in children_vars:
             vars_arr.append(children_var['keys'][0])
     for variable in vars_arr:
+        if verbose:
+            confirmit_info[variable['name']] = variable
         has_parent = variable.get('parentVariableName')
         if has_parent:
             if has_parent in multigrid_vars:
@@ -355,11 +358,20 @@ def quantipy_from_confirmit(meta_json, data_json, text_key='en-GB'):
         "text": { global_language: "Variable order in source file" },
         "items": columns_array
     }
+    info = {
+        "text": "Converted from SAV file .",
+        "from_source": {"pandas_reader": "sav"}
+    }
+    if verbose:
+        info["has_external"] = {
+            "confirmit": {
+                "meta": {
+                    "columns": confirmit_info
+                }
+            }
+        }
     output_obj = {
-        "info": {
-            "text": "Converted from SAV file .",
-            "from_source": {"pandas_reader": "sav"}
-        },
+        "info": info,
         "lib": lib,
         "masks": masks_output,
         "sets": sets,
