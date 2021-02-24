@@ -5,7 +5,7 @@ from quantipy.core.tools.dp.prep import start_meta
 from .languages_file import languages
 
 
-def quantipy_from_confirmit(meta_json, data_json, verbose, text_key='en-GB'):
+def quantipy_from_confirmit(meta_json, data_json, schema_vars, verbose, text_key='en-GB'):
     types_translations = {
         'numeric': 'float',
         'text': 'string',
@@ -174,7 +174,23 @@ def quantipy_from_confirmit(meta_json, data_json, verbose, text_key='en-GB'):
     else:
         with open(meta_json, "r") as read_meta_file:
             meta_parsed = json.load(read_meta_file)
+    if schema_vars:
+        schema_vars_list = schema_vars.split(',')
 
+        def filterVariables(variable):
+            for sv in schema_vars_list:
+                if variable.get("name") == sv:
+                    return True
+            return False
+
+        def filterSchemaDict(callback, dictObj):
+            newDict = dict()
+            for k, v in dictObj.items():
+                if callback(k):
+                    newDict[k] = v
+            return newDict
+
+        data_parsed = filterSchemaDict(filterVariables, data_parsed)
     for idx, element in enumerate(data_parsed):
         for k, v in element.items():
             if idx == 0:
@@ -193,6 +209,7 @@ def quantipy_from_confirmit(meta_json, data_json, verbose, text_key='en-GB'):
     delimited_set_vars = []
     multigrid_vars = {}
     grid3d_vars = {}
+
     root_vars = meta_parsed.get('root')
     vars_arr = root_vars.get('variables')
     for key_var in root_vars.get('keys'):
@@ -201,6 +218,11 @@ def quantipy_from_confirmit(meta_json, data_json, verbose, text_key='en-GB'):
     if children_vars:
         for children_var in children_vars:
             vars_arr.append(children_var['keys'][0])
+
+    if schema_vars:
+        # schema_vars_list = schema_vars.split(',')  
+
+        vars_arr = filter(filterVariables, vars_arr)
     for variable in vars_arr:
         if verbose:
             confirmit_info[variable['name']] = variable
