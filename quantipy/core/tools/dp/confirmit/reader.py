@@ -176,21 +176,16 @@ def quantipy_from_confirmit(meta_json, data_json, schema_vars, verbose, text_key
             meta_parsed = json.load(read_meta_file)
     if schema_vars:
         schema_vars_list = schema_vars.split(',')
+        filtered_data_parsed = []
 
-        def filterVariables(variable):
+        for dp in data_parsed:
+            dp_elem = {}
             for sv in schema_vars_list:
-                if variable.get("name") == sv:
-                    return True
-            return False
+                dp_elem[sv] = dp.get(sv)
+            filtered_data_parsed.append(dp_elem)
 
-        def filterSchemaDict(callback, dictObj):
-            newDict = dict()
-            for k, v in dictObj.items():
-                if callback(k):
-                    newDict[k] = v
-            return newDict
+        data_parsed = filtered_data_parsed
 
-        data_parsed = filterSchemaDict(filterVariables, data_parsed)
     for idx, element in enumerate(data_parsed):
         for k, v in element.items():
             if idx == 0:
@@ -220,9 +215,14 @@ def quantipy_from_confirmit(meta_json, data_json, schema_vars, verbose, text_key
             vars_arr.append(children_var['keys'][0])
 
     if schema_vars:
-        # schema_vars_list = schema_vars.split(',')  
+        def filterVariables(variable):
+            for sv in schema_vars_list:
+                if variable.get("name") == sv:
+                    return True
+            return False
 
         vars_arr = filter(filterVariables, vars_arr)
+
     for variable in vars_arr:
         if verbose:
             confirmit_info[variable['name']] = variable
