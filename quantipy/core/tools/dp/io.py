@@ -21,6 +21,7 @@ from quantipy.core.tools.dp.dimensions.reader import quantipy_from_dimensions
 from quantipy.core.tools.dp.dimensions.writer import dimensions_from_quantipy
 from quantipy.core.tools.dp.decipher.reader import quantipy_from_decipher
 from quantipy.core.tools.dp.confirmit.reader import quantipy_from_confirmit
+from quantipy.core.tools.dp.confirmit.writer import quantipy_to_confirmit
 from quantipy.core.tools.dp.spss.reader import parse_sav_file
 from quantipy.core.tools.dp.spss.writer import save_sav
 from quantipy.core.tools.dp.ascribe.reader import quantipy_from_ascribe
@@ -370,6 +371,11 @@ def read_confirmit_api(projectid, public_url, idp_url, client_id, client_secret,
     for line in json_lines:
         json_meta.append(json.loads(line))
     meta, data = quantipy_from_confirmit(json_meta[0], json_data, schema_vars, verbose)
+    return meta, data
+
+def write_confirmit_api(path_meta, path_data, meta, data, schema_vars, verbose):
+
+    meta, data = quantipy_to_confirmit(path_meta, path_data, meta, data, schema_vars, verbose)
     return meta, data
 
 def read_spss(path_sav, **kwargs):

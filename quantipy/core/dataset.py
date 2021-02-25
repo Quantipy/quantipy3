@@ -12,6 +12,7 @@ from quantipy.core.tools.dp.io import (
     read_ascribe as r_ascribe,
     read_confirmit_from_files as r_confirmit_from_files,
     read_confirmit_api as r_confirmit_api,
+    write_confirmit_api as w_confirmit_api,
     write_spss as w_spss,
     write_quantipy as w_quantipy,
     write_dimensions as w_dimensions)
@@ -622,6 +623,12 @@ class DataSet(object):
 
         self._meta, self._data = r_confirmit_api(projectid, public_url, idp_url, client_id, client_secret, schema_vars, verbose)
         self._set_file_info('', reset=reset)
+
+    def write_confirmit(self, path_meta, path_data, schema_vars=None, verbose=False):
+        """Converts quantipy dataset into Confirmit format"""
+
+        self._meta, self._data = w_confirmit_api(path_meta, path_data, self._meta, self._data, schema_vars, verbose)
+        self._set_file_info(path_data, path_meta, reset=reset)
 
     def read_spss(self, path_sav, **kwargs):
         """
