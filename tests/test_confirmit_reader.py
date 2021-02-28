@@ -144,7 +144,7 @@ def test_array_type(confirmit_dataset):
         {"properties": {},
         "source": "columns@q5_3",
         "text": {"en": "ans3"}}],
-        "subtype": "float",
+        "subtype": "int",
         "text": {"en": "numeric list"}}""")
 
     assert confirmit_dataset.meta()['columns']['q5_1'] == json.loads("""
@@ -153,7 +153,7 @@ def test_array_type(confirmit_dataset):
         "masks@q5":
         {"type": "array"}},
         "text": {"en": "ans1"},
-        "type": "float"}""")
+        "type": "int"}""")
 
 
 def test_rating_type(confirmit_dataset):

@@ -3,9 +3,9 @@ import pandas as pd
 from quantipy.core.helpers.functions import load_json
 from quantipy.core.tools.dp.prep import start_meta
 from .languages_file import languages
+from .helpers import int_or_float
 
-
-def quantipy_from_confirmit(meta_json, data_json, schema_vars, verbose, text_key='en-GB'):
+def quantipy_from_confirmit(meta_json, data_json, schema_vars=None, verbose=False, text_key='en-GB'):
     types_translations = {
         'numeric': 'float',
         'text': 'string',
@@ -119,12 +119,13 @@ def quantipy_from_confirmit(meta_json, data_json, schema_vars, verbose, text_key
             "type": var_type
             # "properties": {}
         }
-        if var_type != 'float' and var_type != 'single':
+        if var_type != 'float' and var_type != 'int' and var_type != 'single':
            variable_obj['properties'] = {}
         if var_type == 'array':
             variable_obj['items'] = get_grid_items(variable)
             if variable.get('variableType') == 'numeric':
-                variable_obj['subtype'] = 'float'
+                numeric_type = int_or_float(variable)
+                variable_obj['subtype'] = numeric_type
             if variable.get('variableType') == 'text':
                 variable_obj['subtype'] = 'string'
             if variable.get('variableType') == 'rating':
@@ -139,7 +140,7 @@ def quantipy_from_confirmit(meta_json, data_json, schema_vars, verbose, text_key
                     lib['values'][variable['name']] = get_options(options, var_type, is_child, has_nodes)
                     variable_obj['values'] = 'lib@values@' + variable['name']
 
-        if var_type != 'float' and var_type != 'array' and var_type != 'string' and var_type != 'date':
+        if var_type != 'float' and var_type != 'int' and var_type != 'array' and var_type != 'string' and var_type != 'date':
             variable_obj['values'] = get_options(options, var_type, is_child, has_nodes)
         if variable.get('titles'):
             language_code = variable['titles'][0].get("languageId")
@@ -175,12 +176,11 @@ def quantipy_from_confirmit(meta_json, data_json, schema_vars, verbose, text_key
         with open(meta_json, "r") as read_meta_file:
             meta_parsed = json.load(read_meta_file)
     if schema_vars:
-        schema_vars_list = schema_vars.split(',')
         filtered_data_parsed = []
 
         for dp in data_parsed:
             dp_elem = {}
-            for sv in schema_vars_list:
+            for sv in schema_vars:
                 dp_elem[sv] = dp.get(sv)
             filtered_data_parsed.append(dp_elem)
 
@@ -216,7 +216,7 @@ def quantipy_from_confirmit(meta_json, data_json, schema_vars, verbose, text_key
 
     if schema_vars:
         def filterVariables(variable):
-            for sv in schema_vars_list:
+            for sv in schema_vars:
                 if variable.get("name") == sv:
                     return True
             return False
@@ -322,7 +322,8 @@ def quantipy_from_confirmit(meta_json, data_json, schema_vars, verbose, text_key
                     numeric_children_arr.append(parsed_subvar_meta['name'])
                 grid_vars.append({'parent': variable['name'], 'children': numeric_children_arr})
             else:
-                columns_output[variable['name']] = get_main_info(variable, 'float')
+                numeric_type = int_or_float(variable)
+                columns_output[variable['name']] = get_main_info(variable, numeric_type)
         if variable.get('variableType') == 'text':
             if variable.get('fields'):
                 parsed_meta = get_main_info(variable, 'array')
