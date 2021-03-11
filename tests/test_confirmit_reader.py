@@ -90,7 +90,22 @@ def test_single_type(confirmit_dataset):
         "type": "string",
         "properties": {},
         "text": {"en": ""}}]}}""")
-    
+    assert confirmit_dataset.meta()['columns']['status'] == json.loads("""
+    {"name": "status",
+    "parent": {},
+    "type": "single",
+    "values": [
+        {"text": {"en": "Complete"},
+        "value": 1},
+        {"text": {"en": "Incomplete"},
+        "value": 2},
+        {"text": {"en": "Quota Full"},
+        "value": 3},
+        {"text": {"en": "Error"},
+        "value": 4},
+        {"text": {"en": "Screened"},
+        "value": 5}],
+        "text": {"en": "Interview Status"}}""")
     # TODO: assert that dataset.crosstab(single) returns correct shaped
     #       dataframe
     #       assert dataset.crosstab('q39').shape == (1,1)

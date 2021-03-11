@@ -80,7 +80,7 @@ def quantipy_from_confirmit(meta_json, data_json, schema_vars=None, verbose=Fals
                 for child in children:
                     get_nodes_children(child)
 
-        for value in variable:
+        for idx, value in enumerate(variable):
             if has_nodes:
                get_nodes_children(value) 
             else:
@@ -93,12 +93,12 @@ def quantipy_from_confirmit(meta_json, data_json, schema_vars=None, verbose=Fals
                     try:
                         col_values_val = int(value["code"])
                     except ValueError:
-                        col_values_val = value["code"]
+                        col_values_val = idx + 1
 
                 language_code = value["texts"][0]["languageId"]
                 values_dict = {"text": { languages[language_code]: value["texts"][0]["text"]}, "value": col_values_val}
                 if value.get('score'):
-                    values_dict["factor"] = value.get('score')
+                    values_dict["factor"] = int(value.get('score'))
                 col_values_arr.append(values_dict)
         return col_values_arr
 
@@ -291,17 +291,9 @@ def quantipy_from_confirmit(meta_json, data_json, schema_vars=None, verbose=Fals
 
         if variable.get('variableType') == 'singleChoice':
             has_nodes = False
-            if variable.get('options'):
-                try:
-                    int(variable['options'][0]['code'])
-                except ValueError:
-                    pass
+
             if variable.get('nodes'):
                 has_nodes = True
-                try:
-                    int(variable['nodes'][0]['code'])
-                except ValueError:
-                    pass
 
             single_vars.append(variable['name'])
             columns_output[variable['name']] = get_main_info(variable, 'single', has_nodes)
