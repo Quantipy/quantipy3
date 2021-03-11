@@ -172,45 +172,77 @@ def test_array_type(confirmit_dataset):
 
 
 def test_rating_type(confirmit_dataset):
-    print(confirmit_dataset.meta()['columns']['q14_1'])
-    assert confirmit_dataset.crosstab('q14_1', 'q39').shape == (4, 3)
-    print(confirmit_dataset.meta()['masks']['q14'])
-    assert confirmit_dataset.meta()['masks']['q14'] == json.loads("""
-    {
-        "name": "q14",
-        "parent": {},
-        "type": "array",
-        "properties": {},
-        "items": [{
-            "properties": {},
-            "source": "columns@q14_1",
-            "text": {"en": "ans1"}
-        },
-        {
-            "properties": {},
-            "source": "columns@q14_2",
-            "text": {"en": "ans2"}
-        },
-        {
-            "properties": {},
-            "source": "columns@q14_3",
-            "text": {"en": "ans3"}
-        }],
-        "subtype": "single",
-        "values": "lib@values@q14",
-        "text": {"en": "grid - numeric precodes"}
-    }""")
+    assert confirmit_dataset.meta()['columns']['q16[{q16_1}]'] == json.loads("""
+    {"name": "q16[{q16_1}]",
+    "parent": {"masks@q16": {"type": "array"}},
+    "text": {"en": "ans1"},
+    "type": "single",
+    "values": "lib@values@q16",
+    "properties": {"created": true}}""")
+    assert confirmit_dataset.meta()['masks']['q16'] == json.loads("""
+    {"name": "q16",
+    "type": "array",
+    "items": [
+        {"properties": {},
+        "source": "columns@q16[{q16_1}]",
+        "text": {"en": "ans1"}},
+        {"properties": {},
+        "source": "columns@q16[{q16_2}]",
+        "text": {"en": "ans2"}},
+        {"properties": {},
+        "source": "columns@q16[{q16_3}]",
+        "text": {"en": "ans3"}}],
+    "subtype": "single",
+    "values": "lib@values@q16",
+    "text": {"en": "grid - character precodes"}}""")
+    assert confirmit_dataset.meta()['lib']['values']['q16'] == json.loads("""
+    [{"text": {"en": "1"},
+    "value": 1,
+    "factor": 1},
+    {"text": {"en": "2"},
+    "value": 2, "factor": 2},
+    {"text": {"en": "3"},
+    "value": 3,
+    "factor": 3}]""")
 
-    assert confirmit_dataset.meta()['columns']['q14_1'] == json.loads("""
-    {
-        "name": "q14_1",
-        "parent": {
-            "masks@q14": {"type": "array"}
-        },
-        "text": {"en": "ans1"},
-        "type": "single",
-        "values": "lib@values@q14"
-    }""")
+    # assert confirmit_dataset.crosstab('q14_1', 'q39').shape == (4, 3)
+    # print(confirmit_dataset.meta()['masks']['q14'])
+    # assert confirmit_dataset.meta()['masks']['q14'] == json.loads("""
+    # {
+    #     "name": "q14",
+    #     "parent": {},
+    #     "type": "array",
+    #     "properties": {},
+    #     "items": [{
+    #         "properties": {},
+    #         "source": "columns@q14_1",
+    #         "text": {"en": "ans1"}
+    #     },
+    #     {
+    #         "properties": {},
+    #         "source": "columns@q14_2",
+    #         "text": {"en": "ans2"}
+    #     },
+    #     {
+    #         "properties": {},
+    #         "source": "columns@q14_3",
+    #         "text": {"en": "ans3"}
+    #     }],
+    #     "subtype": "single",
+    #     "values": "lib@values@q14",
+    #     "text": {"en": "grid - numeric precodes"}
+    # }""")
+
+    # assert confirmit_dataset.meta()['columns']['q14_1'] == json.loads("""
+    # {
+    #     "name": "q14_1",
+    #     "parent": {
+    #         "masks@q14": {"type": "array"}
+    #     },
+    #     "text": {"en": "ans1"},
+    #     "type": "single",
+    #     "values": "lib@values@q14"
+    # }""")
 
 
 def test_ranking_type(confirmit_dataset):

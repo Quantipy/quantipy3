@@ -23,6 +23,8 @@ def quantipy_from_confirmit(meta_json, data_json, schema_vars=None, verbose=Fals
         }
         if values:
             subvar_obj['values'] = 'lib@values@' + parsed_meta['name']
+        if parsed_meta.get('type') == 'array' and parsed_meta.get('subtype') == 'single':
+            subvar_obj['properties'] = {'created': True}
         return subvar_obj
 
     def fill_items_arr(parsed_meta):
@@ -35,7 +37,10 @@ def quantipy_from_confirmit(meta_json, data_json, schema_vars=None, verbose=Fals
         children_arr = []
         for item in parsed_meta['items']:
             children_arr.append(item['source'])
-        sets[parsed_meta['name']] = {'items': children_arr}
+        set_obj = {'items': children_arr}
+        if parsed_meta.get('type') == 'array' and parsed_meta.get('subtype') == 'single':
+            set_obj['name'] = parsed_meta['name']
+        sets[parsed_meta['name']] = set_obj
 
     def get_grid_items(variable):
         children_array = []
@@ -43,10 +48,13 @@ def quantipy_from_confirmit(meta_json, data_json, schema_vars=None, verbose=Fals
         if fields:
             for field in fields:
                 if variable.get('complex-grid'):
-                    source = 'columns@' + field['code']
+                    source = f"columns@{field['code']}"
                     language_text = field['texts'][0]['text']
                 else:
-                    source = 'columns@' + variable['name'] + '_' + field['code']
+                    if variable.get('variableType') == 'rating':
+                        source = f"columns@{variable['name']}[{{{variable['name']}_{field['code']}}}]"
+                    else:
+                        source = f"columns@{variable['name']}_{field['code']}"
                     language_code = field['texts'][0].get('languageId')
                     language_text = {}
                     if language_code:
@@ -115,11 +123,11 @@ def quantipy_from_confirmit(meta_json, data_json, schema_vars=None, verbose=Fals
 
         variable_obj = {
             "name": variable['name'],
-            "parent": {},
             "type": var_type
-            # "properties": {}
         }
-        if var_type != 'float' and var_type != 'int' and var_type != 'single':
+        if variable_meta.get('variableType') != 'rating':
+            variable_obj['parent'] = {}
+        if var_type != 'float' and var_type != 'int' and var_type != 'single' and variable_meta.get('variableType') != 'rating':
            variable_obj['properties'] = {}
         if var_type == 'array':
             variable_obj['items'] = get_grid_items(variable)
@@ -330,15 +338,19 @@ def quantipy_from_confirmit(meta_json, data_json, schema_vars=None, verbose=Fals
             else:
                 columns_output[variable['name']] = get_main_info(variable, 'string')
         if variable.get('variableType') == 'rating':
-            parsed_meta = get_main_info(variable, 'array')
-            masks_output[variable['name']] = parsed_meta
-            fill_items_arr(parsed_meta)
-            single_children_arr = []
-            for subvar in parsed_meta['items']:
-                parsed_subvar_meta = create_subvar_meta(parsed_meta, subvar, True)
-                columns_output[parsed_subvar_meta['name']] = parsed_subvar_meta
-                single_children_arr.append(parsed_subvar_meta['name'])
-            grid_vars.append({'parent': variable['name'], 'children': single_children_arr})
+            if variable.get('isCompound'):
+                parsed_meta = get_main_info(variable, 'array')
+                masks_output[variable['name']] = parsed_meta
+                fill_items_arr(parsed_meta)
+                single_children_arr = []
+                for subvar in parsed_meta['items']:
+                    parsed_subvar_meta = create_subvar_meta(parsed_meta, subvar, True)
+                    columns_output[parsed_subvar_meta['name']] = parsed_subvar_meta
+                    single_children_arr.append(parsed_subvar_meta['name'])
+                grid_vars.append({'parent': variable['name'], 'children': single_children_arr})
+            else:
+                single_vars.append(variable['name'])
+                columns_output[variable['name']] = get_main_info(variable, 'single')
         if variable.get('variableType') == 'ranking':
             parsed_meta = get_main_info(variable, 'array')
             masks_output[variable['name']] = parsed_meta
