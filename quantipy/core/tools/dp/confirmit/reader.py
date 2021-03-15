@@ -59,16 +59,19 @@ def quantipy_from_confirmit(meta_json, data_json, schema_vars=None, verbose=Fals
                     language_text = {}
                     if language_code:
                         language_text[languages[language_code]] = field['texts'][0]['text']
-
-                children_array.append({
-                    'properties': {},
+                item_props = {
                     'source': source,
                     'text': language_text
-                })
+                }
+                if variable.get('variableType') != 'ranking':
+                   item_props['properties'] = {}
+                children_array.append(item_props)
         return children_array
         
 
     def get_options(variable, var_type, is_child, has_nodes):
+        if variable is None:
+            return None
         col_values_arr = []
         def get_nodes_children(value):
             node_obj = {}
@@ -142,6 +145,8 @@ def quantipy_from_confirmit(meta_json, data_json, schema_vars=None, verbose=Fals
                 variable_obj['values'] = 'lib@values@' + variable['name']
             if variable.get('variableType') == 'ranking':
                 variable_obj['subtype'] = 'int'
+                lib['values'][variable['name']] = get_options(options, var_type, is_child, has_nodes)
+                variable_obj['values'] = 'lib@values@' + variable['name']
             if variable.get('variableType') == 'multiGrid':
                 variable_obj['subtype'] = 'delimited set'
                 if complex_grid:

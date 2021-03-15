@@ -205,45 +205,6 @@ def test_rating_type(confirmit_dataset):
     "value": 3,
     "factor": 3}]""")
 
-    # assert confirmit_dataset.crosstab('q14_1', 'q39').shape == (4, 3)
-    # print(confirmit_dataset.meta()['masks']['q14'])
-    # assert confirmit_dataset.meta()['masks']['q14'] == json.loads("""
-    # {
-    #     "name": "q14",
-    #     "parent": {},
-    #     "type": "array",
-    #     "properties": {},
-    #     "items": [{
-    #         "properties": {},
-    #         "source": "columns@q14_1",
-    #         "text": {"en": "ans1"}
-    #     },
-    #     {
-    #         "properties": {},
-    #         "source": "columns@q14_2",
-    #         "text": {"en": "ans2"}
-    #     },
-    #     {
-    #         "properties": {},
-    #         "source": "columns@q14_3",
-    #         "text": {"en": "ans3"}
-    #     }],
-    #     "subtype": "single",
-    #     "values": "lib@values@q14",
-    #     "text": {"en": "grid - numeric precodes"}
-    # }""")
-
-    # assert confirmit_dataset.meta()['columns']['q14_1'] == json.loads("""
-    # {
-    #     "name": "q14_1",
-    #     "parent": {
-    #         "masks@q14": {"type": "array"}
-    #     },
-    #     "text": {"en": "ans1"},
-    #     "type": "single",
-    #     "values": "lib@values@q14"
-    # }""")
-
 
 def test_ranking_type(confirmit_dataset):
     print(confirmit_dataset.meta()['columns']['q2_1'])
@@ -256,56 +217,47 @@ def test_ranking_type(confirmit_dataset):
         "type": "array",
         "properties": {},
         "items": [{
-            "properties": {},
             "source": "columns@q2_1",
             "text": {"en": "ans1"}
         },
         {
-            "properties": {},
             "source": "columns@q2_2",
             "text": {"en": "ans2"}
         },
         {
-            "properties": {},
             "source": "columns@q2_3",
             "text": {"en": "ans3"}
         },
         {
-            "properties": {},
             "source": "columns@q2_4",
             "text": {"en": "ans4"}
         },
         {
-            "properties": {},
             "source": "columns@q2_5",
             "text": {"en": "ans5"}
         },
         {
-            "properties": {},
             "source": "columns@q2_6",
             "text": {"en": "ans6"}
         },
         {
-            "properties": {},
             "source": "columns@q2_7",
             "text": {"en": "ans7"}
         },
         {
-            "properties": {},
             "source": "columns@q2_8",
             "text": {"en": "ans8"}
         },
         {
-            "properties": {},
             "source": "columns@q2_9",
             "text": {"en": "ans9"}
         },
         {
-            "properties": {},
             "source": "columns@q2_10",
             "text": {"en": "ans10"}
         }],
         "subtype": "int",
+        "values": "lib@values@q2",
         "text": {"en": "ranking- ordered (10 answers)"}
     }""")
 
