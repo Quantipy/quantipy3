@@ -582,7 +582,7 @@ class TestDataSet(unittest.TestCase):
         dataset = self._get_dataset()
         dataset.uncode('q8',{1: 1, 2:2, 5:5}, 'q8', intersect={'gender':1})
         dataset.uncode('q8',{3: 3, 4:4, 98:98}, 'q8', intersect={'gender':2})
-        df = dataset.crosstab('q8', 'gender')
+        df = dataset.crosstab('q8', 'gender', xtotal=True)
         result = [[ 1797.,   810.,   987.],
                   [  476.,     0.,   476.],
                   [  104.,     0.,   104.],
@@ -801,6 +801,16 @@ class TestDataSet(unittest.TestCase):
         text = {'en-GB': 'What is your main fitness activity?',
                 'x edits': {'en-GB': 'edit'}, 'y edits':{'en-GB': 'edit'}}
         dataset.set_variable_text('q1', 'edit', 'en-GB', ['x', 'y'])
+
+    def test_crosstab2(self):
+        dataset = self._get_dataset()
+        result = dataset.crosstab('q1', 'gender')
+        with_sigdiff = dataset.crosstab('q1', 'q4 > gender', 
+                                        ci=['counts', 'c%'], 
+                                        sig_level=0.95,
+                                        painted=True)
+        assert result.shape == (13,2)
+        assert with_sigdiff.shape == (37,4)
 
     def test_crosstab(self):
         x = 'q14r01c01'
