@@ -38,7 +38,7 @@ def quantipy_from_confirmit(meta_json, data_json, schema_vars=None, verbose=Fals
         for item in parsed_meta['items']:
             children_arr.append(item['source'])
         set_obj = {'items': children_arr}
-        if parsed_meta.get('type') == 'array' and parsed_meta.get('subtype') == 'single':
+        if parsed_meta.get('type') == 'array':
             set_obj['name'] = parsed_meta['name']
         sets[parsed_meta['name']] = set_obj
 
@@ -362,7 +362,7 @@ def quantipy_from_confirmit(meta_json, data_json, schema_vars=None, verbose=Fals
             fill_items_arr(parsed_meta)
             int_children_arr = []
             for subvar in parsed_meta['items']:
-                parsed_subvar_meta = create_subvar_meta(parsed_meta, subvar)
+                parsed_subvar_meta = create_subvar_meta(parsed_meta, subvar, True)
                 columns_output[parsed_subvar_meta['name']] = parsed_subvar_meta
                 int_children_arr.append(parsed_subvar_meta['name'])
             grid_vars.append({'parent': variable['name'], 'children': int_children_arr})

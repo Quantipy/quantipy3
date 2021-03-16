@@ -268,9 +268,21 @@ def test_ranking_type(confirmit_dataset):
             "masks@q2": {"type": "array"}
         },
         "text": {"en": "ans1"},
-        "type": "int"
+        "type": "int",
+        "values": "lib@values@q2"
     }""")
-
+    assert confirmit_dataset.meta()['sets']['q2'] == json.loads("""
+    {"items": ["columns@q2_1",
+    "columns@q2_2",
+    "columns@q2_3",
+    "columns@q2_4",
+    "columns@q2_5",
+    "columns@q2_6",
+    "columns@q2_7",
+    "columns@q2_8",
+    "columns@q2_9",
+    "columns@q2_10"],
+    "name": "q2"}""")
 
 def test_multigrid_type(confirmit_dataset):
     print(confirmit_dataset.meta()['masks']['g56'])
