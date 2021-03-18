@@ -316,6 +316,9 @@ def test_multigrid_type(confirmit_dataset):
         }
     """)
 
+def test_single_response_grid_type(confirmit_dataset):
+    assert True
+
 def test_read_from_api():
     dataset_from_api = qp.DataSet("confirmit")
     dataset_from_api.read_confirmit_api( projectid="p913481003361",

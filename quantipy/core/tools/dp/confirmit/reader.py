@@ -119,6 +119,8 @@ def quantipy_from_confirmit(meta_json, data_json, schema_vars=None, verbose=Fals
         else:
             variable = variable_meta
 
+        confirmit_var_type = variable.get('variableType')
+
         if has_nodes:
             options = variable.get("nodes")
         else:
@@ -128,26 +130,27 @@ def quantipy_from_confirmit(meta_json, data_json, schema_vars=None, verbose=Fals
             "name": variable['name'],
             "type": var_type
         }
-        if variable_meta.get('variableType') != 'rating':
+        is_single_grid_var = confirmit_var_type == 'singleChoice' and var_type == 'array'
+        if confirmit_var_type != 'rating' and not is_single_grid_var:
             variable_obj['parent'] = {}
-        if var_type != 'float' and var_type != 'int' and var_type != 'single' and variable_meta.get('variableType') != 'rating':
+        if var_type != 'float' and var_type != 'int' and var_type != 'single' and confirmit_var_type != 'rating':
            variable_obj['properties'] = {}
         if var_type == 'array':
             variable_obj['items'] = get_grid_items(variable)
-            if variable.get('variableType') == 'numeric':
+            if confirmit_var_type == 'numeric':
                 numeric_type = int_or_float(variable)
                 variable_obj['subtype'] = numeric_type
-            if variable.get('variableType') == 'text':
+            if confirmit_var_type == 'text':
                 variable_obj['subtype'] = 'string'
-            if variable.get('variableType') == 'rating':
+            if confirmit_var_type == 'rating' or confirmit_var_type == 'singleChoice':
                 variable_obj['subtype'] = 'single'
                 lib['values'][variable['name']] = get_options(options, var_type, is_child, has_nodes)
                 variable_obj['values'] = 'lib@values@' + variable['name']
-            if variable.get('variableType') == 'ranking':
+            if confirmit_var_type == 'ranking':
                 variable_obj['subtype'] = 'int'
                 lib['values'][variable['name']] = get_options(options, var_type, is_child, has_nodes)
                 variable_obj['values'] = 'lib@values@' + variable['name']
-            if variable.get('variableType') == 'multiGrid':
+            if confirmit_var_type == 'multiGrid':
                 variable_obj['subtype'] = 'delimited set'
                 if complex_grid:
                     lib['values'][variable['name']] = get_options(options, var_type, is_child, has_nodes)
@@ -308,8 +311,20 @@ def quantipy_from_confirmit(meta_json, data_json, schema_vars=None, verbose=Fals
             if variable.get('nodes'):
                 has_nodes = True
 
-            single_vars.append(variable['name'])
-            columns_output[variable['name']] = get_main_info(variable, 'single', has_nodes)
+            if variable.get("isCompound") and variable.get("fields") and variable.get("options"):
+                parsed_meta = get_main_info(variable, 'array')
+                masks_output[variable['name']] = parsed_meta
+                fill_items_arr(parsed_meta)
+                single_children_arr = []
+                for subvar in parsed_meta['items']:
+                    parsed_subvar_meta = create_subvar_meta(parsed_meta, subvar, True)
+                    columns_output[parsed_subvar_meta['name']] = parsed_subvar_meta
+                    single_children_arr.append(parsed_subvar_meta['name'])
+                grid_vars.append({'parent': variable['name'], 'children': single_children_arr})
+
+            else:
+                columns_output[variable['name']] = get_main_info(variable, 'single', has_nodes)
+                single_vars.append(variable['name'])
         if variable.get('variableType') == 'multiChoice':
             delimited_set_vars.append(variable['name'])
             columns_output[variable['name']] = get_main_info(variable, 'delimited set')

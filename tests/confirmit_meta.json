@@ -281,6 +281,133 @@
         "upperLimitType": "inclusive"
       },
       {
+        "name": "sat_areas",
+        "titles": [{
+          "languageId": 9,
+          "text": "Area satisfaction"
+        }],
+        "fields": [{
+          "code": "1",
+          "hasOtherField": false,
+          "texts": [{
+            "languageId": 9,
+            "text": "Web"
+          }]
+        },
+        {
+          "code": "2",
+          "hasOtherField": false,
+          "texts": [{
+            "languageId": 9,
+            "text": "Web shop"
+          }]
+        },
+        {
+          "code": "3",
+          "hasOtherField": false,
+          "texts": [{
+            "languageId": 9,
+            "text": "Store"
+          }]
+        },
+        {
+          "code": "4",
+          "hasOtherField": false,
+          "texts": [{
+            "languageId": 9,
+            "text": "Check-out process"
+          }]
+        },
+        {
+          "code": "5",
+          "hasOtherField": false,
+          "texts": [{
+            "languageId": 9,
+            "text": "Product"
+          }]
+        },
+        {
+          "code": "6",
+          "hasOtherField": false,
+          "texts": [{
+            "languageId": 9,
+            "text": "Support"
+          }]
+        }],
+        "isCompound": true,
+        "isBackground": false,
+        "isHidden": false,
+        "variableType": "singleChoice",
+        "tags": [
+          "grid"
+        ],
+        "isSystemVariable": false,
+        "isRespondentVariable": false,
+        "options": [
+          {
+            "code": "1",
+            "hasOtherField": false,
+            "texts": [
+              {
+                "languageId": 9,
+                "text": "1"
+              }
+            ]
+          },
+          {
+            "code": "2",
+            "hasOtherField": false,
+            "texts": [
+              {
+                "languageId": 9,
+                "text": "2"
+              }
+            ]
+          },
+          {
+            "code": "3",
+            "hasOtherField": false,
+            "texts": [
+              {
+                "languageId": 9,
+                "text": "3"
+              }
+            ]
+          },
+          {
+            "code": "4",
+            "hasOtherField": false,
+            "texts": [
+              {
+                "languageId": 9,
+                "text": "4"
+              }
+            ]
+          },
+          {
+            "code": "5",
+            "hasOtherField": false,
+            "texts": [
+              {
+                "languageId": 9,
+                "text": "5"
+              }
+            ]
+          },
+          {
+            "code": "99",
+            "hasOtherField": false,
+            "texts": [
+              {
+                "languageId": 9,
+                "text": "Don ́t know"
+              }
+            ]
+          }
+        ],
+        "excludeFromReporting": false
+      },
+      {
         "name": "q12",
         "titles": [{ "languageId": 9, "text": "single - default options" }],
         "isCompound": false,
