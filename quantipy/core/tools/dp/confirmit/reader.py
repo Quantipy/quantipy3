@@ -45,13 +45,14 @@ def quantipy_from_confirmit(meta_json, data_json, schema_vars=None, verbose=Fals
     def get_grid_items(variable):
         children_array = []
         fields = variable.get('fields')
+        var_type = variable.get('variableType')
         if fields:
             for field in fields:
                 if variable.get('complex-grid'):
                     source = f"columns@{field['code']}"
                     language_text = field['texts'][0]['text']
                 else:
-                    if variable.get('variableType') == 'rating':
+                    if var_type == 'rating' or var_type == 'singleChoice':
                         source = f"columns@{variable['name']}[{{{variable['name']}_{field['code']}}}]"
                     else:
                         source = f"columns@{variable['name']}_{field['code']}"
@@ -63,7 +64,7 @@ def quantipy_from_confirmit(meta_json, data_json, schema_vars=None, verbose=Fals
                     'source': source,
                     'text': language_text
                 }
-                if variable.get('variableType') != 'ranking':
+                if var_type != 'ranking' and var_type != 'rating' and var_type != 'singleChoice':
                    item_props['properties'] = {}
                 children_array.append(item_props)
         return children_array
@@ -131,9 +132,13 @@ def quantipy_from_confirmit(meta_json, data_json, schema_vars=None, verbose=Fals
             "type": var_type
         }
         is_single_grid_var = confirmit_var_type == 'singleChoice' and var_type == 'array'
+        if is_single_grid_var:
+            tags = variable.get('tags')
+            if tags is not None:
+                variable_obj['tags'] = tags
         if confirmit_var_type != 'rating' and not is_single_grid_var:
             variable_obj['parent'] = {}
-        if var_type != 'float' and var_type != 'int' and var_type != 'single' and confirmit_var_type != 'rating':
+        if var_type != 'float' and var_type != 'int' and var_type != 'single' and confirmit_var_type != 'rating' and not is_single_grid_var:
            variable_obj['properties'] = {}
         if var_type == 'array':
             variable_obj['items'] = get_grid_items(variable)

@@ -183,14 +183,11 @@ def test_rating_type(confirmit_dataset):
     {"name": "q16",
     "type": "array",
     "items": [
-        {"properties": {},
-        "source": "columns@q16[{q16_1}]",
+        {"source": "columns@q16[{q16_1}]",
         "text": {"en": "ans1"}},
-        {"properties": {},
-        "source": "columns@q16[{q16_2}]",
+        {"source": "columns@q16[{q16_2}]",
         "text": {"en": "ans2"}},
-        {"properties": {},
-        "source": "columns@q16[{q16_3}]",
+        {"source": "columns@q16[{q16_3}]",
         "text": {"en": "ans3"}}],
     "subtype": "single",
     "values": "lib@values@q16",
@@ -317,7 +314,78 @@ def test_multigrid_type(confirmit_dataset):
     """)
 
 def test_single_response_grid_type(confirmit_dataset):
-    assert True
+    assert confirmit_dataset.meta()['columns']['sat_areas[{sat_areas_1}]'] == json.loads("""
+    {
+        "name": "sat_areas[{sat_areas_1}]",
+        "parent": {
+            "masks@sat_areas": {"type": "array"}},
+            "text": {"en": "Web"},
+            "type": "single",
+            "values": "lib@values@sat_areas",
+            "properties": {"created": true}
+    }""")
+    assert confirmit_dataset.meta()['masks']['sat_areas'] == json.loads("""
+    {
+        "name": "sat_areas",
+        "type": "array",
+        "tags": ["grid"],
+        "items": [
+            {
+                "source": "columns@sat_areas[{sat_areas_1}]",
+                "text": {"en": "Web"}},
+                {"source": "columns@sat_areas[{sat_areas_2}]",
+                "text": {"en": "Web shop"}},
+                {"source": "columns@sat_areas[{sat_areas_3}]",
+                "text": {"en": "Store"}},
+                {"source": "columns@sat_areas[{sat_areas_4}]",
+                "text": {"en": "Check-out process"}},
+                {"source": "columns@sat_areas[{sat_areas_5}]",
+                "text": {"en": "Product"}},
+                {"source": "columns@sat_areas[{sat_areas_6}]",
+                "text": {"en": "Support"}}],
+                "subtype": "single",
+                "values": "lib@values@sat_areas",
+                "text": {"en": "Area satisfaction"}}""")
+    assert confirmit_dataset.meta()['lib']['values']['sat_areas'] == json.loads("""
+    [
+        {
+            "text": {"en": "1"},
+            "value": 1},
+        {
+            "text": {"en": "2"},
+            "value": 2
+        },
+        {
+            "text": {"en": "3"},
+            "value": 3
+        },
+        {
+            "text": {"en": "4"},
+            "value": 4
+        },
+        {
+            "text": {"en": "5"},
+            "value": 5
+        },
+        {
+            "text": {"en": "Don ́t know"},
+            "value": 99
+        }
+    ]
+
+    """)
+    assert confirmit_dataset.meta()['sets']['sat_areas'] == json.loads("""
+    {
+        "items": ["columns@sat_areas[{sat_areas_1}]",
+        "columns@sat_areas[{sat_areas_2}]",
+        "columns@sat_areas[{sat_areas_3}]",
+        "columns@sat_areas[{sat_areas_4}]",
+        "columns@sat_areas[{sat_areas_5}]",
+        "columns@sat_areas[{sat_areas_6}]"],
+        "name": "sat_areas"
+    }
+    """)
+
 
 def test_read_from_api():
     dataset_from_api = qp.DataSet("confirmit")
