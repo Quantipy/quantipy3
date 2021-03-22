@@ -1917,6 +1917,10 @@ class DataSet(object):
                 raise ValueError("Provides only counts and c%")
             else:
                 views.append(i)
+        # for the sig-tests to be calculatd, we need counts even though
+        # they haven't been requested
+        if ci == ['c%'] and sig_level:
+            views.append('counts')
         stack.add_link('ct', x=x, y=y, views=views, weights=w)
         if stats:
             stats = ['mean', 'median', 'stddev', 'lower_q', 'upper_q']

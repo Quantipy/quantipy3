@@ -802,6 +802,20 @@ class TestDataSet(unittest.TestCase):
                 'x edits': {'en-GB': 'edit'}, 'y edits':{'en-GB': 'edit'}}
         dataset.set_variable_text('q1', 'edit', 'en-GB', ['x', 'y'])
 
+    def test_sig_diff_without_counts(self):
+        """ 
+        Test that the sig diff information is included even though the
+        user didn't request the necessary counts view to run the tests
+        """
+        dataset = self._get_dataset()
+        x = 'q5_3'
+        y = 'gender'
+        sig_level = 0.05
+        with_sigdiff = dataset.crosstab(x, y, 
+                                        ci=['c%'], 
+                                        sig_level=sig_level)
+        assert '0.05' in with_sigdiff.index.get_level_values(level=1).tolist()
+
     def test_sig_diff(self):
         dataset = self._get_dataset()
         x = 'q5_3'
