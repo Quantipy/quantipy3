@@ -1876,6 +1876,11 @@ class DataSet(object):
             quartiles).
         sig_level: float
             Add a sigtest (only one level provided) to the output dataframe.
+            We use Quantipy's default parameters for sig testing that correspond
+            to the UNICOM/Dimensions Column Tests algorithms that control for bias 
+            introduced by weighting and overlapping samples in the column pairs of 
+            multi-coded questions. Note also that the UNICOM/Dimensions implementation 
+            uses variance pooling.
         rules: bool, default False
             Apply given rules from the meta object to the output dataframe.
         decimals: int, default 1
@@ -1912,6 +1917,10 @@ class DataSet(object):
                 raise ValueError("Provides only counts and c%")
             else:
                 views.append(i)
+        # for the sig-tests to be calculatd, we need counts even though
+        # they haven't been requested
+        if ci == ['c%'] and sig_level:
+            views.append('counts')
         stack.add_link('ct', x=x, y=y, views=views, weights=w)
         if stats:
             stats = ['mean', 'median', 'stddev', 'lower_q', 'upper_q']

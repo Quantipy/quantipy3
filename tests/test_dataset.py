@@ -802,6 +802,53 @@ class TestDataSet(unittest.TestCase):
                 'x edits': {'en-GB': 'edit'}, 'y edits':{'en-GB': 'edit'}}
         dataset.set_variable_text('q1', 'edit', 'en-GB', ['x', 'y'])
 
+    def test_sig_diff_without_counts(self):
+        """ 
+        Test that the sig diff information is included even though the
+        user didn't request the necessary counts view to run the tests
+        """
+        dataset = self._get_dataset()
+        x = 'q5_3'
+        y = 'gender'
+        sig_level = 0.05
+        with_sigdiff = dataset.crosstab(x, y, 
+                                        ci=['c%'], 
+                                        sig_level=sig_level)
+        assert '0.05' in with_sigdiff.index.get_level_values(level=1).tolist()
+
+    def test_sig_diff_details(self):
+        dataset = self._get_dataset()
+        x = 'q5_3'
+        y = 'gender'
+        sig_level = 0.05
+
+        # here we use sig diff with the default parameters, which mimic Dimensions
+        with_sigdiff = dataset.crosstab(x, y, 
+                                        ci=['counts', 'c%'], 
+                                        sig_level=sig_level)
+        # TODO: we can add expected sig-diffs here
+        assert with_sigdiff.shape == (22,2)
+
+        # here we can test the sig-diff with different parameters
+        stack = qp.Stack(name='sig', 
+                         add_data={'sig': {'meta': dataset.meta(), 
+                                           'data': dataset.data()}})
+        stack.add_link(data_keys=['sig'], 
+                       x=x, 
+                       y=y, 
+                       views=['c%', 'counts'])
+        link = stack['sig']['no_filter'][x][y]
+        test = qp.Test(link, 'x|f|:|||counts')
+
+        # possible parameters are here:
+        #https://github.com/Quantipy/quantipy3/blob/master/quantipy/core/quantify/engine.py#L1783        
+        test = test.set_params(level=sig_level)
+        df = test.run()
+        # assert that we only have 1 significanctly higher value
+        assert df[('gender', 2)].isna().sum() == 7
+        assert df[('gender', 1)].isna().sum() == 6
+        
+
     def test_crosstab2(self):
         dataset = self._get_dataset()
         result = dataset.crosstab('q1', 'gender')
