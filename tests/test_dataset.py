@@ -816,7 +816,7 @@ class TestDataSet(unittest.TestCase):
                                         sig_level=sig_level)
         assert '0.05' in with_sigdiff.index.get_level_values(level=1).tolist()
 
-    def test_sig_diff(self):
+    def test_sig_diff_details(self):
         dataset = self._get_dataset()
         x = 'q5_3'
         y = 'gender'
@@ -846,7 +846,7 @@ class TestDataSet(unittest.TestCase):
         df = test.run()
         # assert that we only have 1 significanctly higher value
         assert df[('gender', 2)].isna().sum() == 7
-        assert df[('gender', 2)].isna().sum() == 6
+        assert df[('gender', 1)].isna().sum() == 6
         
 
     def test_crosstab2(self):
