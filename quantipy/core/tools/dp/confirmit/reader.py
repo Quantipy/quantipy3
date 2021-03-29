@@ -181,70 +181,9 @@ def quantipy_from_confirmit(meta_json, data_json, schema_vars=None, verbose=Fals
         
         return variable_obj
 
-    data_array = []
-    sub_data_array = []
-    columns_array = []
-    confirmit_info = {}
-    if isinstance(data_json, list):
-        data_parsed = data_json
-    else:
-        with open(data_json, "r") as read_data_file:
-            data_parsed = json.load(read_data_file)
-
-    if isinstance(meta_json, dict):
-        meta_parsed = meta_json
-    else:
-        with open(meta_json, "r") as read_meta_file:
-            meta_parsed = json.load(read_meta_file)
-    if schema_vars:
-        filtered_data_parsed = []
-
-        for dp in data_parsed:
-            dp_elem = {}
-            for sv in schema_vars:
-                dp_elem[sv] = dp.get(sv)
-            filtered_data_parsed.append(dp_elem)
-
-        data_parsed = filtered_data_parsed
-
-    for idx, element in enumerate(data_parsed):
-        for k, v in element.items():
-            if idx == 0:
-                columns_array.append('columns@' + k)
-            sub_data_array.append(v)
-        data_array.append(sub_data_array)
-
-    global_language_code = meta_parsed.get("languages")[0].get("confirmitLanguageId")
-    global_language = languages[global_language_code]
-    lib = {"default text": global_language, "values": {}}
-    sets = {}
-    columns_output = {}
-    masks_output = {}
-    grid_vars = []
-    single_vars = []
-    delimited_set_vars = []
-    multigrid_vars = {}
-    grid3d_vars = {}
-
-    root_vars = meta_parsed.get('root')
-    vars_arr = root_vars.get('variables')
-    for key_var in root_vars.get('keys'):
-        vars_arr.append(key_var)
-    children_vars = root_vars.get('children')
-    if children_vars:
-        for children_var in children_vars:
-            vars_arr.append(children_var['keys'][0])
-
-    if schema_vars:
-        def filterVariables(variable):
-            for sv in schema_vars:
-                if variable.get("name") == sv:
-                    return True
-            return False
-
-        vars_arr = filter(filterVariables, vars_arr)
-
-    for variable in vars_arr:
+    def parse_confirmit_types(variable):
+        confirmit_var_type = variable.get('variableType')
+        is_loop = variable.get('is_loop')
         if verbose:
             confirmit_info[variable['name']] = variable
         has_parent = variable.get('parentVariableName')
@@ -310,7 +249,7 @@ def quantipy_from_confirmit(meta_json, data_json, schema_vars=None, verbose=Fals
                             }]
                         }    
 
-        if variable.get('variableType') == 'singleChoice':
+        if confirmit_var_type == 'singleChoice':
             has_nodes = False
 
             if variable.get('nodes'):
@@ -328,14 +267,23 @@ def quantipy_from_confirmit(meta_json, data_json, schema_vars=None, verbose=Fals
                 grid_vars.append({'parent': variable['name'], 'children': single_children_arr})
 
             else:
-                columns_output[variable['name']] = get_main_info(variable, 'single', has_nodes)
-                single_vars.append(variable['name'])
-        if variable.get('variableType') == 'multiChoice':
+                if is_loop:
+                    pass
+                    # root_name = variable['name']
+                    # for opt in variable['options']:
+                    #     variable['name'] = root_name + '_' + opt['code']
+                    #     columns_output[variable['name']] = get_main_info(variable, 'single', has_nodes=has_nodes)
+                    # for loop_child in variable['variables']:
+                    #     lc_root_name = loop_child['name']    
+                else:
+                    columns_output[variable['name']] = get_main_info(variable, 'single', has_nodes=has_nodes)
+                    single_vars.append(variable['name'])
+        if confirmit_var_type == 'multiChoice':
             delimited_set_vars.append(variable['name'])
             columns_output[variable['name']] = get_main_info(variable, 'delimited set')
-        if variable.get('variableType') == 'dateTime':
+        if confirmit_var_type == 'dateTime':
             columns_output[variable['name']] = get_main_info(variable, 'date')
-        if variable.get('variableType') == 'numeric':
+        if confirmit_var_type == 'numeric':
             if variable.get('fields'):
                 parsed_meta = get_main_info(variable, 'array')
                 masks_output[variable['name']] = parsed_meta
@@ -349,7 +297,7 @@ def quantipy_from_confirmit(meta_json, data_json, schema_vars=None, verbose=Fals
             else:
                 numeric_type = int_or_float(variable)
                 columns_output[variable['name']] = get_main_info(variable, numeric_type)
-        if variable.get('variableType') == 'text':
+        if confirmit_var_type == 'text':
             if variable.get('fields'):
                 parsed_meta = get_main_info(variable, 'array')
                 masks_output[variable['name']] = parsed_meta
@@ -362,7 +310,7 @@ def quantipy_from_confirmit(meta_json, data_json, schema_vars=None, verbose=Fals
                 grid_vars.append({'parent': variable['name'], 'children': text_children_arr})
             else:
                 columns_output[variable['name']] = get_main_info(variable, 'string')
-        if variable.get('variableType') == 'rating':
+        if confirmit_var_type == 'rating':
             if variable.get('isCompound'):
                 parsed_meta = get_main_info(variable, 'array')
                 masks_output[variable['name']] = parsed_meta
@@ -376,7 +324,7 @@ def quantipy_from_confirmit(meta_json, data_json, schema_vars=None, verbose=Fals
             else:
                 single_vars.append(variable['name'])
                 columns_output[variable['name']] = get_main_info(variable, 'single')
-        if variable.get('variableType') == 'ranking':
+        if confirmit_var_type == 'ranking':
             parsed_meta = get_main_info(variable, 'array')
             masks_output[variable['name']] = parsed_meta
             fill_items_arr(parsed_meta)
@@ -386,7 +334,7 @@ def quantipy_from_confirmit(meta_json, data_json, schema_vars=None, verbose=Fals
                 columns_output[parsed_subvar_meta['name']] = parsed_subvar_meta
                 int_children_arr.append(parsed_subvar_meta['name'])
             grid_vars.append({'parent': variable['name'], 'children': int_children_arr})
-        if variable.get('variableType') == 'multiGrid':
+        if confirmit_var_type == 'multiGrid':
             if variable['name'] not in multigrid_vars:
                 multigrid_vars[variable['name']] = {
                     'name': variable['name'],
@@ -395,6 +343,77 @@ def quantipy_from_confirmit(meta_json, data_json, schema_vars=None, verbose=Fals
                     'options': variable.get('options'),
                     'fields': []
                 }
+
+    data_array = []
+    sub_data_array = []
+    columns_array = []
+    confirmit_info = {}
+    if isinstance(data_json, list):
+        data_parsed = data_json
+    else:
+        with open(data_json, "r") as read_data_file:
+            data_parsed = json.load(read_data_file)
+
+    if isinstance(meta_json, dict):
+        meta_parsed = meta_json
+    else:
+        with open(meta_json, "r") as read_meta_file:
+            meta_parsed = json.load(read_meta_file)
+    if schema_vars:
+        filtered_data_parsed = []
+
+        for dp in data_parsed:
+            dp_elem = {}
+            for sv in schema_vars:
+                dp_elem[sv] = dp.get(sv)
+            filtered_data_parsed.append(dp_elem)
+
+        data_parsed = filtered_data_parsed
+
+    for idx, element in enumerate(data_parsed):
+        for k, v in element.items():
+            if idx == 0:
+                columns_array.append('columns@' + k)
+            sub_data_array.append(v)
+        data_array.append(sub_data_array)
+
+    global_language_code = meta_parsed.get("languages")[0].get("confirmitLanguageId")
+    global_language = languages[global_language_code]
+    lib = {"default text": global_language, "values": {}}
+    sets = {}
+    columns_output = {}
+    masks_output = {}
+    grid_vars = []
+    single_vars = []
+    delimited_set_vars = []
+    multigrid_vars = {}
+    grid3d_vars = {}
+
+    root_vars = meta_parsed.get('root')
+    vars_arr = root_vars.get('variables')
+    for key_var in root_vars.get('keys'):
+        vars_arr.append(key_var)
+    children_vars = root_vars.get('children')
+    if children_vars:
+        for children_var in children_vars:
+            ch_var = children_var.get('keys')[0]
+            ch_var['texts'] = children_var.get('texts')
+            ch_var['variables'] = children_var.get('variables')
+            ch_var['children'] = children_var.get('children')
+            ch_var['is_loop'] = True
+            vars_arr.append(ch_var)
+
+    if schema_vars:
+        def filterVariables(variable):
+            for sv in schema_vars:
+                if variable.get("name") == sv:
+                    return True
+            return False
+
+        vars_arr = filter(filterVariables, vars_arr)
+
+    for variable in vars_arr:
+        parse_confirmit_types(variable)
     
     for k, v in multigrid_vars.items():
         parsed_meta = get_main_info(v, 'array', complex_grid=True)
