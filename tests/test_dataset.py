@@ -40,6 +40,11 @@ class TestDataSet(unittest.TestCase):
         dataset = self._get_dataset()
         self.assertTrue(isinstance(dataset._data, pd.DataFrame))
         self.assertTrue(isinstance(dataset._meta, dict))
+        
+    def test_read_spss(self):
+        dataset = qp.DataSet('spss')
+        dataset.read_spss('tests/Example Data (A) - with multi choice q2.sav')
+        self.assertTrue(dataset.meta('q2').shape == (8,3))
 
     def test_fileinfo(self):
         dataset = self._get_dataset()
