@@ -165,7 +165,7 @@ def extract_sav_meta(sav_file, name="", data=None, ioLocale='en_US.UTF-8',
         # meta['masks'][mrset] = {}
         # 'D' is "multiple dichotomy sets" in SPSS
         # 'C' is "multiple category sets" in SPSS
-        varNames = metadata.multRespDefs[mrset]['varNames']
+        varNames = list(metadata.multRespDefs[mrset]['varNames'])
         # Find the index where there delimited set should be inserted
         # into data, which is immediately prior to the start of the
         # dichotomous set columns
