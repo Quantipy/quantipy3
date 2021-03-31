@@ -268,13 +268,28 @@ def quantipy_from_confirmit(meta_json, data_json, schema_vars=None, verbose=Fals
 
             else:
                 if is_loop:
-                    pass
-                    # root_name = variable['name']
-                    # for opt in variable['options']:
-                    #     variable['name'] = root_name + '_' + opt['code']
-                    #     columns_output[variable['name']] = get_main_info(variable, 'single', has_nodes=has_nodes)
-                    # for loop_child in variable['variables']:
-                    #     lc_root_name = loop_child['name']    
+                    root_name = variable['name']
+                    # reformat_loop_data(root_name)
+                    loop_children = variable.get('variables')
+                    loop_of_loop = variable.get('children')
+                    lc_root_names = []
+                    lol_root_names = []
+                    for idx, opt in enumerate(variable['options']):
+                        variable['name'] = root_name + '_' + opt['code']
+                        columns_output[variable['name']] = get_main_info(variable, 'single', has_nodes=has_nodes)
+                        for lc_idx, loop_child in enumerate(loop_children):
+                            if idx == 0:
+                                lc_root_names.append(loop_child['name'])
+                            loop_child['name'] = root_name + '_' + lc_root_names[lc_idx] + '_' + opt['code']
+                            parse_confirmit_types(loop_child)
+                            loop_child['name'] = lc_root_names[lc_idx]
+                        for lol_idx, loop in enumerate(loop_of_loop):
+                            if idx == 0:
+                                lol_root_names.append(loop['name'])
+                            loop['name'] = root_name + '_' + lol_root_names[lol_idx] + '_' + opt['code']
+                            parse_confirmit_types(loop)
+                            loop['name'] = lol_root_names[lol_idx]
+
                 else:
                     columns_output[variable['name']] = get_main_info(variable, 'single', has_nodes=has_nodes)
                     single_vars.append(variable['name'])
@@ -344,6 +359,18 @@ def quantipy_from_confirmit(meta_json, data_json, schema_vars=None, verbose=Fals
                     'fields': []
                 }
 
+    def set_as_loop(variable):
+        ch_var = variable.get('keys')[0]
+        ch_var['texts'] = variable.get('texts')
+        ch_var['variables'] = variable.get('variables')
+        children_arr = []
+        if variable.get('children'):
+            for child in variable.get('children'):
+                children_arr.append(set_as_loop(child))
+        ch_var['children'] = children_arr
+        ch_var['is_loop'] = True
+        return ch_var
+
     data_array = []
     sub_data_array = []
     columns_array = []
@@ -396,11 +423,7 @@ def quantipy_from_confirmit(meta_json, data_json, schema_vars=None, verbose=Fals
     children_vars = root_vars.get('children')
     if children_vars:
         for children_var in children_vars:
-            ch_var = children_var.get('keys')[0]
-            ch_var['texts'] = children_var.get('texts')
-            ch_var['variables'] = children_var.get('variables')
-            ch_var['children'] = children_var.get('children')
-            ch_var['is_loop'] = True
+            ch_var = set_as_loop(children_var)
             vars_arr.append(ch_var)
 
     if schema_vars:
