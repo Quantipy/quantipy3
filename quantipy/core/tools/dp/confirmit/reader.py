@@ -181,7 +181,26 @@ def quantipy_from_confirmit(meta_json, data_json, schema_vars=None, verbose=Fals
         
         return variable_obj
 
-    def parse_confirmit_types(variable):
+    def reformat_loop_data(loop_var, loop_of_loop=None):
+        for data in data_parsed:
+            try:
+                old_values = data.pop(loop_var)
+                for idx, value in enumerate(old_values):
+                    for k, v in value.items():
+                        if loop_of_loop is None:
+                            if k != loop_var:
+                                k = f'{loop_var}_{k}'
+                        else:
+                            if k != loop_of_loop:
+                                k = f'{loop_var}_{k}'
+                            else:
+                                k = loop_var
+                        k = f'{k}_{str(idx + 1)}'
+                        data[k] = v
+            except KeyError:
+                pass
+
+    def parse_confirmit_types(variable, loop_of_loop=None):
         confirmit_var_type = variable.get('variableType')
         is_loop = variable.get('is_loop')
         if verbose:
@@ -269,7 +288,7 @@ def quantipy_from_confirmit(meta_json, data_json, schema_vars=None, verbose=Fals
             else:
                 if is_loop:
                     root_name = variable['name']
-                    # reformat_loop_data(root_name)
+                    reformat_loop_data(root_name, loop_of_loop)
                     loop_children = variable.get('variables')
                     loop_of_loop = variable.get('children')
                     lc_root_names = []
@@ -287,7 +306,7 @@ def quantipy_from_confirmit(meta_json, data_json, schema_vars=None, verbose=Fals
                             if idx == 0:
                                 lol_root_names.append(loop['name'])
                             loop['name'] = root_name + '_' + lol_root_names[lol_idx] + '_' + opt['code']
-                            parse_confirmit_types(loop)
+                            parse_confirmit_types(loop, lol_root_names[lol_idx])
                             loop['name'] = lol_root_names[lol_idx]
 
                 else:
