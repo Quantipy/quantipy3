@@ -1853,7 +1853,7 @@ class DataSet(object):
 
     @modify(to_list=['x', 'y', 'ci', 'sig_level'])
     @verify(variables={'x': 'both', 'y': 'both_nested', 'w': 'columns'})
-    def crosstab(self, x, y=[], w=None, f=None, ci='counts', stats=False,
+    def crosstab(self, x, y=[], w=None, f=None, ci='counts', base='auto', stats=False,
                  sig_level=None, rules=False, decimals=1, xtotal=False,
                  painted=True):
         """
@@ -1871,6 +1871,9 @@ class DataSet(object):
             used in DataSet.take().
         ci: str/ list of str {'c%', 'counts'}, default 'counts'
             Defines the output cellitem.
+        base: str/ list of str, ['auto', 'both', 'weighted', 'unweighted']
+            What bases to include in the results. Auto will return unweighted or 
+            weighted base according to whether the results are weighted.
         stats: bool, default False
             Add std stats to the output dataframe (mean, median, stddev,
             quartiles).
@@ -1910,7 +1913,6 @@ class DataSet(object):
         else:
             y = self.unroll(y)
         test_y =  [yk for yk in y if yk != '@']
-        # views = ['cbase', 'rbase']
         views = ['cbase']
         for i in ci:
             if not i in ['counts', 'c%']:
@@ -1921,7 +1923,12 @@ class DataSet(object):
         # they haven't been requested
         if ci == ['c%'] and sig_level:
             views.append('counts')
+        if base == 'unweighted' and w is not None:
+            views.remove('cbase')
         stack.add_link('ct', x=x, y=y, views=views, weights=w)
+        # include unweighted base in stack
+        if w is not None and base in ['both', 'unweighted']:
+            stack.add_link('ct', x=x, y=y, views=['cbase'], weights=None)            
         if stats:
             stats = ['mean', 'median', 'stddev', 'lower_q', 'upper_q']
             options = {
@@ -1965,8 +1972,8 @@ class DataSet(object):
             stats=stats,
             tests=sig_level,
             cell_items=cellitems,
-            bases='both')
-        vm.set_bases('both', False, False, 'both')
+            bases=base)
+        vm.set_bases(base, False, False, base)
         #######################################################################
         # prepare ChainManager
         #######################################################################
