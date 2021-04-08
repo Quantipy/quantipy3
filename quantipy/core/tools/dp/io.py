@@ -348,7 +348,7 @@ def read_confirmit_api(projectid, public_url, idp_url, client_id, client_secret,
     source_token = resp_obj['access_token']
 
     # Get source data records
-    headers = {'Authorization': 'Bearer ' + source_token, "Accept": "application/json", "Content-Type": "application/json"}
+    headers = {'Authorization': 'Bearer ' + source_token, "Accept": "application/x-ndjson", "Content-Type": "application/json"}
     url = source_public_site_url + 'v1/surveys/' + source_projectid + '/responses/data'
     response = req.get(url, data=None, headers=headers, stream=False)
     response.raise_for_status()
