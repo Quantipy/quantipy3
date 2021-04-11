@@ -326,11 +326,11 @@ def read_decipher(path_json, path_txt, text_key='main'):
     meta, data = quantipy_from_decipher(path_json, path_txt, text_key)
     return meta, data
 
-def read_confirmit_from_files(path_meta, path_data, schema_vars=None, verbose=True):
-    meta, data = quantipy_from_confirmit(path_meta, path_data, schema_vars, verbose)
+def read_confirmit_from_files(path_meta, path_data, schema_vars=None, schema_filter=None, verbose=True):
+    meta, data = quantipy_from_confirmit(path_meta, path_data, schema_vars, schema_filter, verbose)
     return meta, data
 
-def read_confirmit_api(projectid, public_url, idp_url, client_id, client_secret, schema_vars, verbose):
+def read_confirmit_api(projectid, public_url, idp_url, client_id, client_secret, schema_vars, schema_filter, verbose):
     # Source configuration
     source_projectid = projectid
     source_public_site_url = public_url
@@ -370,7 +370,7 @@ def read_confirmit_api(projectid, public_url, idp_url, client_id, client_secret,
     json_meta = []
     for line in json_lines:
         json_meta.append(json.loads(line))
-    meta, data = quantipy_from_confirmit(json_meta[0], json_data, schema_vars, verbose)
+    meta, data = quantipy_from_confirmit(json_meta[0], json_data, schema_vars, schema_filter, verbose)
     return meta, data
 
 def write_confirmit_api(path_meta, path_data, meta, data, schema_vars, verbose):

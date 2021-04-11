@@ -5,7 +5,7 @@ from quantipy.core.tools.dp.prep import start_meta
 from .languages_file import languages
 from .helpers import int_or_float
 
-def quantipy_from_confirmit(meta_json, data_json, schema_vars=None, verbose=False, text_key='en-GB'):
+def quantipy_from_confirmit(meta_json, data_json, schema_vars=None, schema_filter=None, verbose=False, text_key='en-GB'):
     types_translations = {
         'numeric': 'float',
         'text': 'string',
@@ -446,13 +446,22 @@ def quantipy_from_confirmit(meta_json, data_json, schema_vars=None, verbose=Fals
             vars_arr.append(ch_var)
 
     if schema_vars:
-        def filterVariables(variable):
+        sv_composed = []
+        for var in vars_arr:
             for sv in schema_vars:
-                if variable.get("name") == sv:
+                sv_obj = {}
+                if var.get('name') == sv:
+                    sv_obj['name'] = sv
+                    sv_obj['parent'] = var.get('parentVariableName')
+                    sv_composed.append(sv_obj)
+
+        def filterVariables(variable):
+            for sv in sv_composed:
+                if variable.get("name") == sv['name'] or variable.get("name") == sv['parent']:
                     return True
             return False
 
-        vars_arr = filter(filterVariables, vars_arr)
+        vars_arr = list(filter(filterVariables, vars_arr))
 
     for variable in vars_arr:
         parse_confirmit_types(variable)
@@ -517,6 +526,20 @@ def quantipy_from_confirmit(meta_json, data_json, schema_vars=None, verbose=Fals
                 data[delset_var] = str_true_var
             else:
                 data[delset_var] = None
+
+    if schema_filter:
+        def data_filter(variable):
+            for sf in schema_filter:
+                sf_list = sf.split('=')
+                filter_key = sf_list[0]
+                filter_value = sf_list[1]
+                if str(variable.get(filter_key)) == filter_value:
+                    continue
+                else:
+                    return False
+            return True
+
+        data_parsed = list(filter(data_filter, data_parsed))
 
     df = pd.DataFrame.from_dict(data=data_parsed)
     return output_obj, df

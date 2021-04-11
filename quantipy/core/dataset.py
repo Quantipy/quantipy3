@@ -583,7 +583,7 @@ class DataSet(object):
         self._rename_blacklist_vars()
         return None
 
-    def read_confirmit_from_files(self, path_meta, path_data, reset=True, schema_vars=None, verbose=False):
+    def read_confirmit_from_files(self, path_meta, path_data, reset=True, schema_vars=None, schema_filter=None, verbose=False):
         """Read confirmit data
 
         Parameters
@@ -597,10 +597,10 @@ class DataSet(object):
         -------
         None
         """
-        self._meta, self._data = r_confirmit_from_files(path_meta, path_data, schema_vars, verbose)
+        self._meta, self._data = r_confirmit_from_files(path_meta, path_data, schema_vars, schema_filter, verbose)
         self._set_file_info(path_data, path_meta, reset=reset)
 
-    def read_confirmit_api(self, projectid, public_url, idp_url=None, client_id=None, client_secret=None, reset=True, schema_vars=None, verbose=False):
+    def read_confirmit_api(self, projectid, public_url, idp_url=None, client_id=None, client_secret=None, reset=True, schema_vars=None, schema_filter=None, verbose=False):
         """Read confirmit data from confirmit api
 
         Parameters
@@ -621,7 +621,7 @@ class DataSet(object):
         if not client_secret:
             client_secret = os.getenv('CLIENT_SECRET')
 
-        self._meta, self._data = r_confirmit_api(projectid, public_url, idp_url, client_id, client_secret, schema_vars, verbose)
+        self._meta, self._data = r_confirmit_api(projectid, public_url, idp_url, client_id, client_secret, schema_vars, schema_filter, verbose)
         self._set_file_info('', reset=reset)
 
     def write_confirmit(self, path_meta, path_data, schema_vars=None, verbose=False):
