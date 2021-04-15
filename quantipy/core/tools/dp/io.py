@@ -337,7 +337,6 @@ def read_confirmit_api(projectid, public_url, idp_url, client_id, client_secret,
     return meta, data
 
 def write_confirmit_api(path_meta, path_data, meta, data, schema_vars, verbose):
-
     meta, data = quantipy_to_confirmit(path_meta, path_data, meta, data, schema_vars, verbose)
     return meta, data
 

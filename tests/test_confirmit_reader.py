@@ -486,3 +486,7 @@ def test_read_from_api():
         {"text": {"en": "no"},
         "value": 2}],
     "text": {"en": "Use script to set values"}}""")
+
+def test_writer(confirmit_dataset_verbose):
+    confirmit_writer = confirmit_dataset_verbose
+    confirmit_writer.write_confirmit()
