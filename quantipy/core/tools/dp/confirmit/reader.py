@@ -5,7 +5,7 @@ from quantipy.core.tools.dp.prep import start_meta
 from .languages_file import languages
 from .helpers import int_or_float
 
-def quantipy_from_confirmit(meta_json, data_json, schema_vars=None, schema_filter=None, verbose=False, text_key='en-GB'):
+def quantipy_from_confirmit(meta_json, data_json, verbose=False, text_key='en-GB'):
     types_translations = {
         'numeric': 'float',
         'text': 'string',
@@ -227,9 +227,12 @@ def quantipy_from_confirmit(meta_json, data_json, schema_vars=None, schema_filte
                         'texts': [language_text]
                     })
             else:
-                filtered_parent_iter = filter(lambda x: x['name'] == has_parent, vars_arr)
-                filtered_parent = next(filtered_parent_iter)
-                if filtered_parent['variableType'] == 'multiGrid':
+                try:
+                    filtered_parent_iter = filter(lambda x: x['name'] == has_parent, vars_arr)
+                    filtered_parent = next(filtered_parent_iter)
+                except StopIteration:
+                    filtered_parent = {}
+                if filtered_parent.get('variableType') == 'multiGrid':
                     if has_parent not in multigrid_vars:
                         try:
                             language_code = variable.get('texts')[0].get('languageId')
@@ -248,7 +251,7 @@ def quantipy_from_confirmit(meta_json, data_json, schema_vars=None, schema_filte
                                 'texts': [language_text]
                             }]
                         }
-                if filtered_parent['variableType'] == 'grid3D':
+                if filtered_parent.get('variableType') == 'grid3D':
                     if has_parent not in grid3d_vars:
                         try:
                             language_code = variable.get('titles')[0].get('languageId')
@@ -405,16 +408,6 @@ def quantipy_from_confirmit(meta_json, data_json, schema_vars=None, schema_filte
     else:
         with open(meta_json, "r") as read_meta_file:
             meta_parsed = json.load(read_meta_file)
-    if schema_vars:
-        filtered_data_parsed = []
-
-        for dp in data_parsed:
-            dp_elem = {}
-            for sv in schema_vars:
-                dp_elem[sv] = dp.get(sv)
-            filtered_data_parsed.append(dp_elem)
-
-        data_parsed = filtered_data_parsed
 
     for idx, element in enumerate(data_parsed):
         for k, v in element.items():
@@ -444,24 +437,6 @@ def quantipy_from_confirmit(meta_json, data_json, schema_vars=None, schema_filte
         for children_var in children_vars:
             ch_var = set_as_loop(children_var)
             vars_arr.append(ch_var)
-
-    if schema_vars:
-        sv_composed = []
-        for var in vars_arr:
-            for sv in schema_vars:
-                sv_obj = {}
-                if var.get('name') == sv:
-                    sv_obj['name'] = sv
-                    sv_obj['parent'] = var.get('parentVariableName')
-                    sv_composed.append(sv_obj)
-
-        def filterVariables(variable):
-            for sv in sv_composed:
-                if variable.get("name") == sv['name'] or variable.get("name") == sv['parent']:
-                    return True
-            return False
-
-        vars_arr = list(filter(filterVariables, vars_arr))
 
     for variable in vars_arr:
         parse_confirmit_types(variable)
@@ -526,20 +501,6 @@ def quantipy_from_confirmit(meta_json, data_json, schema_vars=None, schema_filte
                 data[delset_var] = str_true_var
             else:
                 data[delset_var] = None
-
-    if schema_filter:
-        def data_filter(variable):
-            for sf in schema_filter:
-                sf_list = sf.split('=')
-                filter_key = sf_list[0]
-                filter_value = sf_list[1]
-                if str(variable.get(filter_key)) == filter_value:
-                    continue
-                else:
-                    return False
-            return True
-
-        data_parsed = list(filter(data_filter, data_parsed))
 
     df = pd.DataFrame.from_dict(data=data_parsed)
     return output_obj, df

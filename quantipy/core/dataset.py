@@ -583,7 +583,7 @@ class DataSet(object):
         self._rename_blacklist_vars()
         return None
 
-    def read_confirmit_from_files(self, path_meta, path_data, reset=True, schema_vars=None, schema_filter=None, verbose=False):
+    def read_confirmit_from_files(self, path_meta, path_data, reset=True, verbose=False):
         """Read confirmit data
 
         Parameters
@@ -597,7 +597,7 @@ class DataSet(object):
         -------
         None
         """
-        self._meta, self._data = r_confirmit_from_files(path_meta, path_data, schema_vars, schema_filter, verbose)
+        self._meta, self._data = r_confirmit_from_files(path_meta, path_data, verbose)
         self._set_file_info(path_data, path_meta, reset=reset)
 
     def read_confirmit_api(self, projectid, public_url, idp_url=None, client_id=None, client_secret=None, reset=True, schema_vars=None, schema_filter=None, verbose=False):

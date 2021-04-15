@@ -467,8 +467,8 @@ def test_read_from_api():
                                         idp_url="https://idp.euro.confirmit.com/",
                                         client_id="71a15e5d-b52d-4534-b54b-fa6e2a9da8a7",
                                         client_secret="2a943d4d-58ab-42b8-a276-53d07ad34064",
-                                        schema_vars=['status', 'q39', 'q21'],
-                                        schema_filter=['status=complete', 'q21=2']
+                                        schema_vars='status,q39,q21',
+                                        schema_filter="response:status='complete'"
                                         )
     print(dataset_from_api.meta('q39'))
     assert dataset_from_api.crosstab('q39').shape == (3, 1)
