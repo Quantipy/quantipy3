@@ -626,9 +626,13 @@ class DataSet(object):
 
     def write_confirmit(self, path_meta, path_data, schema_vars=None, verbose=False):
         """Converts quantipy dataset into Confirmit format"""
-
-        self._meta, self._data = w_confirmit_api(path_meta, path_data, self._meta, self._data, schema_vars, verbose)
-        self._set_file_info(path_data, path_meta, reset=reset)
+        res_meta_string = json.dumps(self._meta)
+        output_meta_path = path_meta
+        output_data_path = path_data
+        output_meta_file = open(output_meta_path,'w')
+        self._data.to_csv(output_data_path)
+        output_meta_file.write(res_meta_string)
+        output_meta_file.close()
 
     def read_spss(self, path_sav, **kwargs):
         """

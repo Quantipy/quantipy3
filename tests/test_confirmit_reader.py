@@ -489,4 +489,4 @@ def test_read_from_api():
 
 def test_writer(confirmit_dataset_verbose):
     confirmit_writer = confirmit_dataset_verbose
-    confirmit_writer.write_confirmit()
+    confirmit_writer.write_confirmit('metaOutput.json', 'dataOutput.csv')
