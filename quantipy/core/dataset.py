@@ -597,6 +597,8 @@ class DataSet(object):
         -------
         None
         """
+        if verbose:
+            self.write_allowed = True
         self._meta, self._data = r_confirmit_from_files(path_meta, path_data, verbose)
         self._set_file_info(path_data, path_meta, reset=reset)
 
@@ -626,13 +628,19 @@ class DataSet(object):
 
     def write_confirmit(self, path_meta, path_data, schema_vars=None, verbose=False):
         """Converts quantipy dataset into Confirmit format"""
-        res_meta_string = json.dumps(self._meta)
-        output_meta_path = path_meta
-        output_data_path = path_data
-        output_meta_file = open(output_meta_path,'w')
-        self._data.to_csv(output_data_path)
-        output_meta_file.write(res_meta_string)
-        output_meta_file.close()
+        try:
+            if self.write_allowed:
+                res_meta_string = json.dumps(self._meta)
+                output_meta_path = path_meta
+                output_data_path = path_data
+                output_meta_file = open(output_meta_path,'w')
+                self._data.to_csv(output_data_path)
+                output_meta_file.write(res_meta_string)
+                output_meta_file.close()
+            else:
+                raise Exception("Must set has_external parameter in read method first")
+        except AttributeError:
+            raise Exception("Must set has_external parameter in read method first")
 
     def read_spss(self, path_sav, **kwargs):
         """
