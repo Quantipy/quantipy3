@@ -3,7 +3,7 @@ import requests as req
 import json
 
 
-async def get_surveys(projectid, public_url, idp_url, client_id, client_secret, schema_vars, schema_filter):
+async def get_surveys(projectid, public_url, idp_url, client_id, client_secret, schema_vars=None, schema_filter=None):
     # Source configuration
     source_projectid = projectid
     source_public_site_url = public_url
@@ -69,3 +69,27 @@ async def get_surveys(projectid, public_url, idp_url, client_id, client_secret, 
     json_meta = await task2
 
     return json_data, json_meta
+
+
+def upload_surveys(projectid, public_url, idp_url, client_id, client_secret, data):
+    # Source configuration
+    source_projectid = projectid
+    source_public_site_url = public_url
+    source_idp_url = idp_url
+    source_client_id = client_id
+    source_client_secret = client_secret
+    # Get access token
+    response = req.post(source_idp_url + 'identity/connect/token',
+                        data="grant_type=api-user&scope=pub.surveys",
+                        auth=(source_client_id, source_client_secret),
+                        headers={'Content-Type': 'application/x-www-form-urlencoded'})
+    response.raise_for_status()
+    resp_obj = response.json()
+    source_token = resp_obj['access_token']
+
+    # Upload source data records
+    headers = {'Authorization': 'Bearer ' + source_token, "Accept": "application/json", "Content-Type": "application/json"}
+    url = source_public_site_url + 'v1/surveys/' + source_projectid + '/responses/data'
+    response = req.patch(url, data=json.dumps(data), headers=headers)
+    response.raise_for_status()
+    return response
