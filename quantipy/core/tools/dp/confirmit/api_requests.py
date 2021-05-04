@@ -71,13 +71,36 @@ async def get_surveys(projectid, public_url, idp_url, client_id, client_secret, 
     return json_data, json_meta
 
 
-def upload_surveys(projectid, public_url, idp_url, client_id, client_secret, data):
+def upload_surveys(api_data, json_data, json_meta, data_vars):
     # Source configuration
-    source_projectid = projectid
-    source_public_site_url = public_url
-    source_idp_url = idp_url
-    source_client_id = client_id
-    source_client_secret = client_secret
+    source_projectid = api_data.get("projectid")
+    source_public_site_url = api_data.get("public_url")
+    source_idp_url = api_data.get("idp_url")
+    source_client_id = api_data.get("client_id")
+    source_client_secret = api_data.get("client_secret")
+
+    key_vars = []
+    filtered_data = []
+    root_vars = json_meta[0].get('root')
+    for key_var in root_vars.get('keys'):
+        key_vars.append(key_var.get('name'))
+
+    for data_record in json_data:
+        dr_obj = {}
+        for selected_data in data_vars:
+            dr_obj[selected_data] = data_record.get(selected_data)
+        for key_var in key_vars:
+            dr_obj[key_var] = data_record.get(key_var)
+        filtered_data.append(dr_obj)
+
+    data = {
+        "dataSchema": {
+            "keys": key_vars,
+            "variables": data_vars
+        },
+        "data": filtered_data
+    }
+
     # Get access token
     response = req.post(source_idp_url + 'identity/connect/token',
                         data="grant_type=api-user&scope=pub.surveys",

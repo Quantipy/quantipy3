@@ -498,25 +498,20 @@ def test_writer_to_api():
                                         public_url="https://ws.euro.confirmit.com/",
                                         idp_url="https://idp.euro.confirmit.com/",
                                         client_id="71a15e5d-b52d-4534-b54b-fa6e2a9da8a7",
-                                        client_secret="2a943d4d-58ab-42b8-a276-53d07ad34064")
+                                        client_secret="2a943d4d-58ab-42b8-a276-53d07ad34064"),
                                         )
-    data = {
-        "dataSchema": {
-            "keys": ["responseid"],
-            "variables": ["q7", "q9", "q11"]
-        },
-        "data": [{
-            "responseid": 1,
-            "q7": "ss",
-            "q9": 2,
-            "q11":"aa"
-        }]
+
+    api_data = {
+        "projectid": "p913481003361",
+        "public_url": "https://ws.euro.confirmit.com/",
+        "idp_url": "https://idp.euro.confirmit.com/",
+        "client_id": "71a15e5d-b52d-4534-b54b-fa6e2a9da8a7",
+        "client_secret": "2a943d4d-58ab-42b8-a276-53d07ad34064"
     }
 
-    response = upload_surveys(projectid="p913481003361",
-                                        public_url="https://ws.euro.confirmit.com/",
-                                        idp_url="https://idp.euro.confirmit.com/",
-                                        client_id="71a15e5d-b52d-4534-b54b-fa6e2a9da8a7",
-                                        client_secret="2a943d4d-58ab-42b8-a276-53d07ad34064",
-                                        data=data)
+    response = upload_surveys(api_data, json_data, json_meta, data_vars=["q7", "q9", "q11"])
+
     assert response.status_code == 200
+    assert b'insertedRecords' in response.content
+    assert b'updatedRecords' in response.content
+    print(response.content)
