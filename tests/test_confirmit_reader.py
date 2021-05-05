@@ -3,7 +3,6 @@ import pandas as pd
 import json
 import pytest
 import asyncio
-from quantipy.core.tools.dp.confirmit.api_requests import get_surveys, upload_surveys
 
 
 @pytest.fixture
@@ -494,22 +493,13 @@ def test_writer_to_files(confirmit_dataset_verbose):
     confirmit_writer.write_confirmit('metaOutput.json', 'dataOutput.csv')
 
 def test_writer_to_api():
-    json_data, json_meta = asyncio.run(get_surveys(projectid="p913481003361",
-                                        public_url="https://ws.euro.confirmit.com/",
-                                        idp_url="https://idp.euro.confirmit.com/",
-                                        client_id="71a15e5d-b52d-4534-b54b-fa6e2a9da8a7",
-                                        client_secret="2a943d4d-58ab-42b8-a276-53d07ad34064"),
-                                        )
-
-    api_data = {
-        "projectid": "p913481003361",
-        "public_url": "https://ws.euro.confirmit.com/",
-        "idp_url": "https://idp.euro.confirmit.com/",
-        "client_id": "71a15e5d-b52d-4534-b54b-fa6e2a9da8a7",
-        "client_secret": "2a943d4d-58ab-42b8-a276-53d07ad34064"
-    }
-
-    response = upload_surveys(api_data, json_data, json_meta, data_vars=["q7", "q9", "q11"])
+    dataset = qp.DataSet("confirmit")
+    response = dataset.write_confirmit_api(projectid="p913481003361",
+                                           public_url="https://ws.euro.confirmit.com/",
+                                           idp_url="https://idp.euro.confirmit.com/",
+                                           client_id="71a15e5d-b52d-4534-b54b-fa6e2a9da8a7",
+                                           client_secret="2a943d4d-58ab-42b8-a276-53d07ad34064",
+                                           schema_vars=["q7", "q9", "q11"])
 
     assert response.status_code == 200
     assert b'insertedRecords' in response.content

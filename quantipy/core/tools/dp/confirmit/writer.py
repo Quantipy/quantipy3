@@ -1,5 +1,18 @@
 import json
+import asyncio
+from quantipy.core.tools.dp.confirmit.api_requests import get_surveys, upload_surveys
 
-def quantipy_to_confirmit(path_meta, path_data, meta, data, schema_vars, verbose):
-    a = 10
-    return a, 'b'
+
+def quantipy_to_confirmit(projectid, public_url, idp_url, client_id, client_secret, schema_vars):
+    json_data, json_meta = asyncio.run(get_surveys(projectid, public_url, idp_url,
+                                                   client_id, client_secret))
+
+    api_data = {
+        "projectid": projectid,
+        "public_url": public_url,
+        "idp_url": idp_url,
+        "client_id": client_id,
+        "client_secret": client_secret
+    }
+
+    return upload_surveys(api_data, json_data, json_meta, schema_vars)

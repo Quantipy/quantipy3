@@ -642,6 +642,10 @@ class DataSet(object):
         except AttributeError:
             raise Exception("Must set has_external parameter in read method first")
 
+    def write_confirmit_api(self, projectid, public_url, idp_url, client_id, client_secret, schema_vars):
+        """Converts quantipy dataset into Confirmit format and uploads it to the confirmit API"""
+        return w_confirmit_api(projectid, public_url, idp_url, client_id, client_secret, schema_vars)
+
     def read_spss(self, path_sav, **kwargs):
         """
         Load SPSS Statistics .sav files, converting and connecting data/meta.
