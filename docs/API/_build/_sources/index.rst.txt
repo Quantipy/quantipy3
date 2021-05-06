@@ -26,12 +26,6 @@ and `numpy <http://www.numpy.org/>`_ libraries. Aimed at social and marketing re
 
 """"
 
-.. note::
-  We are currently moving our documentation and reorganizing it. Sorry for the
-  lack of latest information.
-
-""""
-
 Key features
 """"""""""""
 
@@ -46,10 +40,13 @@ Key features
 
 """"
 
+**Origin Story**
+  Quantipy was conceived of and instigated by Gary Nelson 
+
 **Contributors**
   Kerstin Müller, Alexander Buchhammer, Alasdair Eaglestone, James Griffiths
 
-  Birgir Hrafn Sigurðsson and Geir Freysson of  `datasmoothie <http://datasmoothie.io//>`_
+  Birgir Hrafn Sigurðsson and Geir Freysson of  `datasmoothie <http://datasmoothie.com//>`_
 
 """"
 
