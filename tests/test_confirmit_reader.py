@@ -488,9 +488,6 @@ def test_read_from_api():
         "value": 2}],
     "text": {"en": "Use script to set values"}}""")
 
-def test_writer_to_files(confirmit_dataset_verbose):
-    confirmit_writer = confirmit_dataset_verbose
-    confirmit_writer.write_confirmit('metaOutput.json', 'dataOutput.csv')
 
 def test_writer_to_api():
     dataset = qp.DataSet("confirmit")
