@@ -65,7 +65,7 @@ def test_single_type(confirmit_dataset):
     print(confirmit_dataset.meta('q21'))
     assert confirmit_dataset.crosstab('q21').shape == (5, 1)
     print(confirmit_dataset.crosstab('q39', 'q21'))
-    assert confirmit_dataset.crosstab('q39', 'q21').shape == (3, 5)
+    assert confirmit_dataset.crosstab('q39', 'q21').shape == (3, 4)
     assert confirmit_dataset.meta()['columns']['q39'] == json.loads("""
     {"name": "q39",
     "parent": {},
@@ -135,7 +135,7 @@ def test_delimited_set_type(confirmit_dataset):
         "text": {"en": "multi - default options"}}""")
     assert confirmit_dataset.crosstab('q1').shape == (4, 1)
     print(confirmit_dataset.crosstab('q1', 'q22'))
-    assert confirmit_dataset.crosstab('q1', 'q22').shape == (4, 5)
+    assert confirmit_dataset.crosstab('q1', 'q22').shape == (4, 4)
 
 
 def test_number_type(confirmit_dataset):
@@ -148,12 +148,12 @@ def test_number_type(confirmit_dataset):
     "text": {"en": "open - numeric"}}
     """)
     assert confirmit_dataset.crosstab('q73').shape == (71, 1)
-    assert confirmit_dataset.crosstab('q73', 'q39').shape == (71, 3)
+    assert confirmit_dataset.crosstab('q73', 'q39').shape == (71, 2)
 
 
 def test_array_type(confirmit_dataset):
     print(confirmit_dataset.meta()['columns']['q5_1'])
-    assert confirmit_dataset.crosstab('q5_1', 'q39').shape == (52, 3)
+    assert confirmit_dataset.crosstab('q5_1', 'q39').shape == (52, 2)
     assert confirmit_dataset.meta()['masks']['q5'] == json.loads("""
     {"name": "q5",
     "parent": {},
@@ -215,7 +215,7 @@ def test_rating_type(confirmit_dataset):
 
 def test_ranking_type(confirmit_dataset):
     print(confirmit_dataset.meta()['columns']['q2_1'])
-    assert confirmit_dataset.crosstab('q2_1', 'q39').shape == (11, 3)
+    assert confirmit_dataset.crosstab('q2_1', 'q39').shape == (11, 2)
     print(confirmit_dataset.meta()['masks']['q2'])
     assert confirmit_dataset.meta()['masks']['q2'] == json.loads("""
     {
@@ -295,7 +295,7 @@ def test_ranking_type(confirmit_dataset):
 def test_multigrid_type(confirmit_dataset):
     print(confirmit_dataset.meta()['masks']['g56'])
     print(confirmit_dataset.crosstab('g56_1'))
-    assert confirmit_dataset.crosstab('g56_1', 'q39').shape == (3, 3)
+    assert confirmit_dataset.crosstab('g56_1', 'q39').shape == (3, 2)
     print(confirmit_dataset.meta()['masks']['g56'])
     assert confirmit_dataset.meta()['masks']['g56'] == json.loads("""
     {
@@ -476,7 +476,7 @@ def test_read_from_api():
     print(dataset_from_api.meta('q21'))
     assert dataset_from_api.crosstab('q21').shape == (6, 1)
     print(dataset_from_api.crosstab('q39', 'q21'))
-    assert dataset_from_api.crosstab('q39', 'q21').shape == (3, 6)
+    assert dataset_from_api.crosstab('q39', 'q21').shape == (3, 5)
     assert dataset_from_api.meta()['columns']['q39'] == json.loads("""
     {"name": "q39",
     "parent": {},

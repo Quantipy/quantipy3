@@ -40,6 +40,11 @@ class TestDataSet(unittest.TestCase):
         dataset = self._get_dataset()
         self.assertTrue(isinstance(dataset._data, pd.DataFrame))
         self.assertTrue(isinstance(dataset._meta, dict))
+        
+    def test_read_spss(self):
+        dataset = qp.DataSet('spss')
+        dataset.read_spss('tests/Example Data (A) - with multi choice q2.sav')
+        self.assertTrue(dataset.meta('q2').shape == (8,3))
 
     def test_fileinfo(self):
         dataset = self._get_dataset()
@@ -582,7 +587,7 @@ class TestDataSet(unittest.TestCase):
         dataset = self._get_dataset()
         dataset.uncode('q8',{1: 1, 2:2, 5:5}, 'q8', intersect={'gender':1})
         dataset.uncode('q8',{3: 3, 4:4, 98:98}, 'q8', intersect={'gender':2})
-        df = dataset.crosstab('q8', 'gender')
+        df = dataset.crosstab('q8', 'gender', xtotal=True)
         result = [[ 1797.,   810.,   987.],
                   [  476.,     0.,   476.],
                   [  104.,     0.,   104.],
@@ -801,6 +806,63 @@ class TestDataSet(unittest.TestCase):
         text = {'en-GB': 'What is your main fitness activity?',
                 'x edits': {'en-GB': 'edit'}, 'y edits':{'en-GB': 'edit'}}
         dataset.set_variable_text('q1', 'edit', 'en-GB', ['x', 'y'])
+
+    def test_sig_diff_without_counts(self):
+        """ 
+        Test that the sig diff information is included even though the
+        user didn't request the necessary counts view to run the tests
+        """
+        dataset = self._get_dataset()
+        x = 'q5_3'
+        y = 'gender'
+        sig_level = 0.05
+        with_sigdiff = dataset.crosstab(x, y, 
+                                        ci=['c%'], 
+                                        sig_level=sig_level)
+        assert '0.05' in with_sigdiff.index.get_level_values(level=1).tolist()
+
+    def test_sig_diff_details(self):
+        dataset = self._get_dataset()
+        x = 'q5_3'
+        y = 'gender'
+        sig_level = 0.05
+
+        # here we use sig diff with the default parameters, which mimic Dimensions
+        with_sigdiff = dataset.crosstab(x, y, 
+                                        ci=['counts', 'c%'], 
+                                        sig_level=sig_level)
+        # TODO: we can add expected sig-diffs here
+        assert with_sigdiff.shape == (22,2)
+
+        # here we can test the sig-diff with different parameters
+        stack = qp.Stack(name='sig', 
+                         add_data={'sig': {'meta': dataset.meta(), 
+                                           'data': dataset.data()}})
+        stack.add_link(data_keys=['sig'], 
+                       x=x, 
+                       y=y, 
+                       views=['c%', 'counts'])
+        link = stack['sig']['no_filter'][x][y]
+        test = qp.Test(link, 'x|f|:|||counts')
+
+        # possible parameters are here:
+        #https://github.com/Quantipy/quantipy3/blob/master/quantipy/core/quantify/engine.py#L1783        
+        test = test.set_params(level=sig_level)
+        df = test.run()
+        # assert that we only have 1 significanctly higher value
+        assert df[('gender', 2)].isna().sum() == 7
+        assert df[('gender', 1)].isna().sum() == 6
+        
+
+    def test_crosstab2(self):
+        dataset = self._get_dataset()
+        result = dataset.crosstab('q1', 'gender')
+        with_sigdiff = dataset.crosstab('q1', 'q4 > gender', 
+                                        ci=['counts', 'c%'], 
+                                        sig_level=0.95,
+                                        painted=True)
+        assert result.shape == (13,2)
+        assert with_sigdiff.shape == (37,4)
 
     def test_crosstab(self):
         x = 'q14r01c01'

@@ -17,6 +17,9 @@ This repository is a port of [Quantipy](https://www.github.com/quantipy/quantipy
   - Structured analysis and reporting via Chain and Cluster containers
   - Exports to SPSS, Dimensions ddf/mdd, MS Excel and Powerpoint with flexible layouts and various options
   - Python 3.8 is not yet fully supported, but 3.5, 3.6, and 3.7 are.
+  
+#### Origins
+- Quantipy was concieved of and instigated by Gary Nelson: http://www.datasmoothie.com
 
 #### Contributors
 - Alexander Buchhammer, Alasdair Eaglestone, James Griffiths, Kerstin Müller : https://yougov.co.uk
@@ -172,13 +175,13 @@ Weight factor ratio                13.283522
 And you can test whether the weighting has worked by running crosstabs:
 
 ```
-dataset.crosstab('agecat', pct=True, w='my_new_weight')
+dataset.crosstab('agecat', ci=['c%'], w='my_new_weight')
 ```
 
 <table border="1" class="dataframe">  <thead>    <tr>      <th></th>      <th>Question</th>      <th>agecat. Age category</th>    </tr>        <tr>      <th>Question</th>      <th>Values</th>      <th></th>    </tr>  </thead>  <tbody>    <tr>      <th rowspan="6" valign="top">agecat. Age category</th>      <th>All</th>      <td>100.0</td>    </tr>    <tr>      <th>18-24</th>      <td>5.0</td>    </tr>    <tr>      <th>25-34</th>      <td>30.0</td>    </tr>    <tr>      <th>35-49</th>      <td>26.0</td>    </tr>    <tr>      <th>50-64</th>      <td>19.0</td>    </tr>    <tr>      <th>64+</th>      <td>20.0</td>    </tr>  </tbody></table>
 
 ```
-dataset.crosstab('gender', pct=True, w='my_new_weight')
+dataset.crosstab('gender', ci=['c%'], w='my_new_weight')
 ```
 
 <table border="1" class="dataframe">  <thead>    <tr>      <th></th>      <th>Question</th>      <th>gender. Gender</th>        <tr>      <th>Question</th>      <th>Values</th>      <th></th>    </tr>  </thead>  <tbody>    <tr>      <th rowspan="3" valign="top">gender. Gender</th>      <th>All</th>      <td>100.0</td>    </tr>    <tr>      <th>Male</th>      <td>49.0</td>    </tr>    <tr>      <th>Female</th>      <td>51.0</td>    </tr>  </tbody></table>
