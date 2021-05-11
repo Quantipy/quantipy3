@@ -191,13 +191,13 @@ def quantipy_from_confirmit(meta_json, data_json, verbose=False, text_key='en-GB
                     for k, v in value.items():
                         if loop_of_loop is None:
                             if k != loop_var:
-                                k = f'{loop_var}_{k}'
+                                k = '{loop_var}_{k}'.format(loop_var=loop_var, k=k)
                         else:
                             if k != loop_of_loop:
-                                k = f'{loop_var}_{k}'
+                                k = '{loop_var}_{k}'.format(loop_var=loop_var, k=k)
                             else:
                                 k = loop_var
-                        k = f'{k}_{str(idx + 1)}'
+                        k = '{k}_{string_idx}'.format(k=k, string_idx=str(idx + 1))
                         data[k] = v
             except KeyError:
                 pass
