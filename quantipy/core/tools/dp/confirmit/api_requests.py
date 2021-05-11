@@ -1,9 +1,8 @@
-import asyncio
 import requests as req
 import json
 
 
-async def get_surveys(projectid, public_url, idp_url, client_id, client_secret, schema_vars=None, schema_filter=None):
+def get_surveys(projectid, public_url, idp_url, client_id, client_secret, schema_vars=None, schema_filter=None):
     # Source configuration
     source_projectid = projectid
     source_public_site_url = public_url
@@ -30,7 +29,7 @@ async def get_surveys(projectid, public_url, idp_url, client_id, client_secret, 
         return resp_obj['access_token']
 
 
-    async def get_survey_data(source_token, source_public_site_url, source_projectid):
+    def get_survey_data(source_token, source_public_site_url, source_projectid):
         # Get source data records
         headers = {'Authorization': 'Bearer ' + source_token, "Accept": "application/x-ndjson", "Content-Type": "application/json"}
         url = source_public_site_url + 'v1/surveys/' + source_projectid + '/responses/data'
@@ -46,7 +45,7 @@ async def get_surveys(projectid, public_url, idp_url, client_id, client_secret, 
         return json_data
 
 
-    async def get_survey_meta(source_token, source_public_site_url, source_projectid):
+    def get_survey_meta(source_token, source_public_site_url, source_projectid):
         # Get survey schema records
         headers = {'Authorization': 'Bearer ' + source_token, "Accept": "application/json", "Content-Type": "application/json"}
         url = source_public_site_url + 'v1/surveys/' + source_projectid + '/responses/schema'
@@ -62,11 +61,8 @@ async def get_surveys(projectid, public_url, idp_url, client_id, client_secret, 
 
 
     source_token = get_token(source_idp_url, source_client_id, source_client_secret)
-    task1 = asyncio.create_task(get_survey_data(source_token, source_public_site_url, source_projectid))
-    task2 = asyncio.create_task(get_survey_meta(source_token, source_public_site_url, source_projectid))
-
-    json_data = await task1
-    json_meta = await task2
+    json_data = get_survey_data(source_token, source_public_site_url, source_projectid)
+    json_meta = get_survey_meta(source_token, source_public_site_url, source_projectid)
 
     return json_data, json_meta
 

@@ -9,7 +9,6 @@ import re, string
 import sqlite3
 import sys
 import requests as req
-import asyncio
 from ftfy import fix_text
 
 from collections import OrderedDict
@@ -332,7 +331,7 @@ def read_confirmit_from_files(path_meta, path_data, verbose=True):
     return meta, data
 
 def read_confirmit_api(projectid, public_url, idp_url, client_id, client_secret, schema_vars, schema_filter, verbose):
-    json_data, json_meta = asyncio.run(get_surveys(projectid, public_url, idp_url, client_id, client_secret, schema_vars, schema_filter))
+    json_data, json_meta = get_surveys(projectid, public_url, idp_url, client_id, client_secret, schema_vars, schema_filter)
     meta, data = quantipy_from_confirmit(json_meta[0], json_data, verbose)
     return meta, data
 
