@@ -49,13 +49,15 @@ def quantipy_from_confirmit(meta_json, data_json, verbose=False, text_key='en-GB
         if fields:
             for field in fields:
                 if variable.get('complex-grid'):
-                    source = f"columns@{field['code']}"
+                    source = "columns@{}".format(field['code'])
                     language_text = field['texts'][0]['text']
                 else:
                     if var_type == 'rating' or var_type == 'singleChoice':
-                        source = f"columns@{variable['name']}[{{{variable['name']}_{field['code']}}}]"
+                        source = "columns@{variable_name}[{{{variable_name}_{field}}}]" \
+                            .format(variable_name=variable['name'], field=field['code'])
                     else:
-                        source = f"columns@{variable['name']}_{field['code']}"
+                        source = "columns@{variable_name}_{field}" \
+                            .format(variable_name=variable['name'], field=field['code'])
                     language_code = field['texts'][0].get('languageId')
                     language_text = {}
                     if language_code:
