@@ -3,9 +3,9 @@ import pandas as pd
 from quantipy.core.helpers.functions import load_json
 from quantipy.core.tools.dp.prep import start_meta
 from .languages_file import languages
+from .helpers import int_or_float
 
-
-def quantipy_from_confirmit(meta_json, data_json, text_key='en-GB'):
+def quantipy_from_confirmit(meta_json, data_json, verbose=False, text_key='en-GB'):
     types_translations = {
         'numeric': 'float',
         'text': 'string',
@@ -23,6 +23,8 @@ def quantipy_from_confirmit(meta_json, data_json, text_key='en-GB'):
         }
         if values:
             subvar_obj['values'] = 'lib@values@' + parsed_meta['name']
+        if parsed_meta.get('type') == 'array' and parsed_meta.get('subtype') == 'single':
+            subvar_obj['properties'] = {'created': True}
         return subvar_obj
 
     def fill_items_arr(parsed_meta):
@@ -35,32 +37,44 @@ def quantipy_from_confirmit(meta_json, data_json, text_key='en-GB'):
         children_arr = []
         for item in parsed_meta['items']:
             children_arr.append(item['source'])
-        sets[parsed_meta['name']] = {'items': children_arr}
+        set_obj = {'items': children_arr}
+        if parsed_meta.get('type') == 'array':
+            set_obj['name'] = parsed_meta['name']
+        sets[parsed_meta['name']] = set_obj
 
     def get_grid_items(variable):
         children_array = []
         fields = variable.get('fields')
+        var_type = variable.get('variableType')
         if fields:
             for field in fields:
                 if variable.get('complex-grid'):
-                    source = 'columns@' + field['code']
+                    source = "columns@{}".format(field['code'])
                     language_text = field['texts'][0]['text']
                 else:
-                    source = 'columns@' + variable['name'] + '_' + field['code']
+                    if var_type == 'rating' or var_type == 'singleChoice':
+                        source = "columns@{variable_name}[{{{variable_name}_{field}}}]" \
+                            .format(variable_name=variable['name'], field=field['code'])
+                    else:
+                        source = "columns@{variable_name}_{field}" \
+                            .format(variable_name=variable['name'], field=field['code'])
                     language_code = field['texts'][0].get('languageId')
                     language_text = {}
                     if language_code:
                         language_text[languages[language_code]] = field['texts'][0]['text']
-
-                children_array.append({
-                    'properties': {},
+                item_props = {
                     'source': source,
                     'text': language_text
-                })
+                }
+                if var_type != 'ranking' and var_type != 'rating' and var_type != 'singleChoice':
+                   item_props['properties'] = {}
+                children_array.append(item_props)
         return children_array
         
 
     def get_options(variable, var_type, is_child, has_nodes):
+        if variable is None:
+            return None
         col_values_arr = []
         def get_nodes_children(value):
             node_obj = {}
@@ -80,7 +94,7 @@ def quantipy_from_confirmit(meta_json, data_json, text_key='en-GB'):
                 for child in children:
                     get_nodes_children(child)
 
-        for value in variable:
+        for idx, value in enumerate(variable):
             if has_nodes:
                get_nodes_children(value) 
             else:
@@ -93,12 +107,12 @@ def quantipy_from_confirmit(meta_json, data_json, text_key='en-GB'):
                     try:
                         col_values_val = int(value["code"])
                     except ValueError:
-                        col_values_val = value["code"]
+                        col_values_val = idx + 1
 
                 language_code = value["texts"][0]["languageId"]
                 values_dict = {"text": { languages[language_code]: value["texts"][0]["text"]}, "value": col_values_val}
                 if value.get('score'):
-                    values_dict["factor"] = value.get('score')
+                    values_dict["factor"] = int(value.get('score'))
                 col_values_arr.append(values_dict)
         return col_values_arr
 
@@ -108,6 +122,8 @@ def quantipy_from_confirmit(meta_json, data_json, text_key='en-GB'):
         else:
             variable = variable_meta
 
+        confirmit_var_type = variable.get('variableType')
+
         if has_nodes:
             options = variable.get("nodes")
         else:
@@ -115,31 +131,39 @@ def quantipy_from_confirmit(meta_json, data_json, text_key='en-GB'):
 
         variable_obj = {
             "name": variable['name'],
-            "parent": {},
             "type": var_type
-            # "properties": {}
         }
-        if var_type != 'float' and var_type != 'single':
+        is_single_grid_var = confirmit_var_type == 'singleChoice' and var_type == 'array'
+        if is_single_grid_var:
+            tags = variable.get('tags')
+            if tags is not None:
+                variable_obj['tags'] = tags
+        if confirmit_var_type != 'rating' and not is_single_grid_var:
+            variable_obj['parent'] = {}
+        if var_type != 'float' and var_type != 'int' and var_type != 'single' and confirmit_var_type != 'rating' and not is_single_grid_var:
            variable_obj['properties'] = {}
         if var_type == 'array':
             variable_obj['items'] = get_grid_items(variable)
-            if variable.get('variableType') == 'numeric':
-                variable_obj['subtype'] = 'float'
-            if variable.get('variableType') == 'text':
+            if confirmit_var_type == 'numeric':
+                numeric_type = int_or_float(variable)
+                variable_obj['subtype'] = numeric_type
+            if confirmit_var_type == 'text':
                 variable_obj['subtype'] = 'string'
-            if variable.get('variableType') == 'rating':
+            if confirmit_var_type == 'rating' or confirmit_var_type == 'singleChoice':
                 variable_obj['subtype'] = 'single'
                 lib['values'][variable['name']] = get_options(options, var_type, is_child, has_nodes)
                 variable_obj['values'] = 'lib@values@' + variable['name']
-            if variable.get('variableType') == 'ranking':
+            if confirmit_var_type == 'ranking':
                 variable_obj['subtype'] = 'int'
-            if variable.get('variableType') == 'multiGrid':
+                lib['values'][variable['name']] = get_options(options, var_type, is_child, has_nodes)
+                variable_obj['values'] = 'lib@values@' + variable['name']
+            if confirmit_var_type == 'multiGrid':
                 variable_obj['subtype'] = 'delimited set'
                 if complex_grid:
                     lib['values'][variable['name']] = get_options(options, var_type, is_child, has_nodes)
                     variable_obj['values'] = 'lib@values@' + variable['name']
 
-        if var_type != 'float' and var_type != 'array' and var_type != 'string' and var_type != 'date':
+        if var_type != 'float' and var_type != 'int' and var_type != 'array' and var_type != 'string' and var_type != 'date':
             variable_obj['values'] = get_options(options, var_type, is_child, has_nodes)
         if variable.get('titles'):
             language_code = variable['titles'][0].get("languageId")
@@ -159,9 +183,222 @@ def quantipy_from_confirmit(meta_json, data_json, text_key='en-GB'):
         
         return variable_obj
 
+    def reformat_loop_data(loop_var, loop_of_loop=None):
+        for data in data_parsed:
+            try:
+                old_values = data.pop(loop_var)
+                for idx, value in enumerate(old_values):
+                    for k, v in value.items():
+                        if loop_of_loop is None:
+                            if k != loop_var:
+                                k = '{loop_var}_{k}'.format(loop_var=loop_var, k=k)
+                        else:
+                            if k != loop_of_loop:
+                                k = '{loop_var}_{k}'.format(loop_var=loop_var, k=k)
+                            else:
+                                k = loop_var
+                        k = '{k}_{string_idx}'.format(k=k, string_idx=str(idx + 1))
+                        data[k] = v
+            except KeyError:
+                pass
+
+    def parse_confirmit_types(variable, loop_of_loop=None):
+        confirmit_var_type = variable.get('variableType')
+        is_loop = variable.get('is_loop')
+        if verbose:
+            confirmit_info[variable['name']] = variable
+        has_parent = variable.get('parentVariableName')
+        if has_parent:
+            if has_parent in multigrid_vars:
+                language_code = variable.get('texts')[0].get('languageId')
+                language_text = { 'text': {} }
+                if language_code:
+                    language_text['text'] = { languages[language_code]: variable['texts'][0]['text'] }
+                multigrid_vars[has_parent]['fields'].append(
+                    {
+                        'code': variable['name'],
+                        'texts': [language_text]
+                    })
+            elif has_parent in grid3d_vars:
+                language_code = variable.get('titles')[0].get('languageId')
+                language_text = { 'text': {} }
+                if language_code:
+                    language_text['text'] = { languages[language_code]: variable['titles'][0]['text'] }
+                grid3d_vars[has_parent]['fields'].append({
+                        'code': variable['name'],
+                        'texts': [language_text]
+                    })
+            else:
+                try:
+                    filtered_parent_iter = filter(lambda x: x['name'] == has_parent, vars_arr)
+                    filtered_parent = next(filtered_parent_iter)
+                except StopIteration:
+                    filtered_parent = {}
+                if filtered_parent.get('variableType') == 'multiGrid':
+                    if has_parent not in multigrid_vars:
+                        try:
+                            language_code = variable.get('texts')[0].get('languageId')
+                        except TypeError:
+                            language_code = None
+                        language_text = { 'text': {} }
+                        if language_code:
+                            language_text['text'] = { languages[language_code]: variable['texts'][0]['text'] }
+                        multigrid_vars[has_parent] = {
+                            'name': has_parent,
+                            'variableType': filtered_parent['variableType'],
+                            'complex-grid': True,
+                            'options': filtered_parent.get('options'),
+                            'fields': [{
+                                'code': variable['name'],
+                                'texts': [language_text]
+                            }]
+                        }
+                if filtered_parent.get('variableType') == 'grid3D':
+                    if has_parent not in grid3d_vars:
+                        try:
+                            language_code = variable.get('titles')[0].get('languageId')
+                        except TypeError:
+                            language_code = None
+                        language_text = { 'text': {} }
+                        if language_code:
+                            language_text['text'] = { languages[language_code]: variable['titles'][0]['text'] }
+                        grid3d_vars[has_parent] = {
+                            'name': has_parent,
+                            'variableType': filtered_parent['variableType'],
+                            'complex-grid': True,
+                            'options': filtered_parent.get('options'),
+                            'fields': [{
+                                'code': variable['name'],
+                                'texts': [language_text]
+                            }]
+                        }    
+
+        if confirmit_var_type == 'singleChoice':
+            has_nodes = False
+
+            if variable.get('nodes'):
+                has_nodes = True
+
+            if variable.get("isCompound") and variable.get("fields") and variable.get("options"):
+                parsed_meta = get_main_info(variable, 'array')
+                masks_output[variable['name']] = parsed_meta
+                fill_items_arr(parsed_meta)
+                single_children_arr = []
+                for subvar in parsed_meta['items']:
+                    parsed_subvar_meta = create_subvar_meta(parsed_meta, subvar, True)
+                    columns_output[parsed_subvar_meta['name']] = parsed_subvar_meta
+                    single_children_arr.append(parsed_subvar_meta['name'])
+                grid_vars.append({'parent': variable['name'], 'children': single_children_arr})
+
+            else:
+                if is_loop:
+                    root_name = variable['name']
+                    reformat_loop_data(root_name, loop_of_loop)
+                    loop_children = variable.get('variables')
+                    loop_of_loop = variable.get('children')
+                    lc_root_names = []
+                    lol_root_names = []
+                    for idx, opt in enumerate(variable['options']):
+                        variable['name'] = root_name + '_' + opt['code']
+                        columns_output[variable['name']] = get_main_info(variable, 'single', has_nodes=has_nodes)
+                        for lc_idx, loop_child in enumerate(loop_children):
+                            if idx == 0:
+                                lc_root_names.append(loop_child['name'])
+                            loop_child['name'] = root_name + '_' + lc_root_names[lc_idx] + '_' + opt['code']
+                            parse_confirmit_types(loop_child)
+                            loop_child['name'] = lc_root_names[lc_idx]
+                        for lol_idx, loop in enumerate(loop_of_loop):
+                            if idx == 0:
+                                lol_root_names.append(loop['name'])
+                            loop['name'] = root_name + '_' + lol_root_names[lol_idx] + '_' + opt['code']
+                            parse_confirmit_types(loop, lol_root_names[lol_idx])
+                            loop['name'] = lol_root_names[lol_idx]
+
+                else:
+                    columns_output[variable['name']] = get_main_info(variable, 'single', has_nodes=has_nodes)
+                    single_vars.append(variable['name'])
+        if confirmit_var_type == 'multiChoice':
+            delimited_set_vars.append(variable['name'])
+            columns_output[variable['name']] = get_main_info(variable, 'delimited set')
+        if confirmit_var_type == 'dateTime':
+            columns_output[variable['name']] = get_main_info(variable, 'date')
+        if confirmit_var_type == 'numeric':
+            if variable.get('fields'):
+                parsed_meta = get_main_info(variable, 'array')
+                masks_output[variable['name']] = parsed_meta
+                fill_items_arr(parsed_meta)
+                numeric_children_arr = []
+                for subvar in parsed_meta['items']:
+                    parsed_subvar_meta = create_subvar_meta(parsed_meta, subvar)
+                    columns_output[parsed_subvar_meta['name']] = parsed_subvar_meta
+                    numeric_children_arr.append(parsed_subvar_meta['name'])
+                grid_vars.append({'parent': variable['name'], 'children': numeric_children_arr})
+            else:
+                numeric_type = int_or_float(variable)
+                columns_output[variable['name']] = get_main_info(variable, numeric_type)
+        if confirmit_var_type == 'text':
+            if variable.get('fields'):
+                parsed_meta = get_main_info(variable, 'array')
+                masks_output[variable['name']] = parsed_meta
+                fill_items_arr(parsed_meta)
+                text_children_arr = []
+                for subvar in parsed_meta['items']:
+                    parsed_subvar_meta = create_subvar_meta(parsed_meta, subvar)
+                    columns_output[parsed_subvar_meta['name']] = parsed_subvar_meta
+                    text_children_arr.append(parsed_subvar_meta['name'])
+                grid_vars.append({'parent': variable['name'], 'children': text_children_arr})
+            else:
+                columns_output[variable['name']] = get_main_info(variable, 'string')
+        if confirmit_var_type == 'rating':
+            if variable.get('isCompound'):
+                parsed_meta = get_main_info(variable, 'array')
+                masks_output[variable['name']] = parsed_meta
+                fill_items_arr(parsed_meta)
+                single_children_arr = []
+                for subvar in parsed_meta['items']:
+                    parsed_subvar_meta = create_subvar_meta(parsed_meta, subvar, True)
+                    columns_output[parsed_subvar_meta['name']] = parsed_subvar_meta
+                    single_children_arr.append(parsed_subvar_meta['name'])
+                grid_vars.append({'parent': variable['name'], 'children': single_children_arr})
+            else:
+                single_vars.append(variable['name'])
+                columns_output[variable['name']] = get_main_info(variable, 'single')
+        if confirmit_var_type == 'ranking':
+            parsed_meta = get_main_info(variable, 'array')
+            masks_output[variable['name']] = parsed_meta
+            fill_items_arr(parsed_meta)
+            int_children_arr = []
+            for subvar in parsed_meta['items']:
+                parsed_subvar_meta = create_subvar_meta(parsed_meta, subvar, True)
+                columns_output[parsed_subvar_meta['name']] = parsed_subvar_meta
+                int_children_arr.append(parsed_subvar_meta['name'])
+            grid_vars.append({'parent': variable['name'], 'children': int_children_arr})
+        if confirmit_var_type == 'multiGrid':
+            if variable['name'] not in multigrid_vars:
+                multigrid_vars[variable['name']] = {
+                    'name': variable['name'],
+                    'variableType': variable['variableType'],
+                    'complex-grid': True,
+                    'options': variable.get('options'),
+                    'fields': []
+                }
+
+    def set_as_loop(variable):
+        ch_var = variable.get('keys')[0]
+        ch_var['texts'] = variable.get('texts')
+        ch_var['variables'] = variable.get('variables')
+        children_arr = []
+        if variable.get('children'):
+            for child in variable.get('children'):
+                children_arr.append(set_as_loop(child))
+        ch_var['children'] = children_arr
+        ch_var['is_loop'] = True
+        return ch_var
+
     data_array = []
     sub_data_array = []
     columns_array = []
+    confirmit_info = {}
     if isinstance(data_json, list):
         data_parsed = data_json
     else:
@@ -192,6 +429,7 @@ def quantipy_from_confirmit(meta_json, data_json, text_key='en-GB'):
     delimited_set_vars = []
     multigrid_vars = {}
     grid3d_vars = {}
+
     root_vars = meta_parsed.get('root')
     vars_arr = root_vars.get('variables')
     for key_var in root_vars.get('keys'):
@@ -199,147 +437,11 @@ def quantipy_from_confirmit(meta_json, data_json, text_key='en-GB'):
     children_vars = root_vars.get('children')
     if children_vars:
         for children_var in children_vars:
-            vars_arr.append(children_var['keys'][0])
+            ch_var = set_as_loop(children_var)
+            vars_arr.append(ch_var)
+
     for variable in vars_arr:
-        has_parent = variable.get('parentVariableName')
-        if has_parent:
-            if has_parent in multigrid_vars:
-                language_code = variable.get('texts')[0].get('languageId')
-                language_text = { 'text': {} }
-                if language_code:
-                    language_text['text'] = { languages[language_code]: variable['texts'][0]['text'] }
-                multigrid_vars[has_parent]['fields'].append(
-                    {
-                        'code': variable['name'],
-                        'texts': [language_text]
-                    })
-            elif has_parent in grid3d_vars:
-                language_code = variable.get('titles')[0].get('languageId')
-                language_text = { 'text': {} }
-                if language_code:
-                    language_text['text'] = { languages[language_code]: variable['titles'][0]['text'] }
-                grid3d_vars[has_parent]['fields'].append({
-                        'code': variable['name'],
-                        'texts': [language_text]
-                    })
-            else:
-                filtered_parent_iter = filter(lambda x: x['name'] == has_parent, vars_arr)
-                filtered_parent = next(filtered_parent_iter)
-                if filtered_parent['variableType'] == 'multiGrid':
-                    if has_parent not in multigrid_vars:
-                        try:
-                            language_code = variable.get('texts')[0].get('languageId')
-                        except TypeError:
-                            language_code = None
-                        language_text = { 'text': {} }
-                        if language_code:
-                            language_text['text'] = { languages[language_code]: variable['texts'][0]['text'] }
-                        multigrid_vars[has_parent] = {
-                            'name': has_parent,
-                            'variableType': filtered_parent['variableType'],
-                            'complex-grid': True,
-                            'options': filtered_parent.get('options'),
-                            'fields': [{
-                                'code': variable['name'],
-                                'texts': [language_text]
-                            }]
-                        }
-                if filtered_parent['variableType'] == 'grid3D':
-                    if has_parent not in grid3d_vars:
-                        try:
-                            language_code = variable.get('titles')[0].get('languageId')
-                        except TypeError:
-                            language_code = None
-                        language_text = { 'text': {} }
-                        if language_code:
-                            language_text['text'] = { languages[language_code]: variable['titles'][0]['text'] }
-                        grid3d_vars[has_parent] = {
-                            'name': has_parent,
-                            'variableType': filtered_parent['variableType'],
-                            'complex-grid': True,
-                            'options': filtered_parent.get('options'),
-                            'fields': [{
-                                'code': variable['name'],
-                                'texts': [language_text]
-                            }]
-                        }    
-
-        if variable.get('variableType') == 'singleChoice':
-            has_nodes = False
-            if variable.get('options'):
-                try:
-                    int(variable['options'][0]['code'])
-                except ValueError:
-                    pass
-            if variable.get('nodes'):
-                has_nodes = True
-                try:
-                    int(variable['nodes'][0]['code'])
-                except ValueError:
-                    pass
-
-            single_vars.append(variable['name'])
-            columns_output[variable['name']] = get_main_info(variable, 'single', has_nodes)
-        if variable.get('variableType') == 'multiChoice':
-            delimited_set_vars.append(variable['name'])
-            columns_output[variable['name']] = get_main_info(variable, 'delimited set')
-        if variable.get('variableType') == 'dateTime':
-            columns_output[variable['name']] = get_main_info(variable, 'date')
-        if variable.get('variableType') == 'numeric':
-            if variable.get('fields'):
-                parsed_meta = get_main_info(variable, 'array')
-                masks_output[variable['name']] = parsed_meta
-                fill_items_arr(parsed_meta)
-                numeric_children_arr = []
-                for subvar in parsed_meta['items']:
-                    parsed_subvar_meta = create_subvar_meta(parsed_meta, subvar)
-                    columns_output[parsed_subvar_meta['name']] = parsed_subvar_meta
-                    numeric_children_arr.append(parsed_subvar_meta['name'])
-                grid_vars.append({'parent': variable['name'], 'children': numeric_children_arr})
-            else:
-                columns_output[variable['name']] = get_main_info(variable, 'float')
-        if variable.get('variableType') == 'text':
-            if variable.get('fields'):
-                parsed_meta = get_main_info(variable, 'array')
-                masks_output[variable['name']] = parsed_meta
-                fill_items_arr(parsed_meta)
-                text_children_arr = []
-                for subvar in parsed_meta['items']:
-                    parsed_subvar_meta = create_subvar_meta(parsed_meta, subvar)
-                    columns_output[parsed_subvar_meta['name']] = parsed_subvar_meta
-                    text_children_arr.append(parsed_subvar_meta['name'])
-                grid_vars.append({'parent': variable['name'], 'children': text_children_arr})
-            else:
-                columns_output[variable['name']] = get_main_info(variable, 'string')
-        if variable.get('variableType') == 'rating':
-            parsed_meta = get_main_info(variable, 'array')
-            masks_output[variable['name']] = parsed_meta
-            fill_items_arr(parsed_meta)
-            single_children_arr = []
-            for subvar in parsed_meta['items']:
-                parsed_subvar_meta = create_subvar_meta(parsed_meta, subvar, True)
-                columns_output[parsed_subvar_meta['name']] = parsed_subvar_meta
-                single_children_arr.append(parsed_subvar_meta['name'])
-            grid_vars.append({'parent': variable['name'], 'children': single_children_arr})
-        if variable.get('variableType') == 'ranking':
-            parsed_meta = get_main_info(variable, 'array')
-            masks_output[variable['name']] = parsed_meta
-            fill_items_arr(parsed_meta)
-            int_children_arr = []
-            for subvar in parsed_meta['items']:
-                parsed_subvar_meta = create_subvar_meta(parsed_meta, subvar)
-                columns_output[parsed_subvar_meta['name']] = parsed_subvar_meta
-                int_children_arr.append(parsed_subvar_meta['name'])
-            grid_vars.append({'parent': variable['name'], 'children': int_children_arr})
-        if variable.get('variableType') == 'multiGrid':
-            if variable['name'] not in multigrid_vars:
-                multigrid_vars[variable['name']] = {
-                    'name': variable['name'],
-                    'variableType': variable['variableType'],
-                    'complex-grid': True,
-                    'options': variable.get('options'),
-                    'fields': []
-                }
+        parse_confirmit_types(variable)
     
     for k, v in multigrid_vars.items():
         parsed_meta = get_main_info(v, 'array', complex_grid=True)
@@ -355,11 +457,20 @@ def quantipy_from_confirmit(meta_json, data_json, text_key='en-GB'):
         "text": { global_language: "Variable order in source file" },
         "items": columns_array
     }
+    info = {
+        "text": "Converted from SAV file .",
+        "from_source": {"pandas_reader": "sav"}
+    }
+    if verbose:
+        info["has_external"] = {
+            "confirmit": {
+                "meta": {
+                    "columns": confirmit_info
+                }
+            }
+        }
     output_obj = {
-        "info": {
-            "text": "Converted from SAV file .",
-            "from_source": {"pandas_reader": "sav"}
-        },
+        "info": info,
         "lib": lib,
         "masks": masks_output,
         "sets": sets,

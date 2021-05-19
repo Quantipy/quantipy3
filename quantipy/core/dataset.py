@@ -12,6 +12,7 @@ from quantipy.core.tools.dp.io import (
     read_ascribe as r_ascribe,
     read_confirmit_from_files as r_confirmit_from_files,
     read_confirmit_api as r_confirmit_api,
+    write_confirmit_api as w_confirmit_api,
     write_spss as w_spss,
     write_quantipy as w_quantipy,
     write_dimensions as w_dimensions)
@@ -584,7 +585,7 @@ class DataSet(object):
         self._rename_blacklist_vars()
         return None
 
-    def read_confirmit_from_files(self, path_meta, path_data, reset=True):
+    def read_confirmit_from_files(self, path_meta, path_data, reset=True, verbose=False):
         """Read confirmit data
 
         Parameters
@@ -598,10 +599,12 @@ class DataSet(object):
         -------
         None
         """
-        self._meta, self._data = r_confirmit_from_files(path_meta, path_data)
+        if verbose:
+            self.write_allowed = True
+        self._meta, self._data = r_confirmit_from_files(path_meta, path_data, verbose)
         self._set_file_info(path_data, path_meta, reset=reset)
 
-    def read_confirmit_api(self, projectid, public_url, idp_url=None, client_id=None, client_secret=None, reset=True):
+    def read_confirmit_api(self, projectid, public_url, idp_url=None, client_id=None, client_secret=None, reset=True, schema_vars=None, schema_filter=None, verbose=False):
         """Read confirmit data from confirmit api
 
         Parameters
@@ -622,8 +625,28 @@ class DataSet(object):
         if not client_secret:
             client_secret = os.getenv('CLIENT_SECRET')
 
-        self._meta, self._data = r_confirmit_api(projectid, public_url, idp_url, client_id, client_secret)
+        self._meta, self._data = r_confirmit_api(projectid, public_url, idp_url, client_id, client_secret, schema_vars, schema_filter, verbose)
         self._set_file_info('', reset=reset)
+
+    def write_confirmit(self, path_meta, path_data, schema_vars=None, verbose=False):
+        """Converts quantipy dataset into Confirmit format"""
+        try:
+            if self.write_allowed:
+                res_meta_string = json.dumps(self._meta)
+                output_meta_path = path_meta
+                output_data_path = path_data
+                output_meta_file = open(output_meta_path,'w')
+                self._data.to_csv(output_data_path)
+                output_meta_file.write(res_meta_string)
+                output_meta_file.close()
+            else:
+                raise Exception("Must set has_external parameter in read method first")
+        except AttributeError:
+            raise Exception("Must set has_external parameter in read method first")
+
+    def write_confirmit_api(self, projectid, public_url, idp_url, client_id, client_secret, schema_vars):
+        """Converts quantipy dataset into Confirmit format and uploads it to the confirmit API"""
+        return w_confirmit_api(projectid, public_url, idp_url, client_id, client_secret, schema_vars)
 
     def read_spss(self, path_sav, **kwargs):
         """
