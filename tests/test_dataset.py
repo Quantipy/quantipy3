@@ -852,6 +852,26 @@ class TestDataSet(unittest.TestCase):
         # assert that we only have 1 significanctly higher value
         assert df[('gender', 2)].isna().sum() == 7
         assert df[('gender', 1)].isna().sum() == 6
+
+
+    def test_crosstab_with_base_selection(self):
+        dataset = self._get_dataset()
+        result = dataset.crosstab(['q2b'], 'gender', w='weight_a')
+        assert "Base" in result.index.get_level_values(1)
+        assert "Unweighted base" not in result.index.get_level_values(1)
+        result = dataset.crosstab(['q2b'], 'gender')
+        assert "Base" in result.index.get_level_values(1)
+        assert "Unweighted base" not in result.index.get_level_values(1)
+        result = dataset.crosstab(['q2b'], 'gender', w='weight_a', base='both')
+        assert "Base" in result.index.get_level_values(1)
+        assert "Unweighted base" in result.index.get_level_values(1)
+        result = dataset.crosstab(['q2b'], 'gender', w='weight_a', base='unweighted')
+        assert "Base" not in result.index.get_level_values(1)
+        assert "Unweighted base" in result.index.get_level_values(1)
+        result = dataset.crosstab(['q2b'], 'gender', w='weight_a', base='weighted')
+        assert "Base" in result.index.get_level_values(1)
+        assert "Unweighted base" not in result.index.get_level_values(1)
+        
         
 
     def test_crosstab2(self):
