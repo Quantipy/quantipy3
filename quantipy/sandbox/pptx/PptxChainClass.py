@@ -9,7 +9,6 @@ import importlib
 default_stdout = sys.stdout
 default_stderr = sys.stderr
 importlib.reload(sys)
-sys.setdefaultencoding('utf-8')
 sys.stdout = default_stdout
 sys.stderr = default_stderr
 
@@ -1372,4 +1371,3 @@ class PptxChain(object):
         chart_df.chart_type = auto_charttype(df, self.array_style)
 
         return chart_df
-
