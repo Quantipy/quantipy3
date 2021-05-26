@@ -38,7 +38,8 @@ _SHEET_ATTR = ('str_table',
                'excel2003_style',
                'remove_timezone',
                'constant_memory',
-               'max_url_length')
+               'max_url_length',
+               'use_future_functions')
 
 # Defaults for _Sheet.
 _SHEET_DEFAULTS = dict(alternate_bg             = True,
