@@ -335,8 +335,8 @@ def read_confirmit_api(projectid, public_url, idp_url, client_id, client_secret,
     meta, data = quantipy_from_confirmit(json_meta[0], json_data, verbose)
     return meta, data
 
-def write_confirmit_api(projectid, public_url, idp_url, client_id, client_secret, schema_vars):
-    return quantipy_to_confirmit(projectid, public_url, idp_url, client_id, client_secret, schema_vars)
+def write_confirmit_api(projectid, public_url, idp_url, client_id, client_secret, schema_vars, json_data, json_meta):
+    return quantipy_to_confirmit(projectid, public_url, idp_url, client_id, client_secret, schema_vars, json_data, json_meta)
 
 
 def read_spss(path_sav, **kwargs):

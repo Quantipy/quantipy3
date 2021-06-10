@@ -67,7 +67,7 @@ def get_surveys(projectid, public_url, idp_url, client_id, client_secret, schema
     return json_data, json_meta
 
 
-def upload_surveys(api_data, json_data, json_meta, data_vars):
+def upload_surveys(api_data, json_data, json_meta, schema_vars):
     # Source configuration
     source_projectid = api_data.get("projectid")
     source_public_site_url = api_data.get("public_url")
@@ -77,13 +77,13 @@ def upload_surveys(api_data, json_data, json_meta, data_vars):
 
     key_vars = []
     filtered_data = []
-    root_vars = json_meta[0].get('root')
-    for key_var in root_vars.get('keys'):
-        key_vars.append(key_var.get('name'))
+    meta_vars = json_meta.get('info').get('has_external').get('confirmit').get('meta')
+    for key_var in meta_vars.get('keys'):
+        key_vars.append(key_var)
 
     for data_record in json_data:
         dr_obj = {}
-        for selected_data in data_vars:
+        for selected_data in schema_vars:
             dr_obj[selected_data] = data_record.get(selected_data)
         for key_var in key_vars:
             dr_obj[key_var] = data_record.get(key_var)
@@ -92,7 +92,7 @@ def upload_surveys(api_data, json_data, json_meta, data_vars):
     data = {
         "dataSchema": {
             "keys": key_vars,
-            "variables": data_vars
+            "variables": schema_vars
         },
         "data": filtered_data
     }
@@ -109,6 +109,6 @@ def upload_surveys(api_data, json_data, json_meta, data_vars):
     # Upload source data records
     headers = {'Authorization': 'Bearer ' + source_token, "Accept": "application/json", "Content-Type": "application/json"}
     url = source_public_site_url + 'v1/surveys/' + source_projectid + '/responses/data'
-    response = req.patch(url, data=json.dumps(data), headers=headers)
+    response = req.put(url, data=json.dumps(data), headers=headers)
     response.raise_for_status()
     return response

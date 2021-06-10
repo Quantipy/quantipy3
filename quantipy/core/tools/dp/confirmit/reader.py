@@ -399,6 +399,7 @@ def quantipy_from_confirmit(meta_json, data_json, verbose=False, text_key='en-GB
     sub_data_array = []
     columns_array = []
     confirmit_info = {}
+    confirmit_keys = {}
     if isinstance(data_json, list):
         data_parsed = data_json
     else:
@@ -434,6 +435,7 @@ def quantipy_from_confirmit(meta_json, data_json, verbose=False, text_key='en-GB
     vars_arr = root_vars.get('variables')
     for key_var in root_vars.get('keys'):
         vars_arr.append(key_var)
+        confirmit_keys[key_var.get("name")] = key_var
     children_vars = root_vars.get('children')
     if children_vars:
         for children_var in children_vars:
@@ -465,7 +467,8 @@ def quantipy_from_confirmit(meta_json, data_json, verbose=False, text_key='en-GB
         info["has_external"] = {
             "confirmit": {
                 "meta": {
-                    "columns": confirmit_info
+                    "columns": confirmit_info,
+                    "keys": confirmit_keys
                 }
             }
         }

@@ -3,6 +3,7 @@
 import numpy as np
 import pandas as pd
 import quantipy as qp
+import copy
 
 from quantipy.core.tools.dp.io import (
     read_quantipy as r_quantipy,
@@ -601,6 +602,9 @@ class DataSet(object):
         """
         if verbose:
             self.write_allowed = True
+            with open(path_data, "r") as read_data_file:
+                self._confirmit_data = json.load(read_data_file)
+
         self._meta, self._data = r_confirmit_from_files(path_meta, path_data, verbose)
         self._set_file_info(path_data, path_meta, reset=reset)
 
@@ -646,7 +650,15 @@ class DataSet(object):
 
     def write_confirmit_api(self, projectid, public_url, idp_url, client_id, client_secret, schema_vars):
         """Converts quantipy dataset into Confirmit format and uploads it to the confirmit API"""
-        return w_confirmit_api(projectid, public_url, idp_url, client_id, client_secret, schema_vars)
+        try:
+            if self.write_allowed:
+                json_meta = copy.deepcopy(self._meta)
+                json_data = copy.deepcopy(self._confirmit_data)
+                return w_confirmit_api(projectid, public_url, idp_url, client_id, client_secret, schema_vars, json_data, json_meta)
+
+            raise Exception("Must set has_external parameter in read method first")
+        except AttributeError:
+            raise Exception("Must set has_external parameter in read method first")
 
     def read_spss(self, path_sav, **kwargs):
         """

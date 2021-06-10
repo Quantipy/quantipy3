@@ -489,9 +489,8 @@ def test_read_from_api():
     "text": {"en": "Use script to set values"}}""")
 
 
-def test_writer_to_api():
-    dataset = qp.DataSet("confirmit")
-    response = dataset.write_confirmit_api(projectid="p913481003361",
+def test_writer_to_api(confirmit_dataset, confirmit_dataset_verbose):
+    response = confirmit_dataset_verbose.write_confirmit_api(projectid="p913481003361",
                                            public_url="https://ws.euro.confirmit.com/",
                                            idp_url="https://idp.euro.confirmit.com/",
                                            client_id="71a15e5d-b52d-4534-b54b-fa6e2a9da8a7",
@@ -499,6 +498,13 @@ def test_writer_to_api():
                                            schema_vars=["q7", "q9", "q11"])
 
     assert response.status_code == 200
-    assert b'insertedRecords' in response.content
     assert b'updatedRecords' in response.content
     print(response.content)
+
+    with pytest.raises(Exception):
+        response = confirmit_dataset.write_confirmit_api(projectid="p913481003361",
+                                            public_url="https://ws.euro.confirmit.com/",
+                                            idp_url="https://idp.euro.confirmit.com/",
+                                            client_id="71a15e5d-b52d-4534-b54b-fa6e2a9da8a7",
+                                            client_secret="2a943d4d-58ab-42b8-a276-53d07ad34064",
+                                            schema_vars=["q7", "q9", "q11"])
