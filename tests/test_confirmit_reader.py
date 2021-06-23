@@ -182,8 +182,8 @@ def test_array_type(confirmit_dataset):
 
 
 def test_rating_type(confirmit_dataset):
-    assert confirmit_dataset.meta()['columns']['q16[{q16_1}]'] == json.loads("""
-    {"name": "q16[{q16_1}]",
+    assert confirmit_dataset.meta()['columns']['q16_1'] == json.loads("""
+    {"name": "q16_1",
     "parent": {"masks@q16": {"type": "array"}},
     "text": {"en": "ans1"},
     "type": "single",
@@ -193,11 +193,11 @@ def test_rating_type(confirmit_dataset):
     {"name": "q16",
     "type": "array",
     "items": [
-        {"source": "columns@q16[{q16_1}]",
+        {"source": "columns@q16_1",
         "text": {"en": "ans1"}},
-        {"source": "columns@q16[{q16_2}]",
+        {"source": "columns@q16_2",
         "text": {"en": "ans2"}},
-        {"source": "columns@q16[{q16_3}]",
+        {"source": "columns@q16_3",
         "text": {"en": "ans3"}}],
     "subtype": "single",
     "values": "lib@values@q16",
@@ -326,9 +326,9 @@ def test_multigrid_type(confirmit_dataset):
 
 
 def test_single_response_grid_type(confirmit_dataset):
-    assert confirmit_dataset.meta()['columns']['sat_areas[{sat_areas_1}]'] == json.loads("""
+    assert confirmit_dataset.meta()['columns']['sat_areas_1'] == json.loads("""
     {
-        "name": "sat_areas[{sat_areas_1}]",
+        "name": "sat_areas_1",
         "parent": {
             "masks@sat_areas": {"type": "array"}},
             "text": {"en": "Web"},
@@ -343,17 +343,17 @@ def test_single_response_grid_type(confirmit_dataset):
         "tags": ["grid"],
         "items": [
             {
-                "source": "columns@sat_areas[{sat_areas_1}]",
+                "source": "columns@sat_areas_1",
                 "text": {"en": "Web"}},
-                {"source": "columns@sat_areas[{sat_areas_2}]",
+                {"source": "columns@sat_areas_2",
                 "text": {"en": "Web shop"}},
-                {"source": "columns@sat_areas[{sat_areas_3}]",
+                {"source": "columns@sat_areas_3",
                 "text": {"en": "Store"}},
-                {"source": "columns@sat_areas[{sat_areas_4}]",
+                {"source": "columns@sat_areas_4",
                 "text": {"en": "Check-out process"}},
-                {"source": "columns@sat_areas[{sat_areas_5}]",
+                {"source": "columns@sat_areas_5",
                 "text": {"en": "Product"}},
-                {"source": "columns@sat_areas[{sat_areas_6}]",
+                {"source": "columns@sat_areas_6",
                 "text": {"en": "Support"}}],
                 "subtype": "single",
                 "values": "lib@values@sat_areas",
@@ -388,12 +388,12 @@ def test_single_response_grid_type(confirmit_dataset):
     """)
     assert confirmit_dataset.meta()['sets']['sat_areas'] == json.loads("""
     {
-        "items": ["columns@sat_areas[{sat_areas_1}]",
-        "columns@sat_areas[{sat_areas_2}]",
-        "columns@sat_areas[{sat_areas_3}]",
-        "columns@sat_areas[{sat_areas_4}]",
-        "columns@sat_areas[{sat_areas_5}]",
-        "columns@sat_areas[{sat_areas_6}]"],
+        "items": ["columns@sat_areas_1",
+        "columns@sat_areas_2",
+        "columns@sat_areas_3",
+        "columns@sat_areas_4",
+        "columns@sat_areas_5",
+        "columns@sat_areas_6"],
         "name": "sat_areas"
     }
     """)
