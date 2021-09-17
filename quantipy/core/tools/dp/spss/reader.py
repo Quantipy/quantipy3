@@ -1,6 +1,5 @@
 import numpy as np
 import pandas as pd
-from pandas.core.base import PandasObject
 import savReaderWriter as sr
 import pyreadstat
 
