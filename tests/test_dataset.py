@@ -46,6 +46,17 @@ class TestDataSet(unittest.TestCase):
         dataset.read_spss('tests/Example Data (A) - with multi choice q2.sav')
         self.assertTrue(dataset.meta('q2').shape == (8,3))
 
+    def test_read_spss_readstat(self):
+        dataset_v1 = qp.DataSet('spss')
+        dataset_v1.read_spss('tests/Example Data (A) - with multi choice q2.sav')
+        dataset = qp.DataSet('spss')
+        dataset.read_spss('tests/Example Data (A) - with multi choice q2.sav', engine='readstat')
+        # the label of the set is lost as this engine doesn't support delimited sets
+        dataset.to_delimited_set('q2', dataset_v1.text('q2'), dataset.find('q2_'))
+        self.assertTrue(dataset.meta('q2').shape == (8,3))
+        assert dataset.crosstab('q2').equals(dataset_v1.crosstab('q2'))        
+        assert dataset.crosstab('q2b').equals(dataset_v1.crosstab('q2b'))
+
     def test_fileinfo(self):
         dataset = self._get_dataset()
         meta_def_key =  dataset._meta['lib']['default text']
