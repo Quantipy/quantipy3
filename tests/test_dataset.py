@@ -834,26 +834,26 @@ class TestDataSet(unittest.TestCase):
 
     def test_sig_diff_details(self):
         dataset = self._get_dataset()
-        x = 'weight_a'
+        x = 'q5_3'
         y = 'gender'
         sig_level = 0.05
 
         # here we use sig diff with the default parameters, which mimic Dimensions
         with_sigdiff = dataset.crosstab(x, y, 
                                         ci=['counts', 'c%'], 
-                                        sig_level=sig_level,
-                                        stats=True)
+                                        sig_level=sig_level)
         # TODO: we can add expected sig-diffs here
-        import pdb; pdb.set_trace()
-        #assert with_sigdiff.shape == (22,2)
+        assert with_sigdiff.shape == (22,2)
 
         # here we can test the sig-diff with different parameters
         stack = qp.Stack(name='sig', 
                          add_data={'sig': {'meta': dataset.meta(), 
                                            'data': dataset.data()}})
-        stack.add_link(data_keys=['sig'], x=x, y=y, views=['c%', 'counts', 'means'])
+        stack.add_link(data_keys=['sig'], 
+                       x=x, 
+                       y=y, 
+                       views=['c%', 'counts'])
         link = stack['sig']['no_filter'][x][y]
-        import pdb; pdb.set_trace()
         test = qp.Test(link, 'x|f|:|||counts')
 
         # possible parameters are here:
