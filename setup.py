@@ -25,7 +25,8 @@ libs = ['numpy',
         'decorator',
         'watchdog',
         'requests',
-        'python-pptx']
+        'python-pptx',
+        'pyreadstat']
 
 def version_libs(libs, precisions, versions):
     return [lib + precisions[lib] + versions[lib]
@@ -38,7 +39,7 @@ else:
     INSTALL_REQUIRES = version_libs(libs, precisions, versions)
 
 setup(name='quantipy3',
-      version='0.2.6',
+      version='0.2.7',
       author='Geir Freysson',
       author_email='geir@datasmoothie.com',
       packages=find_packages(exclude=['tests']),
