@@ -46,6 +46,17 @@ class TestDataSet(unittest.TestCase):
         dataset.read_spss('tests/Example Data (A) - with multi choice q2.sav')
         self.assertTrue(dataset.meta('q2').shape == (8,3))
 
+    def test_read_spss_readstat(self):
+        dataset_v1 = qp.DataSet('spss')
+        dataset_v1.read_spss('tests/Example Data (A) - with multi choice q2.sav')
+        dataset = qp.DataSet('spss')
+        dataset.read_spss('tests/Example Data (A) - with multi choice q2.sav', engine='readstat')
+        # the label of the set is lost as this engine doesn't support delimited sets
+        dataset.to_delimited_set('q2', dataset_v1.text('q2'), dataset.find('q2_'))
+        self.assertTrue(dataset.meta('q2').shape == (8,3))
+        assert dataset.crosstab('q2').equals(dataset_v1.crosstab('q2'))        
+        assert dataset.crosstab('q2b').equals(dataset_v1.crosstab('q2b'))
+
     def test_fileinfo(self):
         dataset = self._get_dataset()
         meta_def_key =  dataset._meta['lib']['default text']
@@ -823,26 +834,26 @@ class TestDataSet(unittest.TestCase):
 
     def test_sig_diff_details(self):
         dataset = self._get_dataset()
-        x = 'q5_3'
+        x = 'weight_a'
         y = 'gender'
         sig_level = 0.05
 
         # here we use sig diff with the default parameters, which mimic Dimensions
         with_sigdiff = dataset.crosstab(x, y, 
                                         ci=['counts', 'c%'], 
-                                        sig_level=sig_level)
+                                        sig_level=sig_level,
+                                        stats=True)
         # TODO: we can add expected sig-diffs here
-        assert with_sigdiff.shape == (22,2)
+        import pdb; pdb.set_trace()
+        #assert with_sigdiff.shape == (22,2)
 
         # here we can test the sig-diff with different parameters
         stack = qp.Stack(name='sig', 
                          add_data={'sig': {'meta': dataset.meta(), 
                                            'data': dataset.data()}})
-        stack.add_link(data_keys=['sig'], 
-                       x=x, 
-                       y=y, 
-                       views=['c%', 'counts'])
+        stack.add_link(data_keys=['sig'], x=x, y=y, views=['c%', 'counts', 'means'])
         link = stack['sig']['no_filter'][x][y]
+        import pdb; pdb.set_trace()
         test = qp.Test(link, 'x|f|:|||counts')
 
         # possible parameters are here:

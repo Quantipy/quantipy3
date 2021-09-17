@@ -39,4 +39,5 @@ docs/API/_templates/
 .eggs/
 .cache
 .pytest_cache/*
+.mypy_cache/*
 build
