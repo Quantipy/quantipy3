@@ -90,6 +90,10 @@ def extract_sav_meta(sav_file, name="", data=None, ioLocale='en_US.UTF-8',
                     values = {'text': {text_key: str(text)},
                             'value': int(value)}
                     meta['columns'][column]['values'].append(values)
+                    # if user has stored single answer data as a string rather than number
+                    # we convert it to floats and store non convertables as nan (with coerce)
+                    if column in data.columns and data[column].dtype == 'O':
+                        data[column] = pd.to_numeric(data[column], errors='coerce', downcast='float')
             else:
                 if column in metadata.original_variable_types:
                     f = metadata.original_variable_types[column]
