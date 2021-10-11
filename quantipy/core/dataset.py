@@ -55,7 +55,7 @@ from collections import OrderedDict, Counter
 import importlib
 
 VALID_TKS = [
-    'en-GB', 'en-US' 'da-DK', 'fi-FI', 'nb-NO', 'sv-SE', 'de-DE', 'is-IS', 'fr-FR', 'ar-AR',
+    'en-GB', 'en-US', 'da-DK', 'fi-FI', 'nb-NO', 'sv-SE', 'de-DE', 'is-IS', 'fr-FR', 'ar-AR',
     'es-ES', 'it-IT', 'pl-PL', 'en']
 
 VAR_SUFFIXES = [
