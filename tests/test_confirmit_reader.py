@@ -460,7 +460,7 @@ def test_loop_variables(confirmit_dataset):
     }
     """)
 
-
+@pytest.mark.skip(reason="confirmit api has changed")
 def test_read_from_api():
     dataset_from_api = qp.DataSet("confirmit")
     dataset_from_api.read_confirmit_api(projectid="p913481003361",
@@ -488,7 +488,7 @@ def test_read_from_api():
         "value": 2}],
     "text": {"en": "Use script to set values"}}""")
 
-
+@pytest.mark.skip(reason="confirmit api has changed")
 def test_writer_to_api():
     dataset = qp.DataSet("confirmit")
     response = dataset.write_confirmit_api(projectid="p913481003361",
