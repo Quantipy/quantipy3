@@ -715,7 +715,7 @@ class _Sheet(Worksheet):
             else:
                 fact = 1
 
-            dimensions = self.truetype.getsize(label)
+            dimensions = self.truetype.getsize(label.encode("utf-8"))
 
             if (dimensions[1] * units_to_pixels) - padding > height:
                 # text too tall
