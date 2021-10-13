@@ -895,6 +895,24 @@ class TestDataSet(unittest.TestCase):
         assert result.shape == (13,2)
         assert with_sigdiff.shape == (37,4)
 
+    def test_crosstab_with_lang_key(self):
+        dataset = self._get_dataset()
+        dataset.set_variable_text(name='gender', new_text='Kyn', text_key='is-IS')
+        dataset.set_value_texts(name='gender', renamed_vals={1:'Maður', 2:"Kona"}, text_key='is-IS')
+        dataset.set_variable_text(name='locality', new_text='Búseta', text_key='is-IS')
+        dataset.set_value_texts(name='locality', 
+                                renamed_vals={
+                                    1:"Verslunarkjarni", 
+                                    2:"Þéttbýli",
+                                    3:"Úthverfi",
+                                    4:"Dreifbýli",
+                                    5:"Afskekkt"
+                                    }, 
+                                text_key='is-IS')
+
+        result = dataset.crosstab(x='locality', y='gender', text_key='is-IS')
+        assert result.columns.get_level_values(1).to_list() == ['Maður', 'Kona']
+
     def test_crosstab(self):
         x = 'q14r01c01'
         dataset = self._get_dataset()

@@ -55,7 +55,7 @@ from collections import OrderedDict, Counter
 import importlib
 
 VALID_TKS = [
-    'en-GB', 'da-DK', 'fi-FI', 'nb-NO', 'sv-SE', 'de-DE', 'fr-FR', 'ar-AR',
+    'en-GB', 'en-US', 'da-DK', 'fi-FI', 'nb-NO', 'sv-SE', 'de-DE', 'is-IS', 'fr-FR', 'ar-AR',
     'es-ES', 'it-IT', 'pl-PL', 'en']
 
 VAR_SUFFIXES = [
@@ -1878,7 +1878,7 @@ class DataSet(object):
     @verify(variables={'x': 'both', 'y': 'both_nested', 'w': 'columns'})
     def crosstab(self, x, y=[], w=None, f=None, ci='counts', base='auto', stats=False,
                  sig_level=None, rules=False, decimals=1, xtotal=False,
-                 painted=True):
+                 painted=True, text_key=None):
         """
         Return a well formated crosstab. (New version)
         Parameters
@@ -1916,6 +1916,8 @@ class DataSet(object):
             regular frequency of the x column.
         painted: bool, default True
             Add texts from the meta to the index and columns.
+        text_key: string, default None
+            What language text key to use when returning the result.
         """
         def _rounding(x, dec):
             try:
@@ -2014,7 +2016,10 @@ class DataSet(object):
             folder     = 'ct')
 
         if painted:
-            cm.paint_all(totalize=True)
+            if text_key is not None:
+                cm.paint_all(totalize=True, text_key=text_key)
+            else:
+                cm.paint_all(totalize=True)
 
         dfs = []
         for chain in cm['ct']:
