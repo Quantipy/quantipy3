@@ -6,7 +6,8 @@ from setuptools import setup, find_packages
 versions = dict(numpy='1.14.5',
                 scipy='1.2.1',
                 pandas='0.25.3',
-                ftfy='5.5.1')
+                ftfy='5.5.1',
+                pyreadstat='1.1.2')
 
 precisions = dict(numpy='==',
                   scipy='==',
@@ -39,7 +40,7 @@ else:
     INSTALL_REQUIRES = version_libs(libs, precisions, versions)
 
 setup(name='quantipy3',
-      version='0.2.10',
+      version='0.2.11',
       author='Geir Freysson',
       author_email='geir@datasmoothie.com',
       packages=find_packages(exclude=['tests']),
