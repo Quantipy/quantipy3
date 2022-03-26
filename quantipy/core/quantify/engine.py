@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
-from scipy.stats.stats import _ttest_finish as get_pval
+#from scipy.stats.stats import _ttest_finish as get_pval
+from scipy.stats._stats_py import _ttest_finish as get_pval
 from itertools import combinations, chain, product
 from collections import defaultdict, OrderedDict
 import quantipy as qp

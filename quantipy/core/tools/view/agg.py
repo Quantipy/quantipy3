@@ -11,7 +11,8 @@ from collections import OrderedDict, defaultdict
 from quantipy.core.helpers.constants import DTYPE_MAP
 from quantipy.core.helpers.constants import MAPPED_PATTERN
 from itertools import product, combinations
-from scipy.stats.stats import _ttest_finish as get_pval
+#from scipy.stats.stats import _ttest_finish as get_pval
+from scipy.stats._stats_py import _ttest_finish as get_pval
 from operator import add, sub, mul, truediv
 
 from quantipy.core.view import View

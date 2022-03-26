@@ -39,7 +39,8 @@ from quantipy.core.tools.qp_decorators import lazy_property
 from operator import add, sub, mul
 from operator import truediv as div
 
-from scipy.stats.stats import _ttest_finish as get_pval
+#from scipy.stats.stats import _ttest_finish as get_pval
+from scipy.stats._stats_py import _ttest_finish as get_pval
 from scipy.stats import chi2 as chi2dist
 from scipy.stats import f as fdist
 from itertools import combinations, chain, product

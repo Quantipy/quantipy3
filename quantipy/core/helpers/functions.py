@@ -8,7 +8,8 @@ import itertools
 import math
 import re, string
 
-from collections import OrderedDict, defaultdict
+from collections import OrderedDict
+
 from .constants import DTYPE_MAP
 from .constants import MAPPED_PATTERN
 from itertools import product
