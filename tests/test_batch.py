@@ -42,7 +42,6 @@ def _get_meta(batch):
 	name = batch.name
 	return batch._meta['sets']['batches'][name]
 
-@unittest.skip("Not yet supported in python 3")
 class TestBatch(unittest.TestCase):
 
 	def test_dataset_add_batch(self):

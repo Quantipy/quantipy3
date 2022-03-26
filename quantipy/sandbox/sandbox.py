@@ -2160,7 +2160,7 @@ class Chain(object):
             group = None
             i =  0 if (self._frame.columns.nlevels in [2, 3]) else 4
 
-            for letter, lab in zip(self.sig_test_letters, self._frame.columns.labels[-i]):
+            for letter, lab in zip(self.sig_test_letters, self._frame.columns.codes[-i]):
                 if letter == '@':
                     continue
                 if group is not None:
@@ -3130,7 +3130,7 @@ class Chain(object):
         df.columns = df.columns.droplevel(drop_levels)
         # Apply the new flat labels and resort the columns
         df.columns.set_levels(levels=flat_cols, level=0, inplace=True)
-        df.columns.set_labels(order_idx, level=0, inplace=True)
+        df.columns.set_codes(order_idx, level=0, inplace=True)
         return df, flat_cols
 
     @staticmethod
@@ -3794,7 +3794,7 @@ class Chain(object):
         len_of_frame = len(frame)
         frame = pd.concat(frame, axis=0)
         index_order = frame.index.get_level_values(1).tolist()
-        index_order =  index_order[:(len(index_order) / len_of_frame)]
+        index_order =  index_order[:int(len(index_order) / len_of_frame)]
         gb_df = frame.groupby(level=1, sort=False)
         for i in index_order:
             grouped_df = gb_df.get_group(i)

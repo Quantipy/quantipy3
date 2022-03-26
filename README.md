@@ -1,4 +1,4 @@
-# Quantipy
+# Quantipy3
 
 ### Fork:
 The aim of this fork is to make quantipy compatible with newer Pandas and Numpy versions.
@@ -16,28 +16,31 @@ This repository is a port of [Quantipy](https://www.github.com/quantipy/quantipy
   - Computation and assessment of data weights
   - Easy-to-use analysis interface
 
-  ### Features not yet supported in python3
-  - Automated data aggregation using ``Batch`` defintions
+  ### Features not yet supported in Python 3 version
   - Structured analysis and reporting via Chain and Cluster containers
   - Exports to SPSS, Dimensions ddf/mdd, MS Excel and Powerpoint with flexible layouts and various options
+  - Python 3.8 is not yet fully supported, but 3.5, 3.6, and 3.7 are.
+  
+#### Origins
+- Quantipy was concieved of and instigated by Gary Nelson: http://www.datasmoothie.com
 
 #### Contributors
 - Alexander Buchhammer, Alasdair Eaglestone, James Griffiths, Kerstin Müller : https://yougov.co.uk
-- Datasmoothie’s Birgir Hrafn Sigurðsson and Geir Freysson: http://www.datasmoothie.com
+- Datasmoothie’s Birgir Hrafn Sigurðsson and [Geir Freysson](http://www.twitter.com/@geirfreysson): http://www.datasmoothie.com
 
 ## Installation
-Quantipy is currently not published on pip (there's an [issue](https://github.com/Quantipy/quantipy3/issues/1) for that, if you want to help out.)
 
-To start using Quantipy we
+`pip install quantipy3`
 
-1. Create a virtual environment
-1. Download or clone the library
-1. Install the required packages
+or
 
-#### 1. Create a virtual envirionment
+`python3 -m pip install quantipy3`
 
+Note that the package is called __quantipy3__ on pip.
 
-Create a virtual environment:
+#### Create a virtual envirionment
+
+If you want to create a virtual environment when using Quantipy:
 
 conda
 ```python
@@ -48,25 +51,6 @@ with venv
 ```python
 python -m venv [your_env_name]
  ```
-
-#### 2. Download or clone library
-
-```
-git clone https://github.com/Quantipy/quantipy3.git
-```
-
-Add the quantipy3 folder that is created to your path, so you can import quantipy from wherever you are working.
-
-#### 3. Install required libraries
-
-Activate your virtual environment and install all the required packages.
-
-```
-source [yourenv]/bin/activate
-pip install -r quantipy3/requirements.txt
-```
-
-You're all set, now you can start crunching your survey data with ease.
 
 ## 5-minutes to Quantipy
 
@@ -160,11 +144,56 @@ dataset[['gender', 'age']].head(5)
 4       NaN    1.0
 ```
 
+#### Weighting
+If your data hasn't been weighted yet, you can use Quantipy's RIM weighting algorithm.
+
+Assuming we have the same variables as before, `gender` and `agecat` we can weight the dataset with these two variables:
+
+```
+from quantipy.core.weights.rim import Rim
+
+age_targets = {'agecat':{1:5.0, 2:30.0, 3:26.0, 4:19.0, 5:20.0}}
+gender_targets = {'gender':{0:49, 1:51}}
+scheme = Rim('gender_and_age')
+scheme.set_targets(targets=[age_targets, gender_targets])
+dataset.weight(scheme,unique_key='respondentId',
+               weight_name="my_weight",
+               inplace=True)
+```
+Quantipy will show you a weighting report:
+```
+Weight variable       weights_gender_and_age
+Weight group                  _default_name_
+Weight filter                           None
+Total: unweighted                 582.000000
+Total: weighted                   582.000000
+Weighting efficiency               60.009826
+Iterations required                14.000000
+Mean weight factor                  1.000000
+Minimum weight factor               0.465818
+Maximum weight factor               6.187700
+Weight factor ratio                13.283522
+```
+
+And you can test whether the weighting has worked by running crosstabs:
+
+```
+dataset.crosstab('agecat', ci=['c%'], w='my_new_weight')
+```
+
+<table border="1" class="dataframe">  <thead>    <tr>      <th></th>      <th>Question</th>      <th>agecat. Age category</th>    </tr>        <tr>      <th>Question</th>      <th>Values</th>      <th></th>    </tr>  </thead>  <tbody>    <tr>      <th rowspan="6" valign="top">agecat. Age category</th>      <th>All</th>      <td>100.0</td>    </tr>    <tr>      <th>18-24</th>      <td>5.0</td>    </tr>    <tr>      <th>25-34</th>      <td>30.0</td>    </tr>    <tr>      <th>35-49</th>      <td>26.0</td>    </tr>    <tr>      <th>50-64</th>      <td>19.0</td>    </tr>    <tr>      <th>64+</th>      <td>20.0</td>    </tr>  </tbody></table>
+
+```
+dataset.crosstab('gender', ci=['c%'], w='my_new_weight')
+```
+
+<table border="1" class="dataframe">  <thead>    <tr>      <th></th>      <th>Question</th>      <th>gender. Gender</th>        <tr>      <th>Question</th>      <th>Values</th>      <th></th>    </tr>  </thead>  <tbody>    <tr>      <th rowspan="3" valign="top">gender. Gender</th>      <th>All</th>      <td>100.0</td>    </tr>    <tr>      <th>Male</th>      <td>49.0</td>    </tr>    <tr>      <th>Female</th>      <td>51.0</td>    </tr>  </tbody></table>
+
 # Contributing
 
 The test suite for Quantipy can be run with the command
 
-`python3 -m unittest`
+`python3 -m pytest tests`
 
 But when developing a specific aspect of Quantipy, it might be quicker to run (e.g. for the DataSet)
 

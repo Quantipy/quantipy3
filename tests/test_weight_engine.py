@@ -295,9 +295,9 @@ class TestEngine(unittest.TestCase):
 
         wdf = engine.dataframe('complex_filter')
 
-        self.assertEqual(wdf.columns.tolist(),
-            ['unique_id', 'gender',
+        self.assertEqual(sorted(wdf.columns.tolist()),
+            sorted(['unique_id', 'gender',
              'locality',
              'weights_complex_filter', 'Wave',
-             'religion'])
+             'religion']))
         self.assertTrue(len(wdf.index) == 596)

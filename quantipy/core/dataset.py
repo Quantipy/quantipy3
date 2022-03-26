@@ -10,6 +10,9 @@ from quantipy.core.tools.dp.io import (
     read_dimensions as r_dimensions,
     read_spss as r_spss,
     read_ascribe as r_ascribe,
+    read_confirmit_from_files as r_confirmit_from_files,
+    read_confirmit_api as r_confirmit_api,
+    write_confirmit_api as w_confirmit_api,
     write_spss as w_spss,
     write_quantipy as w_quantipy,
     write_dimensions as w_dimensions)
@@ -36,6 +39,8 @@ from quantipy.core.tools.dp.prep import (
 
 from .cache import Cache
 
+from quantipy.sandbox.sandbox import ChainManager
+
 import copy as org_copy
 import json
 import warnings
@@ -47,8 +52,8 @@ from itertools import product
 from collections import OrderedDict, Counter
 
 VALID_TKS = [
-    'en-GB', 'da-DK', 'fi-FI', 'nb-NO', 'sv-SE', 'de-DE', 'fr-FR', 'ar-AR',
-    'es-ES', 'it-IT', 'pl-PL']
+    'en-GB', 'en-US', 'da-DK', 'fi-FI', 'nb-NO', 'sv-SE', 'de-DE', 'is-IS', 'fr-FR', 'ar-AR',
+    'es-ES', 'it-IT', 'pl-PL', 'en']
 
 VAR_SUFFIXES = [
     '_rc', '_net', ' (categories', ' (NET', '_rec']
@@ -582,6 +587,69 @@ class DataSet(object):
         self._rename_blacklist_vars()
         return None
 
+    def read_confirmit_from_files(self, path_meta, path_data, reset=True, verbose=False):
+        """Read confirmit data
+
+        Parameters
+        ----------
+        path_meta : str
+            Path to the meta data json file.
+        path_data : type
+            Path to the data json file.
+
+        Returns
+        -------
+        None
+        """
+        if verbose:
+            self.write_allowed = True
+        self._meta, self._data = r_confirmit_from_files(path_meta, path_data, verbose)
+        self._set_file_info(path_data, path_meta, reset=reset)
+
+    def read_confirmit_api(self, projectid, public_url, idp_url=None, client_id=None, client_secret=None, reset=True, schema_vars=None, schema_filter=None, verbose=False):
+        """Read confirmit data from confirmit api
+
+        Parameters
+        ----------
+        path_meta : str
+            Path to the meta data json file.
+        path_data : type
+            Path to the data json file.
+
+        Returns
+        -------
+        None
+        """
+        if not idp_url:
+            idp_url = os.getenv('IDP_URL')
+        if not client_id:
+            client_id = os.getenv('CLIENT_ID')
+        if not client_secret:
+            client_secret = os.getenv('CLIENT_SECRET')
+
+        self._meta, self._data = r_confirmit_api(projectid, public_url, idp_url, client_id, client_secret, schema_vars, schema_filter, verbose)
+        self._set_file_info('', reset=reset)
+
+    def write_confirmit(self, path_meta, path_data, schema_vars=None, verbose=False):
+        """Converts quantipy dataset into Confirmit format"""
+        try:
+            if self.write_allowed:
+                res_meta_string = json.dumps(self._meta)
+                output_meta_path = path_meta
+                output_data_path = path_data
+                output_meta_file = open(output_meta_path,'w')
+                self._data.to_csv(output_data_path)
+                output_meta_file.write(res_meta_string)
+                output_meta_file.close()
+            else:
+                raise Exception("Must set has_external parameter in read method first")
+        except AttributeError:
+            raise Exception("Must set has_external parameter in read method first")
+
+    def write_confirmit_api(self, projectid, public_url, idp_url, client_id, client_secret, schema_vars):
+        """Converts quantipy dataset into Confirmit format and uploads it to the confirmit API"""
+        return w_confirmit_api(projectid, public_url, idp_url, client_id, client_secret, schema_vars)
+
     def read_spss(self, path_sav, **kwargs):
         """
         Load SPSS Statistics .sav files, converting and connecting data/meta.
@@ -783,6 +851,18 @@ class DataSet(object):
         -------
         None
         """
+
+        class NumpyEncoder(json.JSONEncoder):
+            def default(self, obj):
+                if isinstance(obj, np.integer):
+                    return int(obj)
+                elif isinstance(obj, np.floating):
+                    return float(obj)
+                elif isinstance(obj, np.ndarray):
+                    return obj.tolist()
+                else:
+                    return super(NumpyEncoder, self).default(obj)
+
         meta = self._meta
         if key: k = '@{}'.format(key)
         col = {'columns': 'columns{}'.format(k if key else ''),
@@ -804,9 +884,9 @@ class DataSet(object):
             name = '{}{}'.format(collection, '_{}'.format(key.split('.')[0])
                                  if key else '')
         ds_path = '../' if self.path == '/' else self.path
-        path = os.path.join(ds_path, ''.json([self.name, '_', name, '.json']))
+        path = os.path.join(ds_path, ''.join([self.name, '_', name, '.json']))
         with open(path, 'w') as file:
-            json.dump(obj, file)
+            json.dump(obj, file, cls=NumpyEncoder)
         print('create: {}'.format(path))
         return None
 
@@ -1799,128 +1879,161 @@ class DataSet(object):
         else:
             return [parent for parent in self._meta['columns'][name]['parent']]
 
-    def crosstab(self, x, y=None, w=None, pct=False, decimals=1, text=True,
-                 rules=False, xtotal=False, f=None):
+    @modify(to_list=['x', 'y', 'ci', 'sig_level'])
+    @verify(variables={'x': 'both', 'y': 'both_nested', 'w': 'columns'})
+    def crosstab(self, x, y=[], w=None, f=None, ci='counts', base='auto', stats=False,
+                 sig_level=None, rules=False, decimals=1, xtotal=False,
+                 painted=True, text_key=None):
         """
-        """
-        meta, data = self.split()
-        if f:
-            slicer = self.take(f)
-            data = data.copy().iloc[slicer]
-        y = '@' if not y else y
-        get = 'count' if not pct else 'normalize'
-        show = 'values' if not text else 'text'
-        return ct(org_copy.deepcopy(meta), data, x=x, y=y, get=get, weight=w,
-                  show=show, rules=rules, xtotal=xtotal, decimals=decimals)
-
-    def tabulate(self, x, y=None, w=None, show=['pct', 'count', 'base', 'ubase'], decimals=1, f=None):
-        """
-        Calculate the crosstab of the given variables and return a Style object with nice formatting.
-
+        Return a well formated crosstab. (New version)
         Parameters
         ----------
-        x : str
-            The side variable
-        y : str
-            The top variable (optional)
-        w : str
-            Variable used to weight
-        f : Quantipy logical expression
-            A logical expression to filter with, e.g. {'gender': 1}.
-        show : str or list
-            A string or list of strings. Options are pct, count, base, ubase. ubase means unweighted base and is
-            only included if the w variable was set.
-        decimals : int
-            Number of decimals to return
-
-        Returns
-        -------
-        data : Style
-            A pandas Styler object with the resulting dataframe styled to show percentages and counts.
+        x: str/ list of str
+            Name(s) of the downbreak variable(s).
+        y: str/ list of str
+            Name(s) of the crossbreak variable(s).
+        w: str, default None
+            Name of a weight variable.
+        f: str or logic
+            The name of a string variable or a logic statements which can be
+            used in DataSet.take().
+        ci: str/ list of str {'c%', 'counts'}, default 'counts'
+            Defines the output cellitem.
+        base: str/ list of str, ['auto', 'both', 'weighted', 'unweighted']
+            What bases to include in the results. Auto will return unweighted or 
+            weighted base according to whether the results are weighted.
+        stats: bool, default False
+            Add std stats to the output dataframe (mean, median, stddev,
+            quartiles).
+        sig_level: float
+            Add a sigtest (only one level provided) to the output dataframe.
+            We use Quantipy's default parameters for sig testing that correspond
+            to the UNICOM/Dimensions Column Tests algorithms that control for bias 
+            introduced by weighting and overlapping samples in the column pairs of 
+            multi-coded questions. Note also that the UNICOM/Dimensions implementation 
+            uses variance pooling.
+        rules: bool, default False
+            Apply given rules from the meta object to the output dataframe.
+        decimals: int, default 1
+            Rounding for the output dataframe.
+        xtotal: bool, default False
+            If True, the first column of the returned dataframe will be the
+            regular frequency of the x column.
+        painted: bool, default True
+            Add texts from the meta to the index and columns.
+        text_key: string, default None
+            What language text key to use when returning the result.
         """
-        if type(show) is list:
-            if 'pct' not in show and 'count' not in show:
-                raise ValueError("Tabulate must be called with either count or pct in show argument")
-            if 'pct' in show:
-                pct = self.crosstab(x=x, y=y, f=f, w=w, decimals=decimals, pct=True)/100
-                pct.columns = pct.columns.set_levels(['%'], level=0)
-            if 'count' in show:
-                count = self.crosstab(x=x, y=y, f=f, w=w, decimals=decimals, pct=False)
-                count.columns = count.columns.set_levels([''], level=0)
-            if 'pct' in show and 'count' in show:
-                concatted = pd.concat([count,pct], axis =1).stack(level=0)
-                if y is not None:
-                    concatted = concatted.reindex(columns=['All'] + self.value_texts(y))
-                    crossbreak_name = count.columns.get_level_values(0)[0]
-                    new_column_index = pd.MultiIndex.from_product([[crossbreak_name] ,concatted.columns.tolist()])
-                else:
-                    new_column_index = pd.MultiIndex.from_product([['All'] ,concatted.columns.tolist()])
-                concatted.columns = new_column_index
-                result = concatted[2:]
-                if 'base' in show:
-                    base = concatted[0:1]
-                    if w is not None:
-                        base = base.rename(index={"All":"Weighted Total"})
-                    else:
-                        base = base.rename(index={"All":"Total"})
-                    result = pd.concat([base,result])
-                if 'ubase' in show and w is not None:
-                    unweighted_count = self.crosstab(x=x, y=y, f=f, w=None, decimals=decimals, pct=False)
-                    ubase = unweighted_count[0:1]
-                    ubase.columns = base.columns
-                    ubase.index = base.index
-                    ubase = ubase.rename(index={"Weighted Total":"Unweighted Total"})
-                    result = result.rename(index={"Total":"Weighted Total"})
-                    result = pd.concat([ubase, result])
-                # we do this here because we can only drop the % from the index after styling is applied
-                result = result.style.format(lambda x: "{:.0%}".format(x) if (x < 1 and x > 0) else "{:.0f}".format(x))
-                result.data = result.data.rename(index={"%":""})
-
-            elif 'pct' in show:
-                result = self.crosstab(x=x, y=y, f=f, w=w, decimals=decimals, pct=True)[1:]/100
-                if 'base' in show:
-                    count = self.crosstab(x=x, y=y, f=f, w=w, decimals=decimals, pct=False)
-                    base = count[0:1]
-                    if w is not None:
-                        base = base.rename({"All":"Weighted Total"})
-                    else:
-                        base = base.rename({"All":"Total"})
-                    result = pd.concat([base, result])
-                if 'ubase' in show and w is not None:
-                    unweighted_count = self.crosstab(x=x, y=y, f=f, w=None, decimals=decimals, pct=False)
-                    ubase = unweighted_count[0:1]
-                    ubase = ubase.rename(index={"All":"Unweighted Total"})
-                    result = pd.concat([ubase, result])
-                if y is None:
-                    result = result.droplevel(axis=1, level=0)
-                result.rename(columns={"@":"All"})
-                result = result.style.format(lambda x: "{:.0%}".format(x) if (x < 1 and x > 0) else "{:.0f}".format(x))
-            elif 'count' in show:
-                result = self.crosstab(x=x, y=y, f=f, w=w, decimals=decimals, pct=False)
-                if 'base' in show:
-                    if w is not None:
-                        result = result.rename({"All":"Weighted Total"})
-                    else:
-                        result = result.rename({"All":"Total"})
-                else:
-                    result = result[1:]
-                    result = result.style.format(lambda x: "{:.0%}".format(x) if (x < 1 and x > 0) else "{:.0f}".format(x))
-
+        def _rounding(x, dec):
+            try:
+                return np.round(x, decimals=dec)
+            except:
+                return x
+        #######################################################################
+        # prepare stack
+        #######################################################################
+        if isinstance(f, str) or not f:
+            idx = self.manifest_filter(f)
         else:
-            if show == 'pct':
-                result = self.crosstab(x=x, y=y, f=f, w=w, decimals=decimals, pct=True)[1:]/100
-                result = result.style.format(lambda x: "{:.0%}".format(x) if x < 1 else "{:.0f}".format(x))
-            elif show == 'count':
-                result = self.crosstab(x=x, y=y, f=f, w=w, decimals=decimals, pct=False)
-                result = result.rename(index={"All":"Total"})
-                result = result.style.format(lambda x: "{:.0%}".format(x) if (x < 1 and x > 0) else "{:.0f}".format(x))
+            idx = self.take(f)
+        data = self._data.copy().iloc[idx]
+        stack = qp.Stack(name='ct', add_data={'ct': (data, self._meta)})
+        if xtotal or not y:
+            y = ['@'] + self.unroll(y)
+        else:
+            y = self.unroll(y)
+        test_y =  [yk for yk in y if yk != '@']
+        views = ['cbase']
+        for i in ci:
+            if not i in ['counts', 'c%']:
+                raise ValueError("Provides only counts and c%")
             else:
-                raise ValueError("Tabulate must be called with either count or pct in show argument")
-        if y is None:
-            if not isinstance(result.data.columns, pd.core.indexes.base.Index):
-                result.data = result.data.droplevel(axis=1, level=0).rename(columns={"@":"Total"})
-                result.data = result.data[1:]
-        return result
+                views.append(i)
+        # for the sig-tests to be calculatd, we need counts even though
+        # they haven't been requested
+        if ci == ['c%'] and sig_level:
+            views.append('counts')
+        if base == 'unweighted' and w is not None:
+            views.remove('cbase')
+        stack.add_link('ct', x=x, y=y, views=views, weights=w)
+        # include unweighted base in stack
+        if w is not None and base in ['both', 'unweighted']:
+            stack.add_link('ct', x=x, y=y, views=['cbase'], weights=None)            
+        if stats:
+            stats = ['mean', 'median', 'stddev', 'lower_q', 'upper_q']
+            options = {
+                'stats': '',
+                'axis': 'x'}
+            view = qp.ViewMapper()
+            view.make_template('descriptives')
+            for stat in stats:
+                options['stats'] = stat
+                view.add_method('stat', kwargs=options)
+                stack.add_link('ct', x=x, y=y, views=view, weights=w)
+        if sig_level and test_y:
+            view = qp.ViewMapper().make_template(
+                method='coltests',
+                iterators={
+                    'metric': ['props', 'means'],
+                    'mimic': ['Dim'],
+                    'level': sig_level})
+            view.add_method(
+                'significance',
+                kwargs = {
+                    'flag_bases': [30, 100],
+                    'test_total': None,
+                    'groups': 'Tests'})
+            stack.add_link('ct', x=x, y=y, views=view, weights=w)
+        #######################################################################
+        # prepare ViewManager
+        #######################################################################
+        vm = qp.ViewManager(stack)
+        if ci == ['counts']:
+            cellitems = 'counts'
+        elif ci == ['c%']:
+            cellitems = 'colpct'
+        elif 'counts' in ci and 'c%' in ci:
+            cellitems = 'counts_colpct'
+        vm.get_views(
+            data_key='ct',
+            filter_key='no_filter',
+            weight=w,
+            freqs=True,
+            stats=stats,
+            tests=sig_level,
+            cell_items=cellitems,
+            bases=base)
+        vm.set_bases(base, False, False, base)
+        #######################################################################
+        # prepare ChainManager
+        #######################################################################
+        cm = ChainManager(stack)
+        cm.get(
+            data_key   = 'ct',
+            filter_key = 'no_filter',
+            x_keys     = x,
+            y_keys     = y,
+            views      = vm.views,
+            orient     = 'x',
+            prioritize = True,
+            rules      = rules,
+            rules_weight = w or '',
+            folder     = 'ct')
+
+        if painted:
+            if text_key is not None:
+                cm.paint_all(totalize=True, text_key=text_key)
+            else:
+                cm.paint_all(totalize=True)
+
+        dfs = []
+        for chain in cm['ct']:
+            df = chain.dataframe
+            dfs.append(df)
+        all_df = pd.concat(dfs)
+        for c in df.columns:
+            all_df[c] = all_df[c].apply(lambda x: _rounding(x, decimals))
+        return all_df
 
     def data(self):
         """

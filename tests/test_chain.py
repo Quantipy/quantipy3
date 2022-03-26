@@ -49,44 +49,46 @@ def basic_chain(stack):
     del _chain
 
 @pytest.fixture(scope='function')
-def complex_chain(stack, x_keys, y_keys, views, view_keys, orient, incl_tests,
-                  incl_sum):
-    # Custom view methods...
-    # ---SIG
-    sigtest_props_l80_total = qp.ViewMapper().make_template('coltests')
-    view_name = 't_p_80'
-    options = {'level': 0.8, 'metric': 'props', 'test_total': True}
-    sigtest_props_l80_total.add_method(view_name, kwargs=options)
+def complex_chain():
+    def build(stack, x_keys, y_keys, views, view_keys, orient, incl_tests,
+                      incl_sum):
+        # Custom view methods...
+        # ---SIG
+        sigtest_props_l80_total = qp.ViewMapper().make_template('coltests')
+        view_name = 't_p_80'
+        options = {'level': 0.8, 'metric': 'props', 'test_total': True}
+        sigtest_props_l80_total.add_method(view_name, kwargs=options)
 
-    sigtest_means_l80_total = qp.ViewMapper().make_template('coltests')
-    view_name = 't_m_80'
-    options = {'level': 0.8, 'metric': 'means', 'test_total': True}
-    sigtest_means_l80_total.add_method(view_name, kwargs=options)
+        sigtest_means_l80_total = qp.ViewMapper().make_template('coltests')
+        view_name = 't_m_80'
+        options = {'level': 0.8, 'metric': 'means', 'test_total': True}
+        sigtest_means_l80_total.add_method(view_name, kwargs=options)
 
-    sig_views = [sigtest_props_l80_total, sigtest_means_l80_total]
+        sig_views = [sigtest_props_l80_total, sigtest_means_l80_total]
 
-    # ------------------------------------------------------------------------
+        # ------------------------------------------------------------------------
 
-    stack.add_link(x=x_keys, y=y_keys, views=views)
+        stack.add_link(x=x_keys, y=y_keys, views=views)
 
-    if incl_tests:
-        for v in sig_views:
-            stack.add_link(x=x_keys, y=y_keys, views=v)
+        if incl_tests:
+            for v in sig_views:
+                stack.add_link(x=x_keys, y=y_keys, views=v)
 
-    if incl_sum:
-        stack.add_link(x=x_keys, y=y_keys, views=['counts_sum', 'c%_sum'])
+        if incl_sum:
+            stack.add_link(x=x_keys, y=y_keys, views=['counts_sum', 'c%_sum'])
 
-    _chain = ChainManager(stack)
-    _chain.get(data_key='x',
-               filter_key='no_filter',
-               x_keys=x_keys,
-               y_keys=y_keys,
-               views=view_keys,
-               orient=orient)
-    _chains = _chain
-    # if isinstance(_chains, Chain): # single chain
-    #     _chains = [_chains]
-    return _chains
+        _chain = ChainManager(stack)
+        _chain.get(data_key='x',
+                   filter_key='no_filter',
+                   x_keys=x_keys,
+                   y_keys=y_keys,
+                   views=view_keys,
+                   orient=orient)
+        _chains = _chain
+        # if isinstance(_chains, Chain): # single chain
+        #     _chains = [_chains]
+        return _chains
+    return build
 
 @pytest.fixture(scope='class')
 def unnamed_chain_for_structure(dataset, basic_chain):
@@ -107,33 +109,41 @@ def chain_for_structure(dataset, basic_chain):
     del basic_chain
 
 @pytest.fixture(scope='function')
-def chain_structure(chain_for_structure, paint=False, sep=None):
-    if paint:
-        chain_for_structure.paint_all(sep=sep or '. ',
-                                      text_key='en-GB',
-                                      na_rep=parameters.AST)
-    it = iter(chain_for_structure)
-    return next(it)
+def chain_structure():
+    def build(chain_for_structure, paint=False, sep=None):
+        if paint:
+            chain_for_structure.paint_all(sep=sep or '. ',
+                                          text_key='en-GB',
+                                          na_rep=parameters.AST)
+        it = iter(chain_for_structure)
+        return next(it)
+    return build
 
 @pytest.fixture(scope='function')
-def expected_structure(values, columns, paint=False):
-    _expected = pd.DataFrame(np.array(values).T, columns=columns)
-    _expected.iloc[:, 0] = pd.to_numeric(_expected.iloc[:, 0])
-    _expected.iloc[:, 1] = pd.to_numeric(_expected.iloc[:, 1])
-    if not paint:
-        _expected.iloc[:, 2] = pd.to_numeric(_expected.iloc[:, 2])
-    return _expected
+def expected_structure():
+    def build(values, columns, paint=False):
+        _expected = pd.DataFrame(np.array(values).T, columns=columns)
+        _expected.iloc[:, 0] = pd.to_numeric(_expected.iloc[:, 0])
+        _expected.iloc[:, 1] = pd.to_numeric(_expected.iloc[:, 1])
+        if not paint:
+            _expected.iloc[:, 2] = pd.to_numeric(_expected.iloc[:, 2])
+        return _expected
+    return build
 
 @pytest.fixture(scope='function')
-def multi_index(tuples):
-    names = ['Question', 'Values'] * (len(tuples[0]) / 2)
-    _index = pd.MultiIndex.from_tuples(tuples, names=names)
-    return _index
+def multi_index():
+    def build(tuples):
+        names = ['Question', 'Values'] * int(len(tuples[0]) / 2)
+        _index = pd.MultiIndex.from_tuples(tuples, names=names)
+        return _index
+    return build
 
 @pytest.fixture(scope='function')
-def frame(values, index, columns):
-    _frame = pd.DataFrame(values, index=index, columns=columns)
-    return _frame
+def frame():
+    def build(values, index, columns):
+        _frame = pd.DataFrame(values, index=index, columns=columns)
+        return _frame
+    return build
 
 class TestChainConstructor:
     def test_init(self, basic_chain):
@@ -150,14 +160,14 @@ class TestChainConstructor:
 
 class TestChainExceptions:
     def test_get_non_existent_columns(self, basic_chain):
-        expected = "Expecting ValueError"
-        with pytest.raises(ValueError, message=expected) as excinfo:
+        with pytest.raises(ValueError) as excinfo:
             basic_chain.get(data_key=DATA_KEY,
                             filter_key=FILTER_KEY,
                             x_keys=['erdbeer', 'bananana'],
                             y_keys=['@'],
                             views=['cbase', 'counts', 'c%', 'mean', 'median'],
                             orient='x')
+
         assert excinfo.match(r'.* "erdbeer", "bananana" .*')
 
 @pytest.yield_fixture(
@@ -187,7 +197,7 @@ class TestChainGet:
                       ('x|d.mean|x:|||mean', 'x|t.means.Dim.80+@|x:|||t_m_80'),
                        'x|f.c:f|x:|y||c%_sum']
 
-    def test_get_x_orientation(self, stack, params_getx):
+    def test_get_x_orientation(self, stack, params_getx, complex_chain, multi_index, frame):
         x, y, expected = params_getx
 
         chains = complex_chain(stack, x, y, self._VIEWS, self._VIEW_KEYS, 'x',
@@ -230,7 +240,7 @@ class TestChainGet:
             ### Test Contents
             assert chain.contents == parameters.CONTENTS
 
-    def test_sig_transformation_simple(self, stack):
+    def test_sig_transformation_simple(self, stack, complex_chain):
         x, y = 'q5_1', ['@', 'gender', 'q4']
         chains = complex_chain(stack, x, y, self._VIEWS, self._VIEW_SIG_KEYS,
                                'x', incl_tests=True, incl_sum=True)
@@ -250,7 +260,7 @@ class TestChainGet:
         expected_letters = parameters.X5_SIG_SIMPLE[2]
         assert expected_letters == actual_letters
 
-    def test_annotations_fields(self, stack):
+    def test_annotations_fields(self, stack, complex_chain):
         x, y = 'q5_1', ['@', 'gender', 'q4']
         chains = complex_chain(stack, x, y, self._VIEWS, self._VIEW_SIG_KEYS,
                                'x', incl_tests=True, incl_sum=True)
@@ -276,7 +286,7 @@ class TestChainGet:
         assert annot.footer_right == ['footer-right'] == annot.footer['right']
         assert annot.notes == ['notes'] == annot.notes
 
-    def test_annotations_populated(self, stack):
+    def test_annotations_populated(self, stack, complex_chain):
         x, y = 'q5_1', ['@', 'gender', 'q4']
         chains = complex_chain(stack, x, y, self._VIEWS, self._VIEW_SIG_KEYS,
                                'x', incl_tests=True, incl_sum=True)
@@ -289,7 +299,7 @@ class TestChainGet:
         expected = ['footer-center', 'footer-left', 'header-center', 'notes']
         assert annot.populated == expected
 
-    def test_annotations_list_append(self, stack):
+    def test_annotations_list_append(self, stack, complex_chain):
         x, y = 'q5_1', ['@', 'gender', 'q4']
         chains = complex_chain(stack, x, y, self._VIEWS, self._VIEW_SIG_KEYS,
                                'x', incl_tests=True, incl_sum=True)
@@ -330,16 +340,16 @@ def params_structure(request):
     return request.param
 
 class TestChainUnnamedAdd:
-    def test_unnamed(self, unnamed_chain_for_structure):
+    def test_unnamed(self, unnamed_chain_for_structure, chain_structure):
         _chain = chain_structure(unnamed_chain_for_structure)
         assert _chain.name == 'record_number.age'
 
 class TestChainAdd:
-    def test_named(self, chain_for_structure):
+    def test_named(self, chain_for_structure, chain_structure):
         _chain = chain_structure(chain_for_structure)
         assert _chain.name == 'open'
 
-    def test_str(self, chain_for_structure, params_structure):
+    def test_str(self, chain_for_structure, params_structure, chain_structure, expected_structure):
         paint, columns, values, repaint_columns, _ = params_structure
 
         _chain = chain_structure(chain_for_structure, paint=paint)
@@ -348,9 +358,12 @@ class TestChainAdd:
         assert_frame_equal(_chain.structure.fillna('*'), _expected_structure)
 
 class TestChainAddRepaint:
-    def test_str(self, chain_for_structure, params_structure):
+    def test_str(self,
+                 chain_for_structure,
+                 params_structure,
+                 chain_structure,
+                 expected_structure):
         paint, columns, values, repaint_columns, sep = params_structure
-
         if repaint_columns:
             _chain = chain_structure(chain_for_structure, paint=paint)
             _expected_structure = expected_structure(values,

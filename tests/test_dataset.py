@@ -41,6 +41,22 @@ class TestDataSet(unittest.TestCase):
         self.assertTrue(isinstance(dataset._data, pd.DataFrame))
         self.assertTrue(isinstance(dataset._meta, dict))
 
+    def test_read_spss(self):
+        dataset = qp.DataSet('spss')
+        dataset.read_spss('tests/Example Data (A) - with multi choice q2.sav')
+        self.assertTrue(dataset.meta('q2').shape == (8,3))
+
+    def test_read_spss_readstat(self):
+        dataset_v1 = qp.DataSet('spss')
+        dataset_v1.read_spss('tests/Example Data (A) - with multi choice q2.sav')
+        dataset = qp.DataSet('spss')
+        dataset.read_spss('tests/Example Data (A) - with multi choice q2.sav', engine='readstat')
+        # the label of the set is lost as this engine doesn't support delimited sets
+        dataset.to_delimited_set('q2', dataset_v1.text('q2'), dataset.find('q2_'))
+        self.assertTrue(dataset.meta('q2').shape == (8,3))
+        assert dataset.crosstab('q2').equals(dataset_v1.crosstab('q2'))
+        assert dataset.crosstab('q2b').equals(dataset_v1.crosstab('q2b'))
+
     def test_fileinfo(self):
         dataset = self._get_dataset()
         meta_def_key =  dataset._meta['lib']['default text']
@@ -580,9 +596,9 @@ class TestDataSet(unittest.TestCase):
 
     def test_uncode(self):
         dataset = self._get_dataset()
-        dataset.uncode('q8', {1: 1, 2:2, 5:5}, 'q8', intersect={'gender':1})
-        dataset.uncode('q8', {3: 3, 4:4, 98:98}, 'q8', intersect={'gender':2})
-        df = dataset.crosstab('q8', 'gender')
+        dataset.uncode('q8',{1: 1, 2:2, 5:5}, 'q8', intersect={'gender':1})
+        dataset.uncode('q8',{3: 3, 4:4, 98:98}, 'q8', intersect={'gender':2})
+        df = dataset.crosstab('q8', 'gender', xtotal=True)
         result = [[ 1797.,   810.,   987.],
                   [  476.,     0.,   476.],
                   [  104.,     0.,   104.],
@@ -600,16 +616,16 @@ class TestDataSet(unittest.TestCase):
                   for c in range(1, 4)]} for r in frange('1-5')]
         ds = dataset.derotate(levels, mapper, 'gender', 'record_number')
         df_h = ds._data.head(10)
-        df_val = [[x if not np.isnan(x) else np.nan for x in line]
+        df_val = [[x if not np.isnan(x) else 'nan' for x in line]
                   for line in df_h.values.tolist()]
         result_df = [[1.0, 2.0, 1.0, 4.0, 4.0, 4.0, 8.0, 1.0, 2.0, 4.0, 2.0, 3.0, 1.0],
                      [1.0, 2.0, 2.0, 4.0, 4.0, 4.0, 8.0, 3.0, 3.0, 2.0, 4.0, 3.0, 1.0],
-                     [1.0, 3.0, 1.0, 1.0, 1.0, 8.0, np.nan, 4.0, 3.0, 1.0, 3.0, 1.0, 2.0],
+                     [1.0, 3.0, 1.0, 1.0, 1.0, 8.0, 'nan', 4.0, 3.0, 1.0, 3.0, 1.0, 2.0],
                      [1.0, 4.0, 1.0, 5.0, 5.0, 4.0, 8.0, 2.0, 3.0, 2.0, 3.0, 1.0, 1.0],
                      [1.0, 4.0, 2.0, 4.0, 5.0, 4.0, 8.0, 2.0, 1.0, 3.0, 2.0, 1.0, 1.0],
                      [1.0, 5.0, 1.0, 3.0, 3.0, 5.0, 8.0, 4.0, 2.0, 2.0, 1.0, 3.0, 1.0],
                      [1.0, 5.0, 2.0, 5.0, 3.0, 5.0, 8.0, 3.0, 3.0, 3.0, 1.0, 2.0, 1.0],
-                     [1.0, 6.0, 1.0, 2.0, 2.0, 8.0, np.nan, 4.0, 2.0, 3.0, 4.0, 2.0, 1.0],
+                     [1.0, 6.0, 1.0, 2.0, 2.0, 8.0, 'nan', 4.0, 2.0, 3.0, 4.0, 2.0, 1.0],
                      [1.0, 7.0, 1.0, 3.0, 3.0, 3.0, 8.0, 2.0, 1.0, 3.0, 2.0, 4.0, 1.0],
                      [1.0, 7.0, 2.0, 3.0, 3.0, 3.0, 8.0, 3.0, 2.0, 1.0, 2.0, 3.0, 1.0]]
         result_columns = ['@1', 'record_number', 'visit', 'visit_levelled',
@@ -802,19 +818,104 @@ class TestDataSet(unittest.TestCase):
                 'x edits': {'en-GB': 'edit'}, 'y edits':{'en-GB': 'edit'}}
         dataset.set_variable_text('q1', 'edit', 'en-GB', ['x', 'y'])
 
+    def test_sig_diff_without_counts(self):
+        """
+        Test that the sig diff information is included even though the
+        user didn't request the necessary counts view to run the tests
+        """
+        dataset = self._get_dataset()
+        x = 'q5_3'
+        y = 'gender'
+        sig_level = 0.05
+        with_sigdiff = dataset.crosstab(x, y,
+                                        ci=['c%'],
+                                        sig_level=sig_level)
+        assert '0.05' in with_sigdiff.index.get_level_values(level=1).tolist()
+
+    def test_sig_diff_details(self):
+        dataset = self._get_dataset()
+        x = 'q5_3'
+        y = 'gender'
+        sig_level = 0.05
+
+        # here we use sig diff with the default parameters, which mimic Dimensions
+        with_sigdiff = dataset.crosstab(x, y,
+                                        ci=['counts', 'c%'],
+                                        sig_level=sig_level)
+        # TODO: we can add expected sig-diffs here
+        assert with_sigdiff.shape == (22,2)
+
+        # here we can test the sig-diff with different parameters
+        stack = qp.Stack(name='sig',
+                         add_data={'sig': {'meta': dataset.meta(),
+                                           'data': dataset.data()}})
+        stack.add_link(data_keys=['sig'],
+                       x=x,
+                       y=y,
+                       views=['c%', 'counts'])
+        link = stack['sig']['no_filter'][x][y]
+        test = qp.Test(link, 'x|f|:|||counts')
+
+        # possible parameters are here:
+        #https://github.com/Quantipy/quantipy3/blob/master/quantipy/core/quantify/engine.py#L1783
+        test = test.set_params(level=sig_level)
+        df = test.run()
+        # assert that we only have 1 significanctly higher value
+        assert df[('gender', 2)].isna().sum() == 7
+        assert df[('gender', 1)].isna().sum() == 6
+
+
+    def test_crosstab_with_base_selection(self):
+        dataset = self._get_dataset()
+        result = dataset.crosstab(['q2b'], 'gender', w='weight_a')
+        assert "Base" in result.index.get_level_values(1)
+        assert "Unweighted base" not in result.index.get_level_values(1)
+        result = dataset.crosstab(['q2b'], 'gender')
+        assert "Base" in result.index.get_level_values(1)
+        assert "Unweighted base" not in result.index.get_level_values(1)
+        result = dataset.crosstab(['q2b'], 'gender', w='weight_a', base='both')
+        assert "Base" in result.index.get_level_values(1)
+        assert "Unweighted base" in result.index.get_level_values(1)
+        result = dataset.crosstab(['q2b'], 'gender', w='weight_a', base='unweighted')
+        assert "Base" not in result.index.get_level_values(1)
+        assert "Unweighted base" in result.index.get_level_values(1)
+        result = dataset.crosstab(['q2b'], 'gender', w='weight_a', base='weighted')
+        assert "Base" in result.index.get_level_values(1)
+        assert "Unweighted base" not in result.index.get_level_values(1)
+
+
+
+    def test_crosstab2(self):
+        dataset = self._get_dataset()
+        result = dataset.crosstab('q1', 'gender')
+        with_sigdiff = dataset.crosstab('q1', 'q4 > gender',
+                                        ci=['counts', 'c%'],
+                                        sig_level=0.95,
+                                        painted=True)
+        assert result.shape == (13,2)
+        assert with_sigdiff.shape == (37,4)
+
+    def test_crosstab_with_lang_key(self):
+        dataset = self._get_dataset()
+        dataset.set_variable_text(name='gender', new_text='Kyn', text_key='is-IS')
+        dataset.set_value_texts(name='gender', renamed_vals={1:'Maður', 2:"Kona"}, text_key='is-IS')
+        dataset.set_variable_text(name='locality', new_text='Búseta', text_key='is-IS')
+        dataset.set_value_texts(name='locality',
+                                renamed_vals={
+                                    1:"Verslunarkjarni",
+                                    2:"Þéttbýli",
+                                    3:"Úthverfi",
+                                    4:"Dreifbýli",
+                                    5:"Afskekkt"
+                                    },
+                                text_key='is-IS')
+
+        result = dataset.crosstab(x='locality', y='gender', text_key='is-IS')
+        assert result.columns.get_level_values(1).to_list() == ['Maður', 'Kona']
+
     def test_crosstab(self):
         x = 'q14r01c01'
         dataset = self._get_dataset()
         dataset.crosstab(x)
         self.assertEqual(dataset._meta['columns'][x]['values'],
                          'lib@values@q14_1')
-
-    def test_tabulate(self):
-        x = 'q3'
-        y = 'gender'
-        dataset = self._get_dataset()
-        df1 = dataset.tabulate(x, y, show='count')
-        self.assertEqual(df1.data.shape, (10,3))
-        df2 = dataset.tabulate(x, y, show=['count', 'pct', 'base', 'ubase'], w='weight_a')
-        self.assertEqual(df2.data.shape, (20,3))
-        df3 = dataset.tabulate(x)

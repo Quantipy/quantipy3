@@ -1,0 +1,2517 @@
+{
+  "defaultConfirmitLanguageId": 9,
+  "languages": [{ "confirmitLanguageId": 9 }],
+  "root": {
+    "name": "response",
+    "keys": [
+      {
+        "name": "responseid",
+        "isCompound": false,
+        "isBackground": false,
+        "isHidden": false,
+        "variableType": "numeric",
+        "isSystemVariable": true,
+        "isRespondentVariable": false
+      }
+    ],
+    "variables": [
+      {
+        "name": "respid",
+        "isCompound": false,
+        "isBackground": false,
+        "isHidden": false,
+        "variableType": "numeric",
+        "isSystemVariable": true,
+        "isRespondentVariable": false
+      },
+      {
+        "name": "status",
+        "titles": [{ "languageId": 9, "text": "Interview Status" }],
+        "isCompound": false,
+        "isBackground": false,
+        "isHidden": false,
+        "variableType": "singleChoice",
+        "isSystemVariable": true,
+        "isRespondentVariable": false,
+        "options": [
+          {
+            "code": "complete",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "Complete" }]
+          },
+          {
+            "code": "incomplete",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "Incomplete" }]
+          },
+          {
+            "code": "quotafull",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "Quota Full" }]
+          },
+          {
+            "code": "error",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "Error" }]
+          },
+          {
+            "code": "screened",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "Screened" }]
+          }
+        ]
+      },
+      {
+        "name": "interview_start",
+        "titles": [{ "languageId": 9, "text": "Interview Start" }],
+        "isCompound": false,
+        "isBackground": false,
+        "isHidden": false,
+        "variableType": "dateTime",
+        "isSystemVariable": true,
+        "isRespondentVariable": false
+      },
+      {
+        "name": "interview_end",
+        "titles": [{ "languageId": 9, "text": "Interview End" }],
+        "isCompound": false,
+        "isBackground": false,
+        "isHidden": false,
+        "variableType": "dateTime",
+        "isSystemVariable": true,
+        "isRespondentVariable": false
+      },
+      {
+        "name": "lastchannel",
+        "titles": [{ "languageId": 9, "text": "Last channel used" }],
+        "isCompound": false,
+        "isBackground": false,
+        "isHidden": false,
+        "variableType": "singleChoice",
+        "isSystemVariable": true,
+        "isRespondentVariable": false,
+        "options": [
+          {
+            "code": "1",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "CAWI" }]
+          },
+          {
+            "code": "2",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "CAPI" }]
+          },
+          {
+            "code": "8",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "CATI" }]
+          },
+          {
+            "code": "4",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "RDG" }]
+          }
+        ]
+      },
+      {
+        "name": "lastdevicetype",
+        "titles": [{ "languageId": 9, "text": "Last device used" }],
+        "isCompound": false,
+        "isBackground": false,
+        "isHidden": false,
+        "variableType": "singleChoice",
+        "isSystemVariable": true,
+        "isRespondentVariable": false,
+        "options": [
+          {
+            "code": "1",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "Desktop" }]
+          },
+          {
+            "code": "2",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "Touch" }]
+          },
+          {
+            "code": "8",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "Generic" }]
+          }
+        ]
+      },
+      {
+        "name": "lastrenderingmode",
+        "titles": [{ "languageId": 9, "text": "Last rendering mode used" }],
+        "isCompound": false,
+        "isBackground": false,
+        "isHidden": false,
+        "variableType": "singleChoice",
+        "isSystemVariable": true,
+        "isRespondentVariable": false,
+        "options": [
+          {
+            "code": "1",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "Desktop" }]
+          },
+          {
+            "code": "2",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "Touch" }]
+          },
+          {
+            "code": "8",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "Generic" }]
+          }
+        ]
+      },
+      {
+        "name": "last_touched",
+        "titles": [{ "languageId": 9, "text": "Last Touched" }],
+        "isCompound": false,
+        "isBackground": false,
+        "isHidden": false,
+        "variableType": "dateTime",
+        "isSystemVariable": true,
+        "isRespondentVariable": false
+      },
+      {
+        "name": "first_question_on_last_page_displayed",
+        "titles": [{ "languageId": 9, "text": "Dropout question" }],
+        "isCompound": false,
+        "isBackground": false,
+        "isHidden": false,
+        "variableType": "text",
+        "isSystemVariable": true,
+        "isRespondentVariable": false,
+        "length": 0
+      },
+      {
+        "name": "q7",
+        "titles": [
+          {
+            "languageId": 9,
+            "text": "open - default options long title 12346789901234567890123456789012345678901234567890123456789012345678901234567890qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqwwwwwwwwwwwwwwwwwwwwwwwwwrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrend"
+          }
+        ],
+        "isCompound": false,
+        "isBackground": false,
+        "isHidden": false,
+        "variableType": "text",
+        "isSystemVariable": false,
+        "isRespondentVariable": false,
+        "length": -1,
+        "lowerLimitType": "noLimit",
+        "upperLimitType": "noLimit"
+      },
+      {
+        "name": "q11",
+        "titles": [{ "languageId": 9, "text": "open - fieldwidth =25" }],
+        "isCompound": false,
+        "isBackground": false,
+        "isHidden": false,
+        "variableType": "text",
+        "isSystemVariable": false,
+        "isRespondentVariable": false,
+        "length": 25,
+        "lowerLimitType": "noLimit",
+        "upperLimitType": "noLimit"
+      },
+      {
+        "name": "q8",
+        "titles": [{ "languageId": 9, "text": "open - date" }],
+        "isCompound": false,
+        "isBackground": false,
+        "isHidden": false,
+        "variableType": "dateTime",
+        "isSystemVariable": false,
+        "isRespondentVariable": false,
+        "lowerLimitType": "noLimit",
+        "upperLimitType": "noLimit"
+      },
+      {
+        "name": "q9",
+        "titles": [{ "languageId": 9, "text": "open - numeric" }],
+        "isCompound": false,
+        "isBackground": true,
+        "isHidden": false,
+        "variableType": "numeric",
+        "isSystemVariable": false,
+        "isRespondentVariable": false,
+        "precision": 2,
+        "scale": 0,
+        "lowerNumericLimit": 0.0,
+        "upperNumericLimit": 100.0,
+        "lowerLimitType": "inclusive",
+        "upperLimitType": "inclusive"
+      },
+      {
+        "name": "q73",
+        "titles": [{ "languageId": 9, "text": "open - numeric" }],
+        "isCompound": false,
+        "isBackground": true,
+        "isHidden": false,
+        "variableType": "numeric",
+        "isSystemVariable": false,
+        "isRespondentVariable": false,
+        "precision": 18,
+        "scale": 2,
+        "lowerNumericLimit": 0.0,
+        "upperNumericLimit": 100.0,
+        "lowerLimitType": "inclusive",
+        "upperLimitType": "inclusive"
+      },
+      {
+        "name": "delete3",
+        "titles": [{ "languageId": 9, "text": "delete3 title" }],
+        "texts": [{ "languageId": 9, "text": "delete3 text" }],
+        "isCompound": false,
+        "isBackground": true,
+        "isHidden": false,
+        "variableType": "numeric",
+        "isSystemVariable": false,
+        "isRespondentVariable": false,
+        "precision": 2,
+        "scale": 0,
+        "lowerNumericLimit": 0.0,
+        "upperNumericLimit": 100.0,
+        "lowerLimitType": "inclusive",
+        "upperLimitType": "inclusive"
+      },
+      {
+        "name": "sat_areas",
+        "titles": [{
+          "languageId": 9,
+          "text": "Area satisfaction"
+        }],
+        "fields": [{
+          "code": "1",
+          "hasOtherField": false,
+          "texts": [{
+            "languageId": 9,
+            "text": "Web"
+          }]
+        },
+        {
+          "code": "2",
+          "hasOtherField": false,
+          "texts": [{
+            "languageId": 9,
+            "text": "Web shop"
+          }]
+        },
+        {
+          "code": "3",
+          "hasOtherField": false,
+          "texts": [{
+            "languageId": 9,
+            "text": "Store"
+          }]
+        },
+        {
+          "code": "4",
+          "hasOtherField": false,
+          "texts": [{
+            "languageId": 9,
+            "text": "Check-out process"
+          }]
+        },
+        {
+          "code": "5",
+          "hasOtherField": false,
+          "texts": [{
+            "languageId": 9,
+            "text": "Product"
+          }]
+        },
+        {
+          "code": "6",
+          "hasOtherField": false,
+          "texts": [{
+            "languageId": 9,
+            "text": "Support"
+          }]
+        }],
+        "isCompound": true,
+        "isBackground": false,
+        "isHidden": false,
+        "variableType": "singleChoice",
+        "tags": [
+          "grid"
+        ],
+        "isSystemVariable": false,
+        "isRespondentVariable": false,
+        "options": [
+          {
+            "code": "1",
+            "hasOtherField": false,
+            "texts": [
+              {
+                "languageId": 9,
+                "text": "1"
+              }
+            ]
+          },
+          {
+            "code": "2",
+            "hasOtherField": false,
+            "texts": [
+              {
+                "languageId": 9,
+                "text": "2"
+              }
+            ]
+          },
+          {
+            "code": "3",
+            "hasOtherField": false,
+            "texts": [
+              {
+                "languageId": 9,
+                "text": "3"
+              }
+            ]
+          },
+          {
+            "code": "4",
+            "hasOtherField": false,
+            "texts": [
+              {
+                "languageId": 9,
+                "text": "4"
+              }
+            ]
+          },
+          {
+            "code": "5",
+            "hasOtherField": false,
+            "texts": [
+              {
+                "languageId": 9,
+                "text": "5"
+              }
+            ]
+          },
+          {
+            "code": "99",
+            "hasOtherField": false,
+            "texts": [
+              {
+                "languageId": 9,
+                "text": "Don ́t know"
+              }
+            ]
+          }
+        ],
+        "excludeFromReporting": false
+      },
+      {
+        "name": "q12",
+        "titles": [{ "languageId": 9, "text": "single - default options" }],
+        "isCompound": false,
+        "isBackground": false,
+        "isHidden": false,
+        "variableType": "singleChoice",
+        "isSystemVariable": false,
+        "isRespondentVariable": false,
+        "options": [
+          {
+            "code": "1",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans1" }]
+          },
+          {
+            "code": "2",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans2" }]
+          }
+        ]
+      },
+      {
+        "name": "q13",
+        "titles": [{ "languageId": 9, "text": "single - boolean" }],
+        "isCompound": false,
+        "isBackground": false,
+        "isHidden": false,
+        "variableType": "singleChoice",
+        "isSystemVariable": false,
+        "isRespondentVariable": false,
+        "options": [
+          {
+            "code": "1",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "true" }]
+          },
+          {
+            "code": "0",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "false" }]
+          }
+        ]
+      },
+      {
+        "name": "q67",
+        "titles": [{ "languageId": 9, "text": "single char precode" }],
+        "texts": [{ "languageId": 9, "text": "single char precode text" }],
+        "isCompound": false,
+        "isBackground": false,
+        "isHidden": false,
+        "variableType": "singleChoice",
+        "isSystemVariable": false,
+        "isRespondentVariable": false,
+        "options": [
+          {
+            "code": "a",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "a1" }]
+          },
+          {
+            "code": "b",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "a2" }]
+          },
+          {
+            "code": "c",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "a3" }]
+          }
+        ]
+      },
+      {
+        "name": "q1",
+        "titles": [{ "languageId": 9, "text": "multi - default options" }],
+        "isCompound": false,
+        "isBackground": false,
+        "isHidden": false,
+        "variableType": "multiChoice",
+        "isSystemVariable": false,
+        "isRespondentVariable": false,
+        "options": [
+          {
+            "code": "1",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans1" }]
+          },
+          {
+            "code": "2",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans2" }]
+          },
+          {
+            "code": "3",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans3" }]
+          }
+        ],
+        "lowerLimitType": "noLimit",
+        "upperLimitType": "noLimit"
+      },
+      {
+        "name": "q2",
+        "titles": [
+          { "languageId": 9, "text": "ranking- ordered (10 answers)" }
+        ],
+        "texts": [{ "languageId": 9, "text": "ranking- ordered (10 answers)" }],
+        "fields": [
+          {
+            "code": "1",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans1" }]
+          },
+          {
+            "code": "2",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans2" }]
+          },
+          {
+            "code": "3",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans3" }]
+          },
+          {
+            "code": "4",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans4" }]
+          },
+          {
+            "code": "5",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans5" }]
+          },
+          {
+            "code": "6",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans6" }]
+          },
+          {
+            "code": "7",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans7" }]
+          },
+          {
+            "code": "8",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans8" }]
+          },
+          {
+            "code": "9",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans9" }]
+          },
+          {
+            "code": "10",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans10" }]
+          }
+        ],
+        "isCompound": true,
+        "isBackground": false,
+        "isHidden": false,
+        "variableType": "ranking",
+        "isSystemVariable": false,
+        "isRespondentVariable": false,
+        "lowerLimitType": "noLimit",
+        "upperLimitType": "noLimit"
+      },
+      {
+        "name": "q3",
+        "titles": [{ "languageId": 9, "text": "open text list" }],
+        "fields": [
+          {
+            "code": "1",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans1" }]
+          },
+          {
+            "code": "2",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans2" }]
+          },
+          {
+            "code": "3",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans3" }]
+          }
+        ],
+        "isCompound": true,
+        "isBackground": false,
+        "isHidden": false,
+        "variableType": "text",
+        "isSystemVariable": false,
+        "isRespondentVariable": false,
+        "lowerLimitType": "noLimit",
+        "upperLimitType": "noLimit"
+      },
+      {
+        "name": "q4",
+        "titles": [
+          { "languageId": 9, "text": "open text list &amp; fieldwidth =4" }
+        ],
+        "fields": [
+          {
+            "code": "1",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans1" }]
+          },
+          {
+            "code": "2",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans2" }]
+          },
+          {
+            "code": "3",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans3" }]
+          }
+        ],
+        "isCompound": true,
+        "isBackground": false,
+        "isHidden": false,
+        "variableType": "text",
+        "isSystemVariable": false,
+        "isRespondentVariable": false,
+        "length": 4,
+        "lowerLimitType": "noLimit",
+        "upperLimitType": "noLimit"
+      },
+      {
+        "name": "q5",
+        "titles": [{ "languageId": 9, "text": "numeric list" }],
+        "texts": [{ "languageId": 9, "text": "multi - numeric" }],
+        "fields": [
+          {
+            "code": "1",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans1" }]
+          },
+          {
+            "code": "2",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans2" }]
+          },
+          {
+            "code": "3",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans3" }]
+          }
+        ],
+        "isCompound": true,
+        "isBackground": false,
+        "isHidden": false,
+        "variableType": "numeric",
+        "isSystemVariable": false,
+        "isRespondentVariable": false,
+        "precision": 2,
+        "scale": 0,
+        "lowerLimitType": "noLimit",
+        "upperLimitType": "noLimit"
+      },
+      {
+        "name": "q6",
+        "titles": [
+          { "languageId": 9, "text": "numeric list (total digits =20)" }
+        ],
+        "texts": [
+          { "languageId": 9, "text": "numeric list (total digits =20)" }
+        ],
+        "fields": [
+          {
+            "code": "1",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans1" }]
+          },
+          {
+            "code": "2",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans2" }]
+          },
+          {
+            "code": "3",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans3" }]
+          }
+        ],
+        "isCompound": true,
+        "isBackground": false,
+        "isHidden": false,
+        "variableType": "numeric",
+        "isSystemVariable": false,
+        "isRespondentVariable": false,
+        "precision": 20,
+        "scale": 0,
+        "lowerLimitType": "noLimit",
+        "upperLimitType": "noLimit"
+      },
+      {
+        "name": "q24",
+        "titles": [
+          {
+            "languageId": 9,
+            "text": "numeric list (min 1 and max 255 value)"
+          }
+        ],
+        "texts": [
+          {
+            "languageId": 9,
+            "text": "numeric list (min 1 and max 255 value)"
+          }
+        ],
+        "fields": [
+          {
+            "code": "1",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans1" }]
+          },
+          {
+            "code": "2",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans2" }]
+          },
+          {
+            "code": "3",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans3" }]
+          }
+        ],
+        "isCompound": true,
+        "isBackground": false,
+        "isHidden": false,
+        "variableType": "numeric",
+        "isSystemVariable": false,
+        "isRespondentVariable": false,
+        "precision": 2,
+        "scale": 0,
+        "lowerNumericLimit": 1.0,
+        "upperNumericLimit": 255.0,
+        "lowerLimitType": "inclusive",
+        "upperLimitType": "inclusive"
+      },
+      {
+        "name": "q26",
+        "titles": [
+          { "languageId": 9, "text": "numeric list (5 < precision <10)" }
+        ],
+        "texts": [
+          { "languageId": 9, "text": "numeric list (5 < precision <10)" }
+        ],
+        "fields": [
+          {
+            "code": "1",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans1" }]
+          },
+          {
+            "code": "2",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans2" }]
+          },
+          {
+            "code": "3",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans3" }]
+          }
+        ],
+        "isCompound": true,
+        "isBackground": false,
+        "isHidden": false,
+        "variableType": "numeric",
+        "isSystemVariable": false,
+        "isRespondentVariable": false,
+        "precision": 7,
+        "scale": 0,
+        "lowerLimitType": "noLimit",
+        "upperLimitType": "noLimit"
+      },
+      {
+        "name": "q27",
+        "titles": [
+          { "languageId": 9, "text": "numeric list (precision >10)" }
+        ],
+        "texts": [
+          { "languageId": 9, "text": "numeric list (precision >10)" }
+        ],
+        "fields": [
+          {
+            "code": "1",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans1" }]
+          },
+          {
+            "code": "2",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans2" }]
+          },
+          {
+            "code": "3",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans3" }]
+          }
+        ],
+        "isCompound": true,
+        "isBackground": false,
+        "isHidden": false,
+        "variableType": "numeric",
+        "isSystemVariable": false,
+        "isRespondentVariable": false,
+        "precision": 12,
+        "scale": 0,
+        "lowerLimitType": "noLimit",
+        "upperLimitType": "noLimit"
+      },
+      {
+        "name": "q14",
+        "titles": [{ "languageId": 9, "text": "grid - numeric precodes" }],
+        "texts": [{ "languageId": 9, "text": "grid - numeric precodes" }],
+        "fields": [
+          {
+            "code": "1",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans1" }]
+          },
+          {
+            "code": "2",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans2" }]
+          },
+          {
+            "code": "3",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans3" }]
+          }
+        ],
+        "isCompound": true,
+        "isBackground": false,
+        "isHidden": false,
+        "variableType": "rating",
+        "isSystemVariable": false,
+        "isRespondentVariable": false,
+        "options": [
+          {
+            "code": "1",
+            "score": 1.0,
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "1" }]
+          },
+          {
+            "code": "2",
+            "score": 2.0,
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "2" }]
+          },
+          {
+            "code": "3",
+            "score": 3.0,
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "3" }]
+          }
+        ]
+      },
+      {
+        "name": "q16",
+        "titles": [{ "languageId": 9, "text": "grid - character precodes" }],
+        "fields": [
+          {
+            "code": "1",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans1" }]
+          },
+          {
+            "code": "2",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans2" }]
+          },
+          {
+            "code": "3",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans3" }]
+          }
+        ],
+        "isCompound": true,
+        "isBackground": false,
+        "isHidden": false,
+        "variableType": "rating",
+        "isSystemVariable": false,
+        "isRespondentVariable": false,
+        "options": [
+          {
+            "code": "a",
+            "score": 1.0,
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "1" }]
+          },
+          {
+            "code": "aa",
+            "score": 2.0,
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "2" }]
+          },
+          {
+            "code": "aaa",
+            "score": 3.0,
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "3" }]
+          }
+        ]
+      },
+      {
+        "name": "q18",
+        "titles": [{ "languageId": 9, "text": "grid - fieldwidth=5" }],
+        "fields": [
+          {
+            "code": "1",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans1" }]
+          },
+          {
+            "code": "2",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans2" }]
+          },
+          {
+            "code": "3",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans3" }]
+          }
+        ],
+        "isCompound": true,
+        "isBackground": false,
+        "isHidden": false,
+        "variableType": "rating",
+        "isSystemVariable": false,
+        "isRespondentVariable": false,
+        "options": [
+          {
+            "code": "1",
+            "score": 1.0,
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "1" }]
+          },
+          {
+            "code": "2",
+            "score": 2.0,
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "2" }]
+          },
+          {
+            "code": "3",
+            "score": 3.0,
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "3" }]
+          }
+        ]
+      },
+      {
+        "name": "g19",
+        "titles": [{ "languageId": 9, "text": "grid" }],
+        "isCompound": false,
+        "isBackground": false,
+        "isHidden": false,
+        "variableType": "grid3D",
+        "isSystemVariable": false,
+        "isRespondentVariable": false,
+        "options": [
+          {
+            "code": "1",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans1" }]
+          },
+          {
+            "code": "2",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans2" }]
+          },
+          {
+            "code": "3",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans3" }]
+          },
+          {
+            "code": "4",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans4" }]
+          }
+        ]
+      },
+      {
+        "name": "q21",
+        "titles": [{ "languageId": 9, "text": "single in grid" }],
+        "isCompound": false,
+        "isBackground": false,
+        "isHidden": false,
+        "variableType": "singleChoice",
+        "isSystemVariable": false,
+        "isRespondentVariable": false,
+        "parentVariableName": "g19",
+        "options": [
+          {
+            "code": "1",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans1" }]
+          },
+          {
+            "code": "2",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans2" }]
+          },
+          {
+            "code": "3",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans3" }]
+          },
+          {
+            "code": "4",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans4" }]
+          }
+        ]
+      },
+      {
+        "name": "q22",
+        "titles": [{ "languageId": 9, "text": "multi in grid" }],
+        "isCompound": false,
+        "isBackground": false,
+        "isHidden": false,
+        "variableType": "multiChoice",
+        "isSystemVariable": false,
+        "isRespondentVariable": false,
+        "parentVariableName": "g19",
+        "options": [
+          {
+            "code": "1",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans1" }]
+          },
+          {
+            "code": "2",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans2" }]
+          },
+          {
+            "code": "3",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans3" }]
+          },
+          {
+            "code": "4",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans4" }]
+          }
+        ],
+        "lowerLimitType": "noLimit",
+        "upperLimitType": "noLimit"
+      },
+      {
+        "name": "q39",
+        "titles": [{ "languageId": 9, "text": "Use script to set values" }],
+        "isCompound": false,
+        "isBackground": false,
+        "isHidden": false,
+        "variableType": "singleChoice",
+        "isSystemVariable": false,
+        "isRespondentVariable": false,
+        "options": [
+          {
+            "code": "1",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "yes" }]
+          },
+          {
+            "code": "2",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "no" }]
+          }
+        ]
+      },
+      {
+        "name": "q28",
+        "titles": [{ "languageId": 9, "text": "multi - default options" }],
+        "isCompound": false,
+        "isBackground": false,
+        "isHidden": false,
+        "variableType": "multiChoice",
+        "isSystemVariable": false,
+        "isRespondentVariable": false,
+        "options": [
+          {
+            "code": "1",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans1" }]
+          },
+          {
+            "code": "2",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans2" }]
+          },
+          {
+            "code": "3",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans3" }]
+          }
+        ],
+        "lowerLimitType": "noLimit",
+        "upperLimitType": "noLimit"
+      },
+      {
+        "name": "q29",
+        "titles": [
+          { "languageId": 9, "text": "ranking- ordered (10 answers)" }
+        ],
+        "fields": [
+          {
+            "code": "1",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans1" }]
+          },
+          {
+            "code": "2",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans2" }]
+          },
+          {
+            "code": "3",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans3" }]
+          },
+          {
+            "code": "4",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans4" }]
+          },
+          {
+            "code": "5",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans5" }]
+          },
+          {
+            "code": "6",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans6" }]
+          },
+          {
+            "code": "7",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans7" }]
+          },
+          {
+            "code": "8",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans8" }]
+          },
+          {
+            "code": "9",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans9" }]
+          },
+          {
+            "code": "10",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans10" }]
+          }
+        ],
+        "isCompound": true,
+        "isBackground": false,
+        "isHidden": false,
+        "variableType": "ranking",
+        "isSystemVariable": false,
+        "isRespondentVariable": false,
+        "lowerLimitType": "noLimit",
+        "upperLimitType": "noLimit"
+      },
+      {
+        "name": "q30",
+        "titles": [{ "languageId": 9, "text": "open text list" }],
+        "fields": [
+          {
+            "code": "1",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans1" }]
+          },
+          {
+            "code": "2",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans2" }]
+          },
+          {
+            "code": "3",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans3" }]
+          }
+        ],
+        "isCompound": true,
+        "isBackground": false,
+        "isHidden": false,
+        "variableType": "text",
+        "isSystemVariable": false,
+        "isRespondentVariable": false,
+        "lowerLimitType": "noLimit",
+        "upperLimitType": "noLimit"
+      },
+      {
+        "name": "q31",
+        "titles": [
+          { "languageId": 9, "text": "open text list &amp; fieldwidth =4" }
+        ],
+        "fields": [
+          {
+            "code": "1",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans1" }]
+          },
+          {
+            "code": "2",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans2" }]
+          },
+          {
+            "code": "3",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans3" }]
+          }
+        ],
+        "isCompound": true,
+        "isBackground": false,
+        "isHidden": false,
+        "variableType": "text",
+        "isSystemVariable": false,
+        "isRespondentVariable": false,
+        "length": 4,
+        "lowerLimitType": "noLimit",
+        "upperLimitType": "noLimit"
+      },
+      {
+        "name": "q32",
+        "titles": [{ "languageId": 9, "text": "numeric list" }],
+        "fields": [
+          {
+            "code": "1",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans1" }]
+          },
+          {
+            "code": "2",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans2" }]
+          },
+          {
+            "code": "3",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans3" }]
+          }
+        ],
+        "isCompound": true,
+        "isBackground": false,
+        "isHidden": false,
+        "variableType": "numeric",
+        "isSystemVariable": false,
+        "isRespondentVariable": false,
+        "precision": 2,
+        "scale": 0,
+        "lowerLimitType": "noLimit",
+        "upperLimitType": "noLimit"
+      },
+      {
+        "name": "iq32",
+        "titles": [{ "languageId": 9, "text": "Arithmetic1" }],
+        "texts": [
+          {
+            "languageId": 9,
+            "text": "q32 smallint<br/>Sum: ^Sum(f(\"q32\").values())^<br/>Average: ^Average(f(\"q32\").values())^<br/>Count: ^Count(f(\"q32\").values())^<br/>Min:  ^Min(f(\"q32\").values())^<br/>Max:  ^Max(f(\"q32\").values())^"
+          }
+        ],
+        "isCompound": false,
+        "isBackground": false,
+        "isHidden": false,
+        "variableType": "info",
+        "isSystemVariable": false,
+        "isRespondentVariable": false
+      },
+      {
+        "name": "q33",
+        "titles": [
+          { "languageId": 9, "text": "numeric list (total digits =20)" }
+        ],
+        "fields": [
+          {
+            "code": "1",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans1" }]
+          },
+          {
+            "code": "2",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans2" }]
+          },
+          {
+            "code": "3",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans3" }]
+          }
+        ],
+        "isCompound": true,
+        "isBackground": false,
+        "isHidden": false,
+        "variableType": "numeric",
+        "isSystemVariable": false,
+        "isRespondentVariable": false,
+        "precision": 20,
+        "scale": 0,
+        "lowerLimitType": "noLimit",
+        "upperLimitType": "noLimit"
+      },
+      {
+        "name": "iq33",
+        "titles": [{ "languageId": 9, "text": "Arithmetic2" }],
+        "texts": [
+          {
+            "languageId": 9,
+            "text": "q33 numeric(20,0)<br/>Sum ^Sum(f(\"q33\").values())^<br/>Average: ^Average(f(\"q33\").values())^<br/>Count: ^Count(f(\"q33\").values())^<br/>Min:  ^Min(f(\"q33\").values())^<br/>Max:  ^Max(f(\"q33\").values())^"
+          }
+        ],
+        "isCompound": false,
+        "isBackground": false,
+        "isHidden": false,
+        "variableType": "info",
+        "isSystemVariable": false,
+        "isRespondentVariable": false
+      },
+      {
+        "name": "q34",
+        "titles": [
+          {
+            "languageId": 9,
+            "text": "numeric list (min 1 and max 255 value)"
+          }
+        ],
+        "fields": [
+          {
+            "code": "1",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans1" }]
+          },
+          {
+            "code": "2",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans2" }]
+          },
+          {
+            "code": "3",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans3" }]
+          }
+        ],
+        "isCompound": true,
+        "isBackground": false,
+        "isHidden": false,
+        "variableType": "numeric",
+        "isSystemVariable": false,
+        "isRespondentVariable": false,
+        "precision": 3,
+        "scale": 0,
+        "lowerNumericLimit": 1.0,
+        "upperNumericLimit": 255.0,
+        "lowerLimitType": "inclusive",
+        "upperLimitType": "inclusive"
+      },
+      {
+        "name": "iq34",
+        "titles": [{ "languageId": 9, "text": "Arithmetic3" }],
+        "texts": [
+          {
+            "languageId": 9,
+            "text": "q34 tinyInt <br/>Sum: ^Sum(f(\"q34\").values())^<br/>Average: ^Average(f(\"q34\").values())^<br/>Count: ^Count(f(\"q34\").values())^<br/>Min:  ^Min(f(\"q34\").values())^<br/>Max:  ^Max(f(\"q34\").values())^"
+          }
+        ],
+        "isCompound": false,
+        "isBackground": false,
+        "isHidden": false,
+        "variableType": "info",
+        "isSystemVariable": false,
+        "isRespondentVariable": false
+      },
+      {
+        "name": "q35",
+        "titles": [
+          { "languageId": 9, "text": "numeric list (5 < precision <10)" }
+        ],
+        "fields": [
+          {
+            "code": "1",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans1" }]
+          },
+          {
+            "code": "2",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans2" }]
+          },
+          {
+            "code": "3",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans3" }]
+          }
+        ],
+        "isCompound": true,
+        "isBackground": false,
+        "isHidden": false,
+        "variableType": "numeric",
+        "isSystemVariable": false,
+        "isRespondentVariable": false,
+        "precision": 9,
+        "scale": 0,
+        "lowerLimitType": "noLimit",
+        "upperLimitType": "noLimit"
+      },
+      {
+        "name": "iq35",
+        "titles": [{ "languageId": 9, "text": "Arithmetic4" }],
+        "texts": [
+          {
+            "languageId": 9,
+            "text": "q35 int<br/>Sum: ^Sum(f(\"q35\").values())^<br/>Average: ^Average(f(\"q35\").values())^<br/>Count: ^Count(f(\"q35\").values())^<br/>Min:  ^Min(f(\"q35\").values())^<br/>Max:  ^Max(f(\"q35\").values())^"
+          }
+        ],
+        "isCompound": false,
+        "isBackground": false,
+        "isHidden": false,
+        "variableType": "info",
+        "isSystemVariable": false,
+        "isRespondentVariable": false
+      },
+      {
+        "name": "q36",
+        "titles": [
+          { "languageId": 9, "text": "numeric list (precision >10)" }
+        ],
+        "fields": [
+          {
+            "code": "1",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans1" }]
+          },
+          {
+            "code": "2",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans2" }]
+          },
+          {
+            "code": "3",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans3" }]
+          }
+        ],
+        "isCompound": true,
+        "isBackground": false,
+        "isHidden": false,
+        "variableType": "numeric",
+        "isSystemVariable": false,
+        "isRespondentVariable": false,
+        "precision": 12,
+        "scale": 0,
+        "lowerLimitType": "noLimit",
+        "upperLimitType": "noLimit"
+      },
+      {
+        "name": "iq36",
+        "titles": [{ "languageId": 9, "text": "Arithmetic5" }],
+        "texts": [
+          {
+            "languageId": 9,
+            "text": "q36 bigint<br/>Sum: ^Sum(f(\"q36\").values())^<br/>Average: ^Average(f(\"q36\").values())^<br/>Count: ^Count(f(\"q36\").values())^<br/>Min:  ^Min(f(\"q36\").values())^<br/>Max:  ^Max(f(\"q36\").values())^"
+          }
+        ],
+        "isCompound": false,
+        "isBackground": false,
+        "isHidden": false,
+        "variableType": "info",
+        "isSystemVariable": false,
+        "isRespondentVariable": false
+      },
+      {
+        "name": "q44",
+        "titles": [
+          {
+            "languageId": 9,
+            "text": "numeric list (precision 8, 3 decimal)"
+          }
+        ],
+        "fields": [
+          {
+            "code": "1",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans1" }]
+          },
+          {
+            "code": "2",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans2" }]
+          },
+          {
+            "code": "3",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans3" }]
+          }
+        ],
+        "isCompound": true,
+        "isBackground": false,
+        "isHidden": false,
+        "variableType": "numeric",
+        "isSystemVariable": false,
+        "isRespondentVariable": false,
+        "precision": 8,
+        "scale": 3,
+        "lowerLimitType": "noLimit",
+        "upperLimitType": "noLimit"
+      },
+      {
+        "name": "iq44",
+        "texts": [
+          {
+            "languageId": 9,
+            "text": "<p>q44 numeric(8,3)<br/>Sum: ^Sum(f(\"q44\").values())^<br/>Average: ^Average(f(\"q44\").values())^<br/>Count: ^Count(f(\"q44\").values())^<br/>Min:  ^Min(f(\"q44\").values())^<br/>Max:  ^Max(f(\"q44\").values())^</p>"
+          }
+        ],
+        "isCompound": false,
+        "isBackground": false,
+        "isHidden": false,
+        "variableType": "info",
+        "isSystemVariable": false,
+        "isRespondentVariable": false
+      },
+      {
+        "name": "q42",
+        "titles": [{ "languageId": 9, "text": "open - date" }],
+        "isCompound": false,
+        "isBackground": false,
+        "isHidden": false,
+        "variableType": "dateTime",
+        "isSystemVariable": false,
+        "isRespondentVariable": false,
+        "lowerLimitType": "noLimit",
+        "upperLimitType": "noLimit"
+      },
+      {
+        "name": "i42",
+        "texts": [
+          {
+            "languageId": 9,
+            "text": "<div>f('q42').getType() = ^f('q42').getType()^<br/></div><div></div><div></div><div>f('q42').OPEN = ^f('q42').OPEN^<br/>f('q42').DATE = ^f('q42').DATE^<br/>f('q42').get()  = ^f('q42').get() ^</div><div></div><div></div><div></div><div>f('q42').value() = ^f('q42').value() ^<br/></div><div><br/></div><div>f('q42').toDate()  = ^f('q42').toDate() ^</div><div>f('q42').day()  = ^f('q42').day() ^</div><div>f('q42').month()  = ^f('q42').month() ^</div><div>f('q42').year()  = ^f('q42').year() ^</div><div>f('q42').datestring()  = ^f('q42').datestring() ^</div>"
+          }
+        ],
+        "isCompound": false,
+        "isBackground": false,
+        "isHidden": false,
+        "variableType": "info",
+        "isSystemVariable": false,
+        "isRespondentVariable": false
+      },
+      {
+        "name": "i40",
+        "titles": [{ "languageId": 9, "text": "GETVALUES" }],
+        "texts": [
+          {
+            "languageId": 9,
+            "text": "<p>q28 (bit): ^f(\"q28\").values()^<br/><br/>q29 (VarChar(2)): ^f(\"q29\").values()^</p><p>q30 (nVarchar(max)): ^f(\"q30\").values()^<br/><br/>q31 (nVarChar(4)): ^f(\"q31\").values()^</p><p>q32 (smallint): ^f(\"q32\").values()^</p><p></p><p>q33 (numeric(20,0)): ^f(\"q33\").values()^</p><p>q34 (tinyInt): ^f(\"q34\").values()^</p><p>q35 (int): ^f(\"q35\").values()^</p><p>q36 (bigint): ^f(\"q36\").values()^</p><p></p>"
+          }
+        ],
+        "isCompound": false,
+        "isBackground": false,
+        "isHidden": false,
+        "variableType": "info",
+        "isSystemVariable": false,
+        "isRespondentVariable": false
+      },
+      {
+        "name": "q52",
+        "titles": [{ "languageId": 9, "text": "Searchable answerlist" }],
+        "isCompound": false,
+        "isBackground": false,
+        "isHidden": false,
+        "variableType": "multiChoice",
+        "isSystemVariable": false,
+        "isRespondentVariable": false,
+        "options": [
+          {
+            "code": "71",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "a1" }]
+          },
+          {
+            "code": "72",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "a2" }]
+          },
+          {
+            "code": "73",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "b1" }]
+          },
+          {
+            "code": "74",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "b2" }]
+          },
+          {
+            "code": "1",
+            "loopReference": "l1",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "loopAns1" }]
+          },
+          {
+            "code": "2",
+            "loopReference": "l1",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "loopAns2" }]
+          },
+          {
+            "code": "3",
+            "loopReference": "l1",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "loopAns3" }]
+          },
+          {
+            "code": "4",
+            "loopReference": "l1",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "loopAns4" }]
+          },
+          {
+            "code": "5",
+            "loopReference": "l1",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "loopAns5" }]
+          },
+          {
+            "code": "6",
+            "loopReference": "l1",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "loopAns6" }]
+          },
+          {
+            "code": "7",
+            "loopReference": "l1",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "loopAns7" }]
+          },
+          {
+            "code": "8",
+            "loopReference": "l1",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "loopAns8" }]
+          },
+          {
+            "code": "75",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "f1" }]
+          },
+          {
+            "code": "76",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "f2" }]
+          },
+          {
+            "code": "77",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "v1" }]
+          },
+          {
+            "code": "78",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "v2" }]
+          },
+          {
+            "code": "79",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "z1" }]
+          },
+          {
+            "code": "80",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "z2" }]
+          }
+        ],
+        "lowerLimitType": "noLimit",
+        "upperLimitType": "noLimit"
+      },
+      {
+        "name": "q55",
+        "titles": [{ "languageId": 9, "text": "single with loop reference" }],
+        "isCompound": false,
+        "isBackground": false,
+        "isHidden": false,
+        "variableType": "singleChoice",
+        "isSystemVariable": false,
+        "isRespondentVariable": false,
+        "options": [
+          {
+            "code": "50",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "a1" }]
+          },
+          {
+            "code": "1",
+            "loopReference": "l2",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "loopAns1" }]
+          },
+          {
+            "code": "2",
+            "loopReference": "l2",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "loopAns2" }]
+          },
+          {
+            "code": "3",
+            "loopReference": "l2",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "loopAns3" }]
+          },
+          {
+            "code": "51",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "a2" }]
+          }
+        ]
+      },
+      {
+        "name": "q57",
+        "titles": [{ "languageId": 9, "text": "multi with loop reference" }],
+        "isCompound": false,
+        "isBackground": false,
+        "isHidden": false,
+        "variableType": "multiChoice",
+        "isSystemVariable": false,
+        "isRespondentVariable": false,
+        "options": [
+          {
+            "code": "50",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "a1" }]
+          },
+          {
+            "code": "51",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "a2" }]
+          },
+          {
+            "code": "1",
+            "loopReference": "l2",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "loopAns1" }]
+          },
+          {
+            "code": "2",
+            "loopReference": "l2",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "loopAns2" }]
+          },
+          {
+            "code": "3",
+            "loopReference": "l2",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "loopAns3" }]
+          }
+        ],
+        "lowerLimitType": "noLimit",
+        "upperLimitType": "noLimit"
+      },
+      {
+        "name": "q58",
+        "titles": [{ "languageId": 9, "text": "grid with loop reference" }],
+        "fields": [
+          {
+            "code": "1",
+            "hasOtherField": false,
+            "loopReference": "l2",
+            "texts": [{ "languageId": 9, "text": "loopAns1" }]
+          },
+          {
+            "code": "2",
+            "hasOtherField": false,
+            "loopReference": "l2",
+            "texts": [{ "languageId": 9, "text": "loopAns2" }]
+          },
+          {
+            "code": "3",
+            "hasOtherField": false,
+            "loopReference": "l2",
+            "texts": [{ "languageId": 9, "text": "loopAns3" }]
+          },
+          {
+            "code": "50",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans1" }]
+          },
+          {
+            "code": "51",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans2" }]
+          }
+        ],
+        "isCompound": true,
+        "isBackground": false,
+        "isHidden": false,
+        "variableType": "rating",
+        "isSystemVariable": false,
+        "isRespondentVariable": false,
+        "options": [
+          {
+            "code": "1",
+            "score": 1.0,
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "scale1" }]
+          },
+          {
+            "code": "2",
+            "score": 2.0,
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "scale2" }]
+          },
+          {
+            "code": "3",
+            "score": 3.0,
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "scale3" }]
+          }
+        ]
+      },
+      {
+        "name": "g59",
+        "titles": [{ "languageId": 9, "text": "3D grid with loop reference" }],
+        "isCompound": false,
+        "isBackground": false,
+        "isHidden": false,
+        "variableType": "grid3D",
+        "isSystemVariable": false,
+        "isRespondentVariable": false,
+        "options": [
+          {
+            "code": "50",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans1" }]
+          },
+          {
+            "code": "51",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans2" }]
+          },
+          {
+            "code": "1",
+            "loopReference": "l2",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "loopAns1" }]
+          },
+          {
+            "code": "2",
+            "loopReference": "l2",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "loopAns2" }]
+          },
+          {
+            "code": "3",
+            "loopReference": "l2",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "loopAns3" }]
+          }
+        ]
+      },
+      {
+        "name": "q60",
+        "titles": [{ "languageId": 9, "text": "single in 3D" }],
+        "isCompound": false,
+        "isBackground": false,
+        "isHidden": false,
+        "variableType": "singleChoice",
+        "isSystemVariable": false,
+        "isRespondentVariable": false,
+        "parentVariableName": "g59",
+        "options": [
+          {
+            "code": "50",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans1" }]
+          },
+          {
+            "code": "51",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans2" }]
+          },
+          {
+            "code": "1",
+            "loopReference": "l2",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "loopAns1" }]
+          },
+          {
+            "code": "2",
+            "loopReference": "l2",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "loopAns2" }]
+          },
+          {
+            "code": "3",
+            "loopReference": "l2",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "loopAns3" }]
+          }
+        ]
+      },
+      {
+        "name": "q61",
+        "titles": [{ "languageId": 9, "text": "multi in 3D" }],
+        "isCompound": false,
+        "isBackground": false,
+        "isHidden": false,
+        "variableType": "multiChoice",
+        "isSystemVariable": false,
+        "isRespondentVariable": false,
+        "parentVariableName": "g59",
+        "options": [
+          {
+            "code": "50",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans1" }]
+          },
+          {
+            "code": "51",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans2" }]
+          },
+          {
+            "code": "1",
+            "loopReference": "l2",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "loopAns1" }]
+          },
+          {
+            "code": "2",
+            "loopReference": "l2",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "loopAns2" }]
+          },
+          {
+            "code": "3",
+            "loopReference": "l2",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "loopAns3" }]
+          }
+        ],
+        "lowerLimitType": "noLimit",
+        "upperLimitType": "noLimit"
+      },
+      {
+        "name": "q62",
+        "titles": [{ "languageId": 9, "text": "grid in 3D" }],
+        "fields": [
+          {
+            "code": "50",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans1" }]
+          },
+          {
+            "code": "51",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "ans2" }]
+          },
+          {
+            "code": "1",
+            "hasOtherField": false,
+            "loopReference": "l2",
+            "texts": [{ "languageId": 9, "text": "loopAns1" }]
+          },
+          {
+            "code": "2",
+            "hasOtherField": false,
+            "loopReference": "l2",
+            "texts": [{ "languageId": 9, "text": "loopAns2" }]
+          },
+          {
+            "code": "3",
+            "hasOtherField": false,
+            "loopReference": "l2",
+            "texts": [{ "languageId": 9, "text": "loopAns3" }]
+          }
+        ],
+        "isCompound": true,
+        "isBackground": false,
+        "isHidden": false,
+        "variableType": "rating",
+        "isSystemVariable": false,
+        "isRespondentVariable": false,
+        "parentVariableName": "g59",
+        "options": [
+          {
+            "code": "1",
+            "score": 1.0,
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "s1" }]
+          },
+          {
+            "code": "2",
+            "score": 2.0,
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "s2" }]
+          }
+        ]
+      },
+      {
+        "name": "g56",
+        "isCompound": false,
+        "isBackground": false,
+        "isHidden": false,
+        "variableType": "multiGrid",
+        "isSystemVariable": false,
+        "isRespondentVariable": false,
+        "options": [
+          {
+            "code": "1",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "1" }]
+          },
+          {
+            "code": "2",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "2" }]
+          }
+        ]
+      },
+      {
+        "name": "g56_1",
+        "texts": [{ "languageId": 9, "text": "a" }],
+        "isCompound": false,
+        "isBackground": false,
+        "isHidden": false,
+        "variableType": "multiChoice",
+        "isSystemVariable": false,
+        "isRespondentVariable": false,
+        "parentVariableName": "g56",
+        "options": [
+          {
+            "code": "1",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "1" }]
+          },
+          {
+            "code": "2",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "2" }]
+          }
+        ],
+        "lowerLimitType": "noLimit",
+        "upperLimitType": "noLimit"
+      },
+      {
+        "name": "g56_2",
+        "texts": [{ "languageId": 9, "text": "b" }],
+        "isCompound": false,
+        "isBackground": false,
+        "isHidden": false,
+        "variableType": "multiChoice",
+        "isSystemVariable": false,
+        "isRespondentVariable": false,
+        "parentVariableName": "g56",
+        "options": [
+          {
+            "code": "1",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "1" }]
+          },
+          {
+            "code": "2",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "2" }]
+          }
+        ],
+        "lowerLimitType": "noLimit",
+        "upperLimitType": "noLimit"
+      },
+      {
+        "name": "g56_3",
+        "texts": [{ "languageId": 9, "text": "c" }],
+        "isCompound": false,
+        "isBackground": false,
+        "isHidden": false,
+        "variableType": "multiChoice",
+        "isSystemVariable": false,
+        "isRespondentVariable": false,
+        "parentVariableName": "g56",
+        "options": [
+          {
+            "code": "1",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "1" }]
+          },
+          {
+            "code": "2",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "2" }]
+          }
+        ],
+        "lowerLimitType": "noLimit",
+        "upperLimitType": "noLimit"
+      },
+      {
+        "name": "g63",
+        "isCompound": false,
+        "isBackground": false,
+        "isHidden": false,
+        "variableType": "multiGrid",
+        "isSystemVariable": false,
+        "isRespondentVariable": false,
+        "options": [
+          {
+            "code": "1",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "aa" }]
+          },
+          {
+            "code": "2",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "bb" }]
+          }
+        ]
+      },
+      {
+        "name": "g63_1",
+        "texts": [{ "languageId": 9, "text": "a" }],
+        "isCompound": false,
+        "isBackground": false,
+        "isHidden": false,
+        "variableType": "multiChoice",
+        "isSystemVariable": false,
+        "isRespondentVariable": false,
+        "parentVariableName": "g63",
+        "options": [
+          {
+            "code": "1",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "aa" }]
+          },
+          {
+            "code": "2",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "bb" }]
+          }
+        ],
+        "lowerLimitType": "noLimit",
+        "upperLimitType": "noLimit"
+      },
+      {
+        "name": "g63_2",
+        "texts": [{ "languageId": 9, "text": "b" }],
+        "isCompound": false,
+        "isBackground": false,
+        "isHidden": false,
+        "variableType": "multiChoice",
+        "isSystemVariable": false,
+        "isRespondentVariable": false,
+        "parentVariableName": "g63",
+        "options": [
+          {
+            "code": "1",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "aa" }]
+          },
+          {
+            "code": "2",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "bb" }]
+          }
+        ],
+        "lowerLimitType": "noLimit",
+        "upperLimitType": "noLimit"
+      },
+      {
+        "name": "g63_3",
+        "texts": [{ "languageId": 9, "text": "c" }],
+        "isCompound": false,
+        "isBackground": false,
+        "isHidden": false,
+        "variableType": "multiChoice",
+        "isSystemVariable": false,
+        "isRespondentVariable": false,
+        "parentVariableName": "g63",
+        "options": [
+          {
+            "code": "1",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "aa" }]
+          },
+          {
+            "code": "2",
+            "hasOtherField": false,
+            "texts": [{ "languageId": 9, "text": "bb" }]
+          }
+        ],
+        "lowerLimitType": "noLimit",
+        "upperLimitType": "noLimit"
+      }
+    ],
+    "children": [
+      {
+        "name": "l1",
+        "texts": [{ "languageId": 9, "text": "" }],
+        "keys": [
+          {
+            "name": "l1",
+            "titles": [{ "languageId": 9, "text": "" }],
+            "isCompound": false,
+            "isBackground": false,
+            "isHidden": false,
+            "variableType": "singleChoice",
+            "isSystemVariable": false,
+            "isRespondentVariable": false,
+            "options": [
+              {
+                "code": "1",
+                "hasOtherField": false,
+                "texts": [{ "languageId": 9, "text": "loopAns1" }]
+              },
+              {
+                "code": "2",
+                "hasOtherField": false,
+                "texts": [{ "languageId": 9, "text": "loopAns2" }]
+              },
+              {
+                "code": "3",
+                "hasOtherField": false,
+                "texts": [{ "languageId": 9, "text": "loopAns3" }]
+              },
+              {
+                "code": "4",
+                "hasOtherField": false,
+                "texts": [{ "languageId": 9, "text": "loopAns4" }]
+              },
+              {
+                "code": "5",
+                "hasOtherField": false,
+                "texts": [{ "languageId": 9, "text": "loopAns5" }]
+              },
+              {
+                "code": "6",
+                "hasOtherField": false,
+                "texts": [{ "languageId": 9, "text": "loopAns6" }]
+              },
+              {
+                "code": "7",
+                "hasOtherField": false,
+                "texts": [{ "languageId": 9, "text": "loopAns7" }]
+              },
+              {
+                "code": "8",
+                "hasOtherField": false,
+                "texts": [{ "languageId": 9, "text": "loopAns8" }]
+              }
+            ]
+          }
+        ],
+        "variables": [
+          {
+            "name": "q66",
+            "fields": [
+              {
+                "code": "1",
+                "hasOtherField": false,
+                "texts": [{ "languageId": 9, "text": "linl1" }]
+              },
+              {
+                "code": "2",
+                "hasOtherField": false,
+                "texts": [{ "languageId": 9, "text": "l1nl2" }]
+              },
+              {
+                "code": "3",
+                "hasOtherField": false,
+                "texts": [{ "languageId": 9, "text": "l1nl3" }]
+              }
+            ],
+            "isCompound": true,
+            "isBackground": false,
+            "isHidden": false,
+            "variableType": "numeric",
+            "isSystemVariable": false,
+            "isRespondentVariable": false,
+            "precision": 2,
+            "scale": 0,
+            "lowerLimitType": "noLimit",
+            "upperLimitType": "noLimit"
+          },
+          {
+            "name": "q65",
+            "fields": [
+              {
+                "code": "1",
+                "hasOtherField": false,
+                "texts": [{ "languageId": 9, "text": "l1g1" }]
+              },
+              {
+                "code": "2",
+                "hasOtherField": false,
+                "texts": [{ "languageId": 9, "text": "l1g2" }]
+              }
+            ],
+            "isCompound": true,
+            "isBackground": false,
+            "isHidden": false,
+            "variableType": "rating",
+            "isSystemVariable": false,
+            "isRespondentVariable": false,
+            "options": [
+              {
+                "code": "1",
+                "score": 1.0,
+                "hasOtherField": false,
+                "texts": [{ "languageId": 9, "text": "l1g1s1" }]
+              },
+              {
+                "code": "2",
+                "score": 2.0,
+                "hasOtherField": false,
+                "texts": [{ "languageId": 9, "text": "l1g1s2" }]
+              },
+              {
+                "code": "3",
+                "score": 3.0,
+                "hasOtherField": false,
+                "texts": [{ "languageId": 9, "text": "l1g1s3" }]
+              }
+            ]
+          },
+          {
+            "name": "q64",
+            "isCompound": false,
+            "isBackground": false,
+            "isHidden": false,
+            "variableType": "multiChoice",
+            "isSystemVariable": false,
+            "isRespondentVariable": false,
+            "options": [
+              {
+                "code": "1",
+                "hasOtherField": false,
+                "texts": [{ "languageId": 9, "text": "l1m1" }]
+              },
+              {
+                "code": "2",
+                "hasOtherField": false,
+                "texts": [{ "languageId": 9, "text": "l1m2" }]
+              },
+              {
+                "code": "3",
+                "hasOtherField": false,
+                "texts": [{ "languageId": 9, "text": "l1m3" }]
+              }
+            ],
+            "lowerLimitType": "noLimit",
+            "upperLimitType": "noLimit"
+          },
+          {
+            "name": "q54",
+            "isCompound": false,
+            "isBackground": false,
+            "isHidden": false,
+            "variableType": "text",
+            "isSystemVariable": false,
+            "isRespondentVariable": false,
+            "length": -1,
+            "lowerLimitType": "noLimit",
+            "upperLimitType": "noLimit"
+          }
+        ],
+        "children": [
+          {
+            "name": "l3",
+            "texts": [{ "languageId": 9, "text": "" }],
+            "keys": [
+              {
+                "name": "l3",
+                "titles": [{ "languageId": 9, "text": "" }],
+                "isCompound": false,
+                "isBackground": false,
+                "isHidden": false,
+                "variableType": "singleChoice",
+                "isSystemVariable": false,
+                "isRespondentVariable": false,
+                "options": [
+                  {
+                    "code": "1",
+                    "hasOtherField": false,
+                    "texts": [{ "languageId": 9, "text": "ll31" }]
+                  },
+                  {
+                    "code": "2",
+                    "hasOtherField": false,
+                    "texts": [{ "languageId": 9, "text": "ll32" }]
+                  }
+                ]
+              }
+            ],
+            "variables": [
+              {
+                "name": "q69",
+                "titles": [{ "languageId": 9, "text": "open text in l3" }],
+                "isCompound": false,
+                "isBackground": false,
+                "isHidden": false,
+                "variableType": "text",
+                "isSystemVariable": false,
+                "isRespondentVariable": false,
+                "length": -1,
+                "lowerLimitType": "noLimit",
+                "upperLimitType": "noLimit"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "l2",
+        "texts": [{ "languageId": 9, "text": "Loop  l2 title" }],
+        "keys": [
+          {
+            "name": "l2",
+            "titles": [{ "languageId": 9, "text": "Loop  l2 title" }],
+            "isCompound": false,
+            "isBackground": false,
+            "isHidden": false,
+            "variableType": "singleChoice",
+            "isSystemVariable": false,
+            "isRespondentVariable": false,
+            "options": [
+              {
+                "code": "1",
+                "hasOtherField": false,
+                "texts": [{ "languageId": 9, "text": "loopAns1" }]
+              },
+              {
+                "code": "2",
+                "hasOtherField": false,
+                "texts": [{ "languageId": 9, "text": "loopAns2" }]
+              },
+              {
+                "code": "3",
+                "hasOtherField": false,
+                "texts": [{ "languageId": 9, "text": "loopAns3" }]
+              }
+            ]
+          }
+        ],
+        "variables": [
+          {
+            "name": "q56",
+            "isCompound": false,
+            "isBackground": false,
+            "isHidden": false,
+            "variableType": "text",
+            "isSystemVariable": false,
+            "isRespondentVariable": false,
+            "length": -1,
+            "lowerLimitType": "noLimit",
+            "upperLimitType": "noLimit"
+          }
+        ]
+      },
+      {
+        "name": "l4",
+        "texts": [{ "languageId": 9, "text": "" }],
+        "keys": [
+          {
+            "name": "l4",
+            "titles": [{ "languageId": 9, "text": "" }],
+            "isCompound": false,
+            "isBackground": false,
+            "isHidden": false,
+            "variableType": "singleChoice",
+            "isSystemVariable": false,
+            "isRespondentVariable": false,
+            "options": [
+              {
+                "code": "1",
+                "hasOtherField": false,
+                "texts": [{ "languageId": 9, "text": "ll" }]
+              }
+            ]
+          }
+        ],
+        "variables": [
+          {
+            "name": "delinl4",
+            "isCompound": false,
+            "isBackground": false,
+            "isHidden": false,
+            "variableType": "text",
+            "isSystemVariable": false,
+            "isRespondentVariable": false,
+            "length": -1,
+            "lowerLimitType": "noLimit",
+            "upperLimitType": "noLimit"
+          }
+        ]
+      }
+    ]
+  },
+  "links": {
+    "self": "http://ws.euro.confirmit.com/v1/surveys/p913481003361/responses/schema"
+  }
+}

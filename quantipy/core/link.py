@@ -41,7 +41,7 @@ class Link(dict):
         if create_views:
             if '@1' not in list(data.keys()):
                 data['@1'] = np.ones(len(data.index))
-            views._apply_to(self, weights)
+            views._apply_to(self)
 
     def get_meta(self):
         stack = self.stack

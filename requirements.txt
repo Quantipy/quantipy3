@@ -11,4 +11,5 @@ decorator
 watchdog
 requests
 python-pptx
+pyreadstat
 jinja2

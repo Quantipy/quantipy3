@@ -608,11 +608,13 @@ def _count(series, responses, exclusive=False, _not=False):
     #dtype was previously object, now string
     if series.dtype in ['object', 'str', 'int64', 'float64']:
 
-        # Get the dichotomous version of series, previously was 'object' not 'str'
-        dummies = series.dropna().astype('str').str.get_dummies(';')
-        if dummies.columns.dtype == 'str':
-            # This previously only allowed 'str' types and had no notna filter
-            dummies.columns = [int(float(col)) for col in dummies.columns if not np.isnan(col)]
+        # Get the dichotomous version of series
+        dummies = series.astype('str').str.get_dummies(';')
+        # pd 0.25 includes a dummy col for 'nan' but 0.24 didn't
+        if 'nan' in dummies.columns:
+            dummies = dummies.drop('nan', axis=1)
+        if dummies.columns.dtype=='object':
+            dummies.columns = [int(float(col)) for col in dummies.columns]
         try:
             if isinstance(responses[0], tuple):
                 values = responses[1]
@@ -1313,6 +1315,8 @@ def resolve_logic(series, logic, data):
 
     if isinstance(logic, dict):
         wildcard, logic = list(logic.keys())[0], list(logic.values())[0]
+        if type(wildcard) == bytes:
+            wildcard = wildcard.decode('utf8')
         if isinstance(logic, str):
             idx = data[data[wildcard]==logic].index
             vkey = logic
@@ -1422,5 +1426,5 @@ def get_logic_key(logic, data=None):
         logical block.
     """
 
-    idx, vkey = get_logic_index(pd.Series([], dtype=np.float64), logic, data)
+    idx, vkey = get_logic_index(pd.Series([]), logic, data)
     return vkey
