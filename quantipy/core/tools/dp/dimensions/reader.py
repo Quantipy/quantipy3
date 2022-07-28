@@ -1085,5 +1085,4 @@ def order_by_meta(data, columns, masks):
         return result
     new_order = ["id_L1"]
     new_order.extend(_get_column_items(columns, masks))
-    #data = data.ix[:, new_order]
     return data

@@ -395,8 +395,8 @@ def verify_hmerge_data(self, data_l, data_r, data_hm, meta_hm):
     assert_frame_equal(actual, expected)
 
     # check data from right dataset
-    actual = data_hm.ix[r_rows, new_columns].fillna(999)
-    expected = data_r.ix[l_in_r_rows, new_columns].fillna(999)
+    actual = data_hm[r_rows][new_columns].fillna(999)
+    expected = data_r[l_in_r_rows][new_columns].fillna(999)
     self.assertTrue(all([all(values) for values in (actual==expected).values]))
 
 def verify_vmerge_data(self, data_l, data_r, data_vm, meta_vm,
@@ -451,7 +451,7 @@ def verify_vmerge_data(self, data_l, data_r, data_vm, meta_vm,
     if blind_append:
         actual = data_vm.iloc[0:no_l_rows][l_cols].fillna(999)
     else:
-        actual = data_vm.ix[l_in_vm_rows, l_cols].fillna(999)
+        actual = data_vm[l_in_vm_rows][l_cols].fillna(999)
     expected = data_l.fillna(999)
     assert_frame_equal(actual, expected)
 
@@ -459,7 +459,7 @@ def verify_vmerge_data(self, data_l, data_r, data_vm, meta_vm,
     if blind_append:
         actual = data_vm.iloc[0:no_l_rows][r_only_cols].fillna(999)
     else:
-        actual = data_vm.ix[l_in_vm_rows, r_only_cols].fillna(999)
+        actual = data_vm[l_in_vm_rows][r_only_cols].fillna(999)
     self.assertTrue(all([all(values) for values in (actual==999).values]))
 
     # check left rows, row_id column
@@ -467,7 +467,7 @@ def verify_vmerge_data(self, data_l, data_r, data_vm, meta_vm,
         if blind_append:
             actual = data_vm.iloc[0:no_l_rows][row_id_name].fillna(999)
         else:
-            actual = data_vm.ix[l_in_vm_rows, row_id_name].fillna(999)
+            actual = data_vm[l_in_vm_rows][row_id_name].fillna(999)
         self.assertTrue(all(actual==left_id))
 
     ### -- RIGHT ONLY ROWS
@@ -477,8 +477,8 @@ def verify_vmerge_data(self, data_l, data_r, data_vm, meta_vm,
         actual = data_vm.iloc[no_l_rows:][r_only_cols].fillna(999)
         expected = data_r[r_only_cols].fillna(999)
     else:
-        actual = data_vm.ix[r_only_vm_rows, r_only_cols].fillna(999)
-        expected = data_r.ix[l_not_in_r_rows, r_only_cols].fillna(999)
+        actual = data_vm[r_only_vm_rows][r_only_cols].fillna(999)
+        expected = data_r[l_not_in_r_rows][r_only_cols].fillna(999)
     comparison_values = actual.values==expected.values
     self.assertTrue(all([all(values) for values in (comparison_values)]))
 
@@ -487,8 +487,8 @@ def verify_vmerge_data(self, data_l, data_r, data_vm, meta_vm,
         actual = data_vm.iloc[no_l_rows:][overlap_columns].fillna(999)
         expected = data_r[overlap_columns].fillna(999)
     else:
-        actual = data_vm.ix[r_only_vm_rows, overlap_columns].fillna(999)
-        expected = data_r.ix[l_not_in_r_rows, overlap_columns].fillna(999)
+        actual = data_vm[r_only_vm_rows][overlap_columns].fillna(999)
+        expected = data_r[l_not_in_r_rows][overlap_columns].fillna(999)
     comparison_values = actual.values==expected.values
     self.assertTrue(all([all(values) for values in (comparison_values)]))
 
@@ -496,27 +496,27 @@ def verify_vmerge_data(self, data_l, data_r, data_vm, meta_vm,
     if blind_append:
         actual = data_vm.iloc[no_l_rows:][l_only_cols].fillna(999)
     else:
-        actual = data_vm.ix[r_only_vm_rows, l_only_cols].fillna(999)
+        actual = data_vm[r_only_vm_rows][l_only_cols].fillna(999)
     self.assertTrue(all([all(values) for values in (actual==999).values]))
 
     ### -- OVERLAP ROWS
 
     if not blind_append:
         # check overlap rows, right only columns
-        actual = data_vm.ix[overlap_rows, r_only_cols].fillna(999)
+        actual = data_vm[overlap_rows][r_only_cols].fillna(999)
         self.assertTrue(all([all(values) for values in (actual==999).values]))
 
         # check overlap rows, overlap columns
-        actual = data_vm.ix[overlap_rows, overlap_columns].fillna(999)
-        expected = data_l.ix[r_in_l_rows, overlap_columns].fillna(999)
+        actual = data_vm[overlap_rows][overlap_columns].fillna(999)
+        expected = data_l[r_in_l_rows][overlap_columns].fillna(999)
         self.assertTrue(all([all(values) for values in (actual==expected).values]))
 
         # check overlap rows, left only columns
-        actual = data_vm.ix[overlap_rows, overlap_columns].fillna(999)
-        expected = data_l.ix[r_in_l_rows, overlap_columns].fillna(999)
+        actual = data_vm[overlap_rows][overlap_columns].fillna(999)
+        expected = data_l[r_in_l_rows][overlap_columns].fillna(999)
         self.assertTrue(all([all(values) for values in (actual==expected).values]))
 
         # check left rows, row_id column
         if not row_id_name is None:
-            actual = data_vm.ix[r_only_vm_rows, row_id_name].fillna(999)
+            actual = data_vm[r_only_vm_rows][row_id_name].fillna(999)
             self.assertTrue(all(actual==right_id))
