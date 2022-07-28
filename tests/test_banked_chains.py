@@ -455,13 +455,6 @@ def confirm_banked_chain(self, bchain, spec=None, text_key=None, weighted=False)
             (spec['text'][text_key], item['text'][text_key])
             for item in spec['items']]
 
-        # Non-auto painting approach
-#         idx_values = [
-#             (spec['name'], item['text'][text_key])
-#             for item in spec['items']]
-#         expected_0 = zip(*idx_values)[0]
-#         expected_1 = zip(*idx_values)[1]
-
         dk = bchain.data_key
         fk = bchain.filter
         vk = bchain.banked_view_key
