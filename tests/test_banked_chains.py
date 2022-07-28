@@ -470,7 +470,7 @@ def confirm_banked_chain(self, bchain, spec=None, text_key=None, weighted=False)
                 vidx = bchain[dk][fk][xk][yk][vk].dataframe.index
 
                 # Auto-paintin approach
-                self.assertSequenceEqual(vidx, idx_values)
+                self.assertSequenceEqual(vidx.values, idx_values)
 
                 # Non-auto-paining approach
 #                 actual_0 = zip(*vidx.values.tolist())[0]
