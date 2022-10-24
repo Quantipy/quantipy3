@@ -95,6 +95,7 @@ def quantipy_from_confirmit(meta_json, data_json, verbose=False, text_key='en-GB
                     get_nodes_children(child)
 
         for idx, value in enumerate(variable):
+            string_value = ""
             if has_nodes:
                get_nodes_children(value) 
             else:
@@ -108,9 +109,12 @@ def quantipy_from_confirmit(meta_json, data_json, verbose=False, text_key='en-GB
                         col_values_val = int(value["code"])
                     except ValueError:
                         col_values_val = idx + 1
+                        string_value = value["code"] if var_type == 'single' else ''
 
                 language_code = value["texts"][0]["languageId"]
                 values_dict = {"text": { languages[language_code]: value["texts"][0]["text"]}, "value": col_values_val}
+                if string_value:
+                    values_dict['string_value'] = string_value
                 if value.get('score'):
                     values_dict["factor"] = int(value.get('score'))
                 col_values_arr.append(values_dict)
