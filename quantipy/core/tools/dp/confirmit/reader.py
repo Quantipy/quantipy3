@@ -495,7 +495,12 @@ def quantipy_from_confirmit(meta_json, data_json, verbose=False, text_key='en-GB
                 try:
                     data[single] = int(data[single])
                 except:
-                    pass
+                    column_data = output_obj['columns'].get(single)
+                    column_data_values = column_data.get('values', [])
+                    filtered_data_values = list(filter(
+                        lambda x: x.get('string_value') == data[single], column_data_values))
+                    data[single] = filtered_data_values[0].get('value') \
+                        if filtered_data_values else data[single]
             else:
                 data[single] = None
 
