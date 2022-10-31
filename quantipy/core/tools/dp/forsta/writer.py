@@ -1,8 +1,8 @@
-from quantipy.core.tools.dp.confirmit.api_requests import upload_surveys
+from quantipy.core.tools.dp.forsta.api_requests import upload_surveys
 import json
 
 
-def quantipy_to_confirmit(self, projectid, public_url, idp_url, client_id, client_secret, schema_vars):
+def quantipy_to_forsta(self, projectid, public_url, idp_url, client_id, client_secret, schema_vars):
     json_meta = self._original_meta
     to_forsta_format = self._code_mapping['to_forsta_format']
 

@@ -19,12 +19,12 @@ from itertools import product
 from quantipy.core.tools.dp.dimensions.reader import quantipy_from_dimensions
 from quantipy.core.tools.dp.dimensions.writer import dimensions_from_quantipy
 from quantipy.core.tools.dp.decipher.reader import quantipy_from_decipher
-from quantipy.core.tools.dp.confirmit.reader import quantipy_from_confirmit
-from quantipy.core.tools.dp.confirmit.writer import quantipy_to_confirmit
+from quantipy.core.tools.dp.forsta.reader import quantipy_from_forsta
+from quantipy.core.tools.dp.forsta.writer import quantipy_to_forsta
 from quantipy.core.tools.dp.spss.reader import parse_sav_file
 from quantipy.core.tools.dp.spss.writer import save_sav
 from quantipy.core.tools.dp.ascribe.reader import quantipy_from_ascribe
-from .confirmit.api_requests import get_surveys
+from .forsta.api_requests import get_surveys
 import importlib
 
 def make_like_ascii(text):
@@ -326,17 +326,17 @@ def read_decipher(path_json, path_txt, text_key='main'):
     meta, data = quantipy_from_decipher(path_json, path_txt, text_key)
     return meta, data
 
-def read_confirmit_from_files(self, path_meta, path_data, verbose=True):
-    meta, data = quantipy_from_confirmit(self, path_meta, path_data, verbose)
+def read_forsta_from_files(self, path_meta, path_data, verbose=True):
+    meta, data = quantipy_from_forsta(self, path_meta, path_data, verbose)
     return meta, data
 
-def read_confirmit_api(self, projectid, public_url, idp_url, client_id, client_secret, schema_vars, schema_filter, verbose):
+def read_forsta_api(self, projectid, public_url, idp_url, client_id, client_secret, schema_vars, schema_filter, verbose):
     json_data, json_meta = get_surveys(projectid, public_url, idp_url, client_id, client_secret, schema_vars, schema_filter)
-    meta, data = quantipy_from_confirmit(self, json_meta[0], json_data, verbose)
+    meta, data = quantipy_from_forsta(self, json_meta[0], json_data, verbose)
     return json_meta, json_data, meta, data
 
-def write_confirmit_api(self, projectid, public_url, idp_url, client_id, client_secret, schema_vars):
-    return quantipy_to_confirmit(self, projectid, public_url, idp_url, client_id, client_secret, schema_vars)
+def write_forsta_api(self, projectid, public_url, idp_url, client_id, client_secret, schema_vars):
+    return quantipy_to_forsta(self, projectid, public_url, idp_url, client_id, client_secret, schema_vars)
 
 
 def read_spss(path_sav, **kwargs):

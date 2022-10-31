@@ -214,42 +214,42 @@ Confirmit
 
 **Reading (from files):**
 
->>> from quantipy.core.tools.dp.io import read_confirmit_from_files
->>> meta, data = read_confirmit_from_files(path_meta_json, path_data_json, verbose = default False)
+>>> from quantipy.core.tools.dp.io import read_forsta_from_files
+>>> meta, data = read_forsta_from_files(path_meta_json, path_data_json, verbose = default False)
 
-The verbose parameter will store all of the metadata from the Confirmit read
+The verbose parameter will store all of the metadata from the Forsta read
 within a custom element within the Quantipy metadata, this will impact performance
 so only set to true if you intend to write data back via the write method.
 
 **Reading (from API):**
 
->>> from quantipy.core.tools.dp.io import read_confirmit_api
->>> meta, data = read_confirmit_api(projectid, public_url, idp_url, client_id, client_secret, schema_vars, schema_filter, verbose)
+>>> from quantipy.core.tools.dp.io import read_forsta_api
+>>> meta, data = read_forsta_api(projectid, public_url, idp_url, client_id, client_secret, schema_vars, schema_filter, verbose)
 
 By default the verbose parameter will store all of the metadata
-from the Confirmit read within a custom element within the Quantipy metadata.
+from the Forsta read within a custom element within the Quantipy metadata.
 
 * projectid: survey id e.g. p12345
 * public_url: e.g. "https://ws.euro.confirmit.com/"
 * idp_url: e.g. "https://idp.euro.confirmit.com/"
-* client_id: Confirmit clientid
-* client_secret: Confirmit client secret
+* client_id: Forsta clientid
+* client_secret: Forsta client secret
 * schema_vars: variables you wish to download as comma delimited string
 * schema_filter: e.g."response:status='complete'"
 * verbose: default = False
 
-The verbose parameter will store all of the metadata from the Confirmit read
+The verbose parameter will store all of the metadata from the Forsta read
 within a custom element within the Quantipy metadata, this will impact performance
 so only set to true if you intend to write data back via the write method.
 
 **Writing:**
 
->>> from quantipy.core.tools.dp.io import write_confirmit_api
->>> write_confirmit_api(projectid, public_url, idp_url, client_id, client_secret, schema_vars)
+>>> from quantipy.core.tools.dp.io import write_forsta_api
+>>> write_forsta_api(projectid, public_url, idp_url, client_id, client_secret, schema_vars)
 
 * projectid: survey id e.g. p12345
 * public_url: e.g. "https://ws.euro.confirmit.com/"
 * idp_url: e.g. "https://idp.euro.confirmit.com/"
-* client_id: Confirmit clientid
-* client_secret: Confirmit client secret
+* client_id: Forsta clientid
+* client_secret: Forsta client secret
 * schema_vars: variables you wish to upload as comma delimited string

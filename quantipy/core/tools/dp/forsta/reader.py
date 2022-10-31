@@ -5,7 +5,7 @@ from quantipy.core.tools.dp.prep import start_meta
 from .languages_file import languages
 from .helpers import int_or_float
 
-def quantipy_from_confirmit(self, meta_json, data_json, verbose=False, text_key='en-GB'):
+def quantipy_from_forsta(self, meta_json, data_json, verbose=False, text_key='en-GB'):
     types_translations = {
         'numeric': 'float',
         'text': 'string',
@@ -105,10 +105,10 @@ def quantipy_from_confirmit(self, meta_json, data_json, verbose=False, text_key=
                 node_obj = {}
                 node_obj['text'] = {}
                 try:
-                    confirmit_texts = value.get('texts')[0]
-                    language_id = confirmit_texts.get('languageId')
+                    forsta_texts = value.get('texts')[0]
+                    language_id = forsta_texts.get('languageId')
                     if language_id:
-                        node_obj['text'] = { languages[language_id]: confirmit_texts.get('text') }
+                        node_obj['text'] = { languages[language_id]: forsta_texts.get('text') }
                 except (TypeError, KeyError):
                     pass
                 node_obj['value'] = value.get('code')
@@ -147,7 +147,7 @@ def quantipy_from_confirmit(self, meta_json, data_json, verbose=False, text_key=
         else:
             variable = variable_meta
 
-        confirmit_var_type = variable.get('variableType')
+        forsta_var_type = variable.get('variableType')
 
         if has_nodes:
             options = variable.get("nodes")
@@ -158,31 +158,31 @@ def quantipy_from_confirmit(self, meta_json, data_json, verbose=False, text_key=
             "name": variable['name'],
             "type": var_type
         }
-        is_single_grid_var = confirmit_var_type == 'singleChoice' and var_type == 'array'
+        is_single_grid_var = forsta_var_type == 'singleChoice' and var_type == 'array'
         if is_single_grid_var:
             tags = variable.get('tags')
             if tags is not None:
                 variable_obj['tags'] = tags
-        if confirmit_var_type != 'rating' and not is_single_grid_var:
+        if forsta_var_type != 'rating' and not is_single_grid_var:
             variable_obj['parent'] = {}
-        if var_type != 'float' and var_type != 'int' and var_type != 'single' and confirmit_var_type != 'rating' and not is_single_grid_var:
+        if var_type != 'float' and var_type != 'int' and var_type != 'single' and forsta_var_type != 'rating' and not is_single_grid_var:
            variable_obj['properties'] = {}
         if var_type == 'array':
             variable_obj['items'] = get_grid_items(variable)
-            if confirmit_var_type == 'numeric':
+            if forsta_var_type == 'numeric':
                 numeric_type = int_or_float(variable)
                 variable_obj['subtype'] = numeric_type
-            if confirmit_var_type == 'text':
+            if forsta_var_type == 'text':
                 variable_obj['subtype'] = 'string'
-            if confirmit_var_type == 'rating' or confirmit_var_type == 'singleChoice':
+            if forsta_var_type == 'rating' or forsta_var_type == 'singleChoice':
                 variable_obj['subtype'] = 'single'
                 lib['values'][variable['name']] = get_options(options, var_type, is_child, has_nodes)
                 variable_obj['values'] = 'lib@values@' + variable['name']
-            if confirmit_var_type == 'ranking':
+            if forsta_var_type == 'ranking':
                 variable_obj['subtype'] = 'int'
                 lib['values'][variable['name']] = get_options(options, var_type, is_child, has_nodes)
                 variable_obj['values'] = 'lib@values@' + variable['name']
-            if confirmit_var_type == 'multiGrid':
+            if forsta_var_type == 'multiGrid':
                 variable_obj['subtype'] = 'delimited set'
                 if complex_grid:
                     lib['values'][variable['name']] = get_options(options, var_type, is_child, has_nodes)
@@ -229,11 +229,11 @@ def quantipy_from_confirmit(self, meta_json, data_json, verbose=False, text_key=
             except KeyError:
                 pass
 
-    def parse_confirmit_types(variable, loop_of_loop=None):
-        confirmit_var_type = variable.get('variableType')
+    def parse_forsta_types(variable, loop_of_loop=None):
+        forsta_var_type = variable.get('variableType')
         is_loop = variable.get('is_loop')
         if verbose:
-            confirmit_info[variable['name']] = variable
+            forsta_info[variable['name']] = variable
         has_parent = variable.get('parentVariableName')
         if has_parent:
             if has_parent in multigrid_vars:
@@ -300,7 +300,7 @@ def quantipy_from_confirmit(self, meta_json, data_json, verbose=False, text_key=
                             }]
                         }    
 
-        if confirmit_var_type == 'singleChoice':
+        if forsta_var_type == 'singleChoice':
             has_nodes = False
 
             if variable.get('nodes'):
@@ -332,24 +332,24 @@ def quantipy_from_confirmit(self, meta_json, data_json, verbose=False, text_key=
                             if idx == 0:
                                 lc_root_names.append(loop_child['name'])
                             loop_child['name'] = root_name + '_' + lc_root_names[lc_idx] + '_' + opt['code']
-                            parse_confirmit_types(loop_child)
+                            parse_forsta_types(loop_child)
                             loop_child['name'] = lc_root_names[lc_idx]
                         for lol_idx, loop in enumerate(loop_of_loop):
                             if idx == 0:
                                 lol_root_names.append(loop['name'])
                             loop['name'] = root_name + '_' + lol_root_names[lol_idx] + '_' + opt['code']
-                            parse_confirmit_types(loop, lol_root_names[lol_idx])
+                            parse_forsta_types(loop, lol_root_names[lol_idx])
                             loop['name'] = lol_root_names[lol_idx]
 
                 else:
                     columns_output[variable['name']] = get_main_info(variable, 'single', has_nodes=has_nodes)
                     single_vars.append(variable['name'])
-        if confirmit_var_type == 'multiChoice':
+        if forsta_var_type == 'multiChoice':
             delimited_set_vars.append(variable['name'])
             columns_output[variable['name']] = get_main_info(variable, 'delimited set')
-        if confirmit_var_type == 'dateTime':
+        if forsta_var_type == 'dateTime':
             columns_output[variable['name']] = get_main_info(variable, 'date')
-        if confirmit_var_type == 'numeric':
+        if forsta_var_type == 'numeric':
             if variable.get('fields'):
                 parsed_meta = get_main_info(variable, 'array')
                 masks_output[variable['name']] = parsed_meta
@@ -363,7 +363,7 @@ def quantipy_from_confirmit(self, meta_json, data_json, verbose=False, text_key=
             else:
                 numeric_type = int_or_float(variable)
                 columns_output[variable['name']] = get_main_info(variable, numeric_type)
-        if confirmit_var_type == 'text':
+        if forsta_var_type == 'text':
             if variable.get('fields'):
                 parsed_meta = get_main_info(variable, 'array')
                 masks_output[variable['name']] = parsed_meta
@@ -376,7 +376,7 @@ def quantipy_from_confirmit(self, meta_json, data_json, verbose=False, text_key=
                 grid_vars.append({'parent': variable['name'], 'children': text_children_arr})
             else:
                 columns_output[variable['name']] = get_main_info(variable, 'string')
-        if confirmit_var_type == 'rating':
+        if forsta_var_type == 'rating':
             if variable.get('isCompound'):
                 parsed_meta = get_main_info(variable, 'array')
                 masks_output[variable['name']] = parsed_meta
@@ -390,7 +390,7 @@ def quantipy_from_confirmit(self, meta_json, data_json, verbose=False, text_key=
             else:
                 single_vars.append(variable['name'])
                 columns_output[variable['name']] = get_main_info(variable, 'single')
-        if confirmit_var_type == 'ranking':
+        if forsta_var_type == 'ranking':
             parsed_meta = get_main_info(variable, 'array')
             masks_output[variable['name']] = parsed_meta
             fill_items_arr(parsed_meta)
@@ -400,7 +400,7 @@ def quantipy_from_confirmit(self, meta_json, data_json, verbose=False, text_key=
                 columns_output[parsed_subvar_meta['name']] = parsed_subvar_meta
                 int_children_arr.append(parsed_subvar_meta['name'])
             grid_vars.append({'parent': variable['name'], 'children': int_children_arr})
-        if confirmit_var_type == 'multiGrid':
+        if forsta_var_type == 'multiGrid':
             if variable['name'] not in multigrid_vars:
                 multigrid_vars[variable['name']] = {
                     'name': variable['name'],
@@ -425,7 +425,7 @@ def quantipy_from_confirmit(self, meta_json, data_json, verbose=False, text_key=
     data_array = []
     sub_data_array = []
     columns_array = []
-    confirmit_info = {}
+    forsta_info = {}
     if isinstance(data_json, list):
         data_parsed = data_json
     else:
@@ -468,7 +468,7 @@ def quantipy_from_confirmit(self, meta_json, data_json, verbose=False, text_key=
             vars_arr.append(ch_var)
 
     for variable in vars_arr:
-        parse_confirmit_types(variable)
+        parse_forsta_types(variable)
     
     for k, v in multigrid_vars.items():
         parsed_meta = get_main_info(v, 'array', complex_grid=True)
@@ -490,9 +490,9 @@ def quantipy_from_confirmit(self, meta_json, data_json, verbose=False, text_key=
     }
     if verbose:
         info["has_external"] = {
-            "confirmit": {
+            "forsta": {
                 "meta": {
-                    "columns": confirmit_info
+                    "columns": forsta_info
                 }
             }
         }

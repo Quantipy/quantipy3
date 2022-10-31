@@ -15,19 +15,19 @@ CLIENT_ID = os.getenv('CLIENT_ID')
 CLIENT_SECRET = os.getenv('CLIENT_SECRET')
 
 @pytest.fixture
-def confirmit_dataset():
-    dataset = qp.DataSet("confirmit")
-    dataset.read_confirmit_from_files('tests/confirmit_meta.json',
-                                      'tests/confirmit_data.json'
+def forsta_dataset():
+    dataset = qp.DataSet("forsta")
+    dataset.read_forsta_from_files('tests/forsta_meta.json',
+                                      'tests/forsta_data.json'
                                       )
     return dataset
 
 
 @pytest.fixture
-def confirmit_dataset_verbose():
-    dataset = qp.DataSet("confirmit")
-    dataset.read_confirmit_from_files('tests/confirmit_meta.json',
-                                      'tests/confirmit_data.json', verbose=True
+def forsta_dataset_verbose():
+    dataset = qp.DataSet("forsta")
+    dataset.read_forsta_from_files('tests/forsta_meta.json',
+                                      'tests/forsta_data.json', verbose=True
                                       )
     return dataset
 
@@ -59,23 +59,23 @@ def test_reader(quantipy_dataset):
     # import pdb; pdb.set_trace()
 
 
-def test_external_data(confirmit_dataset_verbose):
-    confirmit_external = confirmit_dataset_verbose.meta(
-    )["info"]["has_external"]["confirmit"]["meta"]["columns"]
-    assert confirmit_external["status"]["name"] == "status"
-    assert confirmit_external["q27"]["name"] == "q27"
-    assert confirmit_external["g59"]["name"] == "g59"
+def test_external_data(forsta_dataset_verbose):
+    forsta_external = forsta_dataset_verbose.meta(
+    )["info"]["has_external"]["forsta"]["meta"]["columns"]
+    assert forsta_external["status"]["name"] == "status"
+    assert forsta_external["q27"]["name"] == "q27"
+    assert forsta_external["g59"]["name"] == "g59"
 
 
-def test_single_type(confirmit_dataset):
+def test_single_type(forsta_dataset):
     # single type - no loop reference
-    print(confirmit_dataset.meta('q39'))
-    assert confirmit_dataset.crosstab('q39').shape == (3, 1)
-    print(confirmit_dataset.meta('q21'))
-    assert confirmit_dataset.crosstab('q21').shape == (5, 1)
-    print(confirmit_dataset.crosstab('q39', 'q21'))
-    assert confirmit_dataset.crosstab('q39', 'q21').shape == (3, 4)
-    assert confirmit_dataset.meta()['columns']['q39'] == json.loads("""
+    print(forsta_dataset.meta('q39'))
+    assert forsta_dataset.crosstab('q39').shape == (3, 1)
+    print(forsta_dataset.meta('q21'))
+    assert forsta_dataset.crosstab('q21').shape == (5, 1)
+    print(forsta_dataset.crosstab('q39', 'q21'))
+    assert forsta_dataset.crosstab('q39', 'q21').shape == (3, 4)
+    assert forsta_dataset.meta()['columns']['q39'] == json.loads("""
     {"name": "q39",
     "parent": {},
     "type": "single",
@@ -86,7 +86,7 @@ def test_single_type(confirmit_dataset):
         "value": 2}],
     "text": {"en": "Use script to set values"}}""")
     # single type - with loop reference
-    assert confirmit_dataset.meta()['columns']['q55']['values'][1] == json.loads("""
+    assert forsta_dataset.meta()['columns']['q55']['values'][1] == json.loads("""
     {"text": {"en": "loopAns1"},
     "value":
     {"name": "l2",
@@ -106,7 +106,7 @@ def test_single_type(confirmit_dataset):
         "type": "string",
         "properties": {},
         "text": {"en": ""}}]}}""")
-    assert confirmit_dataset.meta()['columns']['status'] == json.loads("""
+    assert forsta_dataset.meta()['columns']['status'] == json.loads("""
     {"name": "status",
     "parent": {},
     "type": "single",
@@ -137,9 +137,9 @@ def test_single_type(confirmit_dataset):
     #       test functions if that is needed
 
 
-def test_delimited_set_type(confirmit_dataset):
-    print(confirmit_dataset.meta('q1'))
-    assert confirmit_dataset.meta()['columns']['q1'] == json.loads("""
+def test_delimited_set_type(forsta_dataset):
+    print(forsta_dataset.meta('q1'))
+    assert forsta_dataset.meta()['columns']['q1'] == json.loads("""
     {"name": "q1",
     "parent": {},
     "type": "delimited set",
@@ -149,28 +149,28 @@ def test_delimited_set_type(confirmit_dataset):
         {"text": {"en": "ans2"}, "value": 2},
         {"text": {"en": "ans3"}, "value": 3}],
         "text": {"en": "multi - default options"}}""")
-    assert confirmit_dataset.crosstab('q1').shape == (4, 1)
-    print(confirmit_dataset.crosstab('q1', 'q22'))
-    assert confirmit_dataset.crosstab('q1', 'q22').shape == (4, 4)
+    assert forsta_dataset.crosstab('q1').shape == (4, 1)
+    print(forsta_dataset.crosstab('q1', 'q22'))
+    assert forsta_dataset.crosstab('q1', 'q22').shape == (4, 4)
 
 
-def test_number_type(confirmit_dataset):
-    print(confirmit_dataset.meta('q73'))
-    print(confirmit_dataset.crosstab('q73'))
-    assert confirmit_dataset.meta()['columns']['q73'] == json.loads("""
+def test_number_type(forsta_dataset):
+    print(forsta_dataset.meta('q73'))
+    print(forsta_dataset.crosstab('q73'))
+    assert forsta_dataset.meta()['columns']['q73'] == json.loads("""
     {"name": "q73",
     "parent": {},
     "type": "float",
     "text": {"en": "open - numeric"}}
     """)
-    assert confirmit_dataset.crosstab('q73').shape == (71, 1)
-    assert confirmit_dataset.crosstab('q73', 'q39').shape == (71, 2)
+    assert forsta_dataset.crosstab('q73').shape == (71, 1)
+    assert forsta_dataset.crosstab('q73', 'q39').shape == (71, 2)
 
 
-def test_array_type(confirmit_dataset):
-    print(confirmit_dataset.meta()['columns']['q5_1'])
-    assert confirmit_dataset.crosstab('q5_1', 'q39').shape == (52, 2)
-    assert confirmit_dataset.meta()['masks']['q5'] == json.loads("""
+def test_array_type(forsta_dataset):
+    print(forsta_dataset.meta()['columns']['q5_1'])
+    assert forsta_dataset.crosstab('q5_1', 'q39').shape == (52, 2)
+    assert forsta_dataset.meta()['masks']['q5'] == json.loads("""
     {"name": "q5",
     "parent": {},
     "type": "array",
@@ -188,7 +188,7 @@ def test_array_type(confirmit_dataset):
         "subtype": "int",
         "text": {"en": "numeric list"}}""")
 
-    assert confirmit_dataset.meta()['columns']['q5_1'] == json.loads("""
+    assert forsta_dataset.meta()['columns']['q5_1'] == json.loads("""
     {"name": "q5_1",
     "parent": {
         "masks@q5":
@@ -197,15 +197,15 @@ def test_array_type(confirmit_dataset):
         "type": "int"}""")
 
 
-def test_rating_type(confirmit_dataset):
-    assert confirmit_dataset.meta()['columns']['q16[{q16_1}]'] == json.loads("""
+def test_rating_type(forsta_dataset):
+    assert forsta_dataset.meta()['columns']['q16[{q16_1}]'] == json.loads("""
     {"name": "q16[{q16_1}]",
     "parent": {"masks@q16": {"type": "array"}},
     "text": {"en": "ans1"},
     "type": "single",
     "values": "lib@values@q16",
     "properties": {"created": true}}""")
-    assert confirmit_dataset.meta()['masks']['q16'] == json.loads("""
+    assert forsta_dataset.meta()['masks']['q16'] == json.loads("""
     {"name": "q16",
     "type": "array",
     "items": [
@@ -218,7 +218,7 @@ def test_rating_type(confirmit_dataset):
     "subtype": "single",
     "values": "lib@values@q16",
     "text": {"en": "grid - character precodes"}}""")
-    assert confirmit_dataset.meta()['lib']['values']['q16'] == json.loads("""
+    assert forsta_dataset.meta()['lib']['values']['q16'] == json.loads("""
     [{"text": {"en": "1"},
     "value": 1,
     "factor": 1},
@@ -229,11 +229,11 @@ def test_rating_type(confirmit_dataset):
     "factor": 3}]""")
 
 
-def test_ranking_type(confirmit_dataset):
-    print(confirmit_dataset.meta()['columns']['q2_1'])
-    assert confirmit_dataset.crosstab('q2_1', 'q39').shape == (11, 2)
-    print(confirmit_dataset.meta()['masks']['q2'])
-    assert confirmit_dataset.meta()['masks']['q2'] == json.loads("""
+def test_ranking_type(forsta_dataset):
+    print(forsta_dataset.meta()['columns']['q2_1'])
+    assert forsta_dataset.crosstab('q2_1', 'q39').shape == (11, 2)
+    print(forsta_dataset.meta()['masks']['q2'])
+    assert forsta_dataset.meta()['masks']['q2'] == json.loads("""
     {
         "name": "q2",
         "parent": {},
@@ -284,7 +284,7 @@ def test_ranking_type(confirmit_dataset):
         "text": {"en": "ranking- ordered (10 answers)"}
     }""")
 
-    assert confirmit_dataset.meta()['columns']['q2_1'] == json.loads("""
+    assert forsta_dataset.meta()['columns']['q2_1'] == json.loads("""
     {
         "name": "q2_1",
         "parent": {
@@ -294,7 +294,7 @@ def test_ranking_type(confirmit_dataset):
         "type": "int",
         "values": "lib@values@q2"
     }""")
-    assert confirmit_dataset.meta()['sets']['q2'] == json.loads("""
+    assert forsta_dataset.meta()['sets']['q2'] == json.loads("""
     {"items": ["columns@q2_1",
     "columns@q2_2",
     "columns@q2_3",
@@ -308,12 +308,12 @@ def test_ranking_type(confirmit_dataset):
     "name": "q2"}""")
 
 
-def test_multigrid_type(confirmit_dataset):
-    print(confirmit_dataset.meta()['masks']['g56'])
-    print(confirmit_dataset.crosstab('g56_1'))
-    assert confirmit_dataset.crosstab('g56_1', 'q39').shape == (3, 2)
-    print(confirmit_dataset.meta()['masks']['g56'])
-    assert confirmit_dataset.meta()['masks']['g56'] == json.loads("""
+def test_multigrid_type(forsta_dataset):
+    print(forsta_dataset.meta()['masks']['g56'])
+    print(forsta_dataset.crosstab('g56_1'))
+    assert forsta_dataset.crosstab('g56_1', 'q39').shape == (3, 2)
+    print(forsta_dataset.meta()['masks']['g56'])
+    assert forsta_dataset.meta()['masks']['g56'] == json.loads("""
     {
         "name": "g56",
         "parent": {},
@@ -341,8 +341,8 @@ def test_multigrid_type(confirmit_dataset):
     """)
 
 
-def test_single_response_grid_type(confirmit_dataset):
-    assert confirmit_dataset.meta()['columns']['sat_areas[{sat_areas_1}]'] == json.loads("""
+def test_single_response_grid_type(forsta_dataset):
+    assert forsta_dataset.meta()['columns']['sat_areas[{sat_areas_1}]'] == json.loads("""
     {
         "name": "sat_areas[{sat_areas_1}]",
         "parent": {
@@ -352,7 +352,7 @@ def test_single_response_grid_type(confirmit_dataset):
             "values": "lib@values@sat_areas",
             "properties": {"created": true}
     }""")
-    assert confirmit_dataset.meta()['masks']['sat_areas'] == json.loads("""
+    assert forsta_dataset.meta()['masks']['sat_areas'] == json.loads("""
     {
         "name": "sat_areas",
         "type": "array",
@@ -374,7 +374,7 @@ def test_single_response_grid_type(confirmit_dataset):
                 "subtype": "single",
                 "values": "lib@values@sat_areas",
                 "text": {"en": "Area satisfaction"}}""")
-    assert confirmit_dataset.meta()['lib']['values']['sat_areas'] == json.loads("""
+    assert forsta_dataset.meta()['lib']['values']['sat_areas'] == json.loads("""
     [
         {
             "text": {"en": "1"},
@@ -402,7 +402,7 @@ def test_single_response_grid_type(confirmit_dataset):
     ]
 
     """)
-    assert confirmit_dataset.meta()['sets']['sat_areas'] == json.loads("""
+    assert forsta_dataset.meta()['sets']['sat_areas'] == json.loads("""
     {
         "items": ["columns@sat_areas[{sat_areas_1}]",
         "columns@sat_areas[{sat_areas_2}]",
@@ -415,8 +415,8 @@ def test_single_response_grid_type(confirmit_dataset):
     """)
 
 
-def test_loop_variables(confirmit_dataset):
-    assert confirmit_dataset.meta()['columns']['l1_1'] == json.loads("""
+def test_loop_variables(forsta_dataset):
+    assert forsta_dataset.meta()['columns']['l1_1'] == json.loads("""
     {
         "name": "l1_1",
         "type": "single",
@@ -457,7 +457,7 @@ def test_loop_variables(confirmit_dataset):
             }],
             "text": {"en": ""}
             }""")
-    assert confirmit_dataset.meta()['columns']['l1_q66_1_1'] == json.loads("""
+    assert forsta_dataset.meta()['columns']['l1_q66_1_1'] == json.loads("""
     {
         "name": "l1_q66_1_1",
         "parent": {
@@ -466,7 +466,7 @@ def test_loop_variables(confirmit_dataset):
         "text": {"en": "linl1"},
         "type": "int"
     }""")
-    assert confirmit_dataset.meta()['columns']['l1_l3_1_q69_1'] == json.loads("""
+    assert forsta_dataset.meta()['columns']['l1_l3_1_q69_1'] == json.loads("""
     {
         "name": "l1_l3_1_q69_1",
         "type": "string",
@@ -476,10 +476,10 @@ def test_loop_variables(confirmit_dataset):
     }
     """)
 
-@pytest.mark.skip(reason="confirmit api has changed")
+@pytest.mark.skip(reason="forsta api has changed")
 def test_read_from_api():
-    dataset_from_api = qp.DataSet("confirmit")
-    dataset_from_api.read_confirmit_api(projectid="p913481003361",
+    dataset_from_api = qp.DataSet("forsta")
+    dataset_from_api.read_forsta_api(projectid="p913481003361",
                                         public_url=PUBLIC_URL,
                                         idp_url=IDP_URL,
                                         client_id=CLIENT_ID,
@@ -504,10 +504,10 @@ def test_read_from_api():
         "value": 2}],
     "text": {"en": "Use script to set values"}}""")
 
-@pytest.mark.skip(reason="confirmit api has changed")
+@pytest.mark.skip(reason="forsta api has changed")
 def test_writer_to_api():
-    dataset = qp.DataSet("confirmit")
-    response = dataset.write_confirmit_api(projectid="p913481003361",
+    dataset = qp.DataSet("forsta")
+    response = dataset.write_forsta_api(projectid="p913481003361",
                                            public_url=PUBLIC_URL,
                                            idp_url=IDP_URL,
                                            client_id=CLIENT_ID,
@@ -520,10 +520,10 @@ def test_writer_to_api():
     print(response.content)
 
 
-@pytest.mark.skip(reason="confirmit api has changed")
+@pytest.mark.skip(reason="forsta api has changed")
 def test_string_values_to_numbers():
-    dataset = qp.DataSet('Confirmit dataset')
-    dataset.read_confirmit_api(
+    dataset = qp.DataSet('forsta dataset')
+    dataset.read_forsta_api(
         projectid=PROJECT_ID,
         public_url=PUBLIC_URL,
         idp_url=IDP_URL,
@@ -535,10 +535,10 @@ def test_string_values_to_numbers():
     assert 'code_mapping' in dataset.meta()['columns']['continent']
 
 
-@pytest.mark.skip(reason="confirmit api has changed")
+@pytest.mark.skip(reason="forsta api has changed")
 def test_dataset_changed_values():
     dataset_changed = qp.DataSet('we will change this one')
-    dataset_changed.read_confirmit_api(
+    dataset_changed.read_forsta_api(
             projectid=PROJECT_ID,
             public_url=PUBLIC_URL,
             idp_url=IDP_URL,
@@ -551,7 +551,7 @@ def test_dataset_changed_values():
     dataset_changed._data['gender'][0] = 2
     changed = dataset_changed.crosstab('gender')
 
-    dataset_changed.write_confirmit_api(
+    dataset_changed.write_forsta_api(
         projectid=PROJECT_ID,
         public_url=PUBLIC_URL,
         idp_url=IDP_URL,
@@ -561,7 +561,7 @@ def test_dataset_changed_values():
     )
 
     dataset_changed_downloaded = qp.DataSet('downloaded')
-    dataset_changed_downloaded.read_confirmit_api(
+    dataset_changed_downloaded.read_forsta_api(
             projectid=PROJECT_ID,
             public_url=PUBLIC_URL,
             idp_url=IDP_URL,
