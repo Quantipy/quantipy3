@@ -326,17 +326,17 @@ def read_decipher(path_json, path_txt, text_key='main'):
     meta, data = quantipy_from_decipher(path_json, path_txt, text_key)
     return meta, data
 
-def read_confirmit_from_files(path_meta, path_data, verbose=True):
-    meta, data = quantipy_from_confirmit(path_meta, path_data, verbose)
+def read_confirmit_from_files(self, path_meta, path_data, verbose=True):
+    meta, data = quantipy_from_confirmit(self, path_meta, path_data, verbose)
     return meta, data
 
-def read_confirmit_api(projectid, public_url, idp_url, client_id, client_secret, schema_vars, schema_filter, verbose):
+def read_confirmit_api(self, projectid, public_url, idp_url, client_id, client_secret, schema_vars, schema_filter, verbose):
     json_data, json_meta = get_surveys(projectid, public_url, idp_url, client_id, client_secret, schema_vars, schema_filter)
-    meta, data = quantipy_from_confirmit(json_meta[0], json_data, verbose)
-    return meta, data
+    meta, data = quantipy_from_confirmit(self, json_meta[0], json_data, verbose)
+    return json_meta, json_data, meta, data
 
-def write_confirmit_api(projectid, public_url, idp_url, client_id, client_secret, schema_vars):
-    return quantipy_to_confirmit(projectid, public_url, idp_url, client_id, client_secret, schema_vars)
+def write_confirmit_api(self, projectid, public_url, idp_url, client_id, client_secret, schema_vars):
+    return quantipy_to_confirmit(self, projectid, public_url, idp_url, client_id, client_secret, schema_vars)
 
 
 def read_spss(path_sav, **kwargs):

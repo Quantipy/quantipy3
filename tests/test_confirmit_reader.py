@@ -2,8 +2,17 @@ import quantipy as qp
 import pandas as pd
 import json
 import pytest
-import asyncio
+import os
+from dotenv import load_dotenv
 
+
+load_dotenv()
+
+PROJECT_ID = os.getenv('PROJECT_ID')
+PUBLIC_URL = os.getenv('PUBLIC_URL')
+IDP_URL = os.getenv('IDP_URL')
+CLIENT_ID = os.getenv('CLIENT_ID')
+CLIENT_SECRET = os.getenv('CLIENT_SECRET')
 
 @pytest.fixture
 def confirmit_dataset():
@@ -112,7 +121,14 @@ def test_single_type(confirmit_dataset):
         "value": 4},
         {"text": {"en": "Screened"},
         "value": 5}],
-        "text": {"en": "Interview Status"}}""")
+    "code_mapping": {"status": {
+        "complete": 1,
+        "incomplete": 2,
+        "quotafull": 3,
+        "error": 4,
+        "screened": 5
+    }},
+    "text": {"en": "Interview Status"}}""")
     # TODO: assert that dataset.crosstab(single) returns correct shaped
     #       dataframe
     #       assert dataset.crosstab('q39').shape == (1,1)
@@ -464,10 +480,10 @@ def test_loop_variables(confirmit_dataset):
 def test_read_from_api():
     dataset_from_api = qp.DataSet("confirmit")
     dataset_from_api.read_confirmit_api(projectid="p913481003361",
-                                        public_url="https://ws.euro.confirmit.com/",
-                                        idp_url="https://idp.euro.confirmit.com/",
-                                        client_id="71a15e5d-b52d-4534-b54b-fa6e2a9da8a7",
-                                        client_secret="2a943d4d-58ab-42b8-a276-53d07ad34064",
+                                        public_url=PUBLIC_URL,
+                                        idp_url=IDP_URL,
+                                        client_id=CLIENT_ID,
+                                        client_secret=CLIENT_SECRET,
                                         schema_vars='status,q39,q21',
                                         schema_filter="response:status='complete'"
                                         )
@@ -492,13 +508,67 @@ def test_read_from_api():
 def test_writer_to_api():
     dataset = qp.DataSet("confirmit")
     response = dataset.write_confirmit_api(projectid="p913481003361",
-                                           public_url="https://ws.euro.confirmit.com/",
-                                           idp_url="https://idp.euro.confirmit.com/",
-                                           client_id="71a15e5d-b52d-4534-b54b-fa6e2a9da8a7",
-                                           client_secret="2a943d4d-58ab-42b8-a276-53d07ad34064",
+                                           public_url=PUBLIC_URL,
+                                           idp_url=IDP_URL,
+                                           client_id=CLIENT_ID,
+                                           client_secret=CLIENT_SECRET,
                                            schema_vars=["q7", "q9", "q11"])
 
     assert response.status_code == 200
     assert b'insertedRecords' in response.content
     assert b'updatedRecords' in response.content
     print(response.content)
+
+
+@pytest.mark.skip(reason="confirmit api has changed")
+def test_string_values_to_numbers():
+    dataset = qp.DataSet('Confirmit dataset')
+    dataset.read_confirmit_api(
+        projectid=PROJECT_ID,
+        public_url=PUBLIC_URL,
+        idp_url=IDP_URL,
+        client_id=CLIENT_ID,
+        client_secret=CLIENT_SECRET
+    )
+    assert all([type(i) != str for i in list(dataset._data['continent'].value_counts().index)]),\
+         "Index contains string"
+    assert 'code_mapping' in dataset.meta()['columns']['continent']
+
+
+@pytest.mark.skip(reason="confirmit api has changed")
+def test_dataset_changed_values():
+    dataset_changed = qp.DataSet('we will change this one')
+    dataset_changed.read_confirmit_api(
+            projectid=PROJECT_ID,
+            public_url=PUBLIC_URL,
+            idp_url=IDP_URL,
+            client_id=CLIENT_ID,
+            client_secret=CLIENT_SECRET
+        )
+
+    pd.options.mode.chained_assignment = None  # default='warn'
+    # change response 1 from male(1) to female(2)
+    dataset_changed._data['gender'][0] = 2
+    changed = dataset_changed.crosstab('gender')
+
+    dataset_changed.write_confirmit_api(
+        projectid=PROJECT_ID,
+        public_url=PUBLIC_URL,
+        idp_url=IDP_URL,
+        client_id=CLIENT_ID,
+        client_secret=CLIENT_SECRET,
+        schema_vars=['gender']
+    )
+
+    dataset_changed_downloaded = qp.DataSet('downloaded')
+    dataset_changed_downloaded.read_confirmit_api(
+            projectid=PROJECT_ID,
+            public_url=PUBLIC_URL,
+            idp_url=IDP_URL,
+            client_id=CLIENT_ID,
+            client_secret=CLIENT_SECRET
+    )
+
+    downloaded = dataset_changed_downloaded.crosstab('gender')
+    assert all(downloaded.values == changed.values),\
+        "Downloaded values not same as values after change"

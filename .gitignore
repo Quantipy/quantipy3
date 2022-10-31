@@ -28,7 +28,7 @@ tests/Example Data (A).cache
 *.eot
 *.svg
 *.woff
-
+*.env
 *.js
 
 docs/API/_static/

@@ -601,7 +601,7 @@ class DataSet(object):
         """
         if verbose:
             self.write_allowed = True
-        self._meta, self._data = r_confirmit_from_files(path_meta, path_data, verbose)
+        self._meta, self._data = r_confirmit_from_files(self, path_meta, path_data, verbose)
         self._set_file_info(path_data, path_meta, reset=reset)
 
     def read_confirmit_api(self, projectid, public_url, idp_url=None, client_id=None, client_secret=None, reset=True, schema_vars=None, schema_filter=None, verbose=False):
@@ -624,8 +624,9 @@ class DataSet(object):
             client_id = os.getenv('CLIENT_ID')
         if not client_secret:
             client_secret = os.getenv('CLIENT_SECRET')
-
-        self._meta, self._data = r_confirmit_api(projectid, public_url, idp_url, client_id, client_secret, schema_vars, schema_filter, verbose)
+        self._original_meta, self._original_data, self._meta, self._data = \
+            r_confirmit_api(self, projectid, public_url, idp_url, client_id, \
+                            client_secret, schema_vars, schema_filter, verbose)
         self._set_file_info('', reset=reset)
 
     def write_confirmit(self, path_meta, path_data, schema_vars=None, verbose=False):
@@ -646,7 +647,7 @@ class DataSet(object):
 
     def write_confirmit_api(self, projectid, public_url, idp_url, client_id, client_secret, schema_vars):
         """Converts quantipy dataset into Confirmit format and uploads it to the confirmit API"""
-        return w_confirmit_api(projectid, public_url, idp_url, client_id, client_secret, schema_vars)
+        return w_confirmit_api(self, projectid, public_url, idp_url, client_id, client_secret, schema_vars)
 
     def read_spss(self, path_sav, **kwargs):
         """

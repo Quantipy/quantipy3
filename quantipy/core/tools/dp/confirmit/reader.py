@@ -5,13 +5,15 @@ from quantipy.core.tools.dp.prep import start_meta
 from .languages_file import languages
 from .helpers import int_or_float
 
-def quantipy_from_confirmit(meta_json, data_json, verbose=False, text_key='en-GB'):
+def quantipy_from_confirmit(self, meta_json, data_json, verbose=False, text_key='en-GB'):
     types_translations = {
         'numeric': 'float',
         'text': 'string',
         'singleChoice': 'single',
         'multiChoice': 'delimited set' 
     }
+    to_qp_format = {}
+    to_forsta_format = {}
     def create_subvar_meta(parsed_meta, subvar, values=False):
         parent_key = 'masks@' + parsed_meta['name']
         name = subvar['source'].replace('columns@', '')
@@ -72,55 +74,74 @@ def quantipy_from_confirmit(meta_json, data_json, verbose=False, text_key='en-GB
         return children_array
         
 
-    def get_options(variable, var_type, is_child, has_nodes):
-        if variable is None:
-            return None
-        col_values_arr = []
-        def get_nodes_children(value):
-            node_obj = {}
-            node_obj['text'] = {}
-            try:
-                confirmit_texts = value.get('texts')[0]
-                language_id = confirmit_texts.get('languageId')
-                if language_id:
-                    node_obj['text'] = { languages[language_id]: confirmit_texts.get('text') }
-            except (TypeError, KeyError):
-                pass
-            node_obj['value'] = value.get('code')
-
-            col_values_arr.append(node_obj)
-            children = value.get('children')
-            if children:
-                for child in children:
-                    get_nodes_children(child)
-
-        for idx, value in enumerate(variable):
-            string_value = ""
-            if has_nodes:
-               get_nodes_children(value) 
-            else:
-                loopReference = value.get('loopReference')
-                if(loopReference and var_type == 'single'):
-                    filtered_loop_ref = filter(lambda x: x['name']  == loopReference, children_vars) 
-                    child_var = list(filtered_loop_ref)
-                    col_values_val = get_main_info(child_var[0], var_type, is_child=True)
-                else:
-                    try:
-                        col_values_val = int(value["code"])
-                    except ValueError:
-                        col_values_val = idx + 1
-                        string_value = value["code"] if var_type == 'single' else ''
-
-                language_code = value["texts"][0]["languageId"]
-                values_dict = {"text": { languages[language_code]: value["texts"][0]["text"]}, "value": col_values_val}
-                if string_value:
-                    values_dict['string_value'] = string_value
-                if value.get('score'):
-                    values_dict["factor"] = int(value.get('score'))
-                col_values_arr.append(values_dict)
-        return col_values_arr
-
     def get_main_info(variable_meta, var_type, has_nodes=False, is_child=False, complex_grid=False):
+        should_add_code_mapping = False
+
+        def add_code_mapping(var_name, options):
+            encode = {
+                var_name: {}
+            }
+            decode = {
+                var_name: {}
+            }
+            for idx, option in enumerate(options):
+                encode[var_name][option['code']] = idx + 1
+                decode[var_name][idx + 1] = option['code']
+
+            to_qp_format[var_name] = encode[var_name]
+            to_forsta_format[var_name] = decode[var_name]
+            self._code_mapping = {
+                'to_qp_format': to_qp_format,
+                'to_forsta_format': to_forsta_format
+                }
+            return encode
+
+        def get_options(variable, var_type, is_child, has_nodes):
+            nonlocal should_add_code_mapping
+            if variable is None:
+                return None
+            col_values_arr = []
+            def get_nodes_children(value):
+                node_obj = {}
+                node_obj['text'] = {}
+                try:
+                    confirmit_texts = value.get('texts')[0]
+                    language_id = confirmit_texts.get('languageId')
+                    if language_id:
+                        node_obj['text'] = { languages[language_id]: confirmit_texts.get('text') }
+                except (TypeError, KeyError):
+                    pass
+                node_obj['value'] = value.get('code')
+
+                col_values_arr.append(node_obj)
+                children = value.get('children')
+                if children:
+                    for child in children:
+                        get_nodes_children(child)
+
+            for idx, value in enumerate(variable):
+                if has_nodes:
+                    get_nodes_children(value) 
+                else:
+                    loopReference = value.get('loopReference')
+                    if(loopReference and var_type == 'single'):
+                        filtered_loop_ref = filter(lambda x: x['name']  == loopReference, children_vars) 
+                        child_var = list(filtered_loop_ref)
+                        col_values_val = get_main_info(child_var[0], var_type, is_child=True)
+                    else:
+                        try:
+                            col_values_val = int(value["code"])
+                        except ValueError:
+                            should_add_code_mapping = True
+                            col_values_val = idx + 1
+
+                    language_code = value["texts"][0]["languageId"]
+                    values_dict = {"text": { languages[language_code]: value["texts"][0]["text"]}, "value": col_values_val}
+                    if value.get('score'):
+                        values_dict["factor"] = int(value.get('score'))
+                    col_values_arr.append(values_dict)
+            return col_values_arr
+
         if is_child:
             variable = variable_meta.get('keys')[0]
         else:
@@ -169,6 +190,8 @@ def quantipy_from_confirmit(meta_json, data_json, verbose=False, text_key='en-GB
 
         if var_type != 'float' and var_type != 'int' and var_type != 'array' and var_type != 'string' and var_type != 'date':
             variable_obj['values'] = get_options(options, var_type, is_child, has_nodes)
+            if var_type == 'single' and should_add_code_mapping:
+                variable_obj['code_mapping'] = add_code_mapping(variable['name'], options)
         if variable.get('titles'):
             language_code = variable['titles'][0].get("languageId")
             if language_code:
@@ -495,12 +518,7 @@ def quantipy_from_confirmit(meta_json, data_json, verbose=False, text_key='en-GB
                 try:
                     data[single] = int(data[single])
                 except:
-                    column_data = output_obj['columns'].get(single)
-                    column_data_values = column_data.get('values', [])
-                    filtered_data_values = list(filter(
-                        lambda x: x.get('string_value') == data[single], column_data_values))
-                    data[single] = filtered_data_values[0].get('value') \
-                        if filtered_data_values else data[single]
+                    pass
             else:
                 data[single] = None
 
@@ -513,5 +531,5 @@ def quantipy_from_confirmit(meta_json, data_json, verbose=False, text_key='en-GB
             else:
                 data[delset_var] = None
 
-    df = pd.DataFrame.from_dict(data=data_parsed)
+    df = pd.DataFrame.from_dict(data=data_parsed).replace(to_qp_format)
     return output_obj, df
