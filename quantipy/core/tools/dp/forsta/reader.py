@@ -531,5 +531,7 @@ def quantipy_from_forsta(self, meta_json, data_json, verbose=False, text_key='en
             else:
                 data[delset_var] = None
 
-    df = pd.DataFrame.from_dict(data=data_parsed).replace(to_qp_format)
+    df = pd.DataFrame.from_dict(data=data_parsed)
+    for var in to_qp_format.keys():
+        df[var] = df[var].apply(lambda x: to_qp_format.get(var).get(x))
     return output_obj, df
