@@ -374,7 +374,7 @@ def read_quantipy(path_json, path_csv):
     data = load_csv(path_csv)
 
     for col in list(meta['columns'].keys()):
-        if meta['columns'][col]['type']=='date':
+        if meta['columns'][col]['type']=='date' and col in data.columns:
             data[col] = pd.to_datetime(data[col])
 
     return meta, data
