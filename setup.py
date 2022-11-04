@@ -12,7 +12,8 @@ versions = dict(numpy='1.14.5',
 precisions = dict(numpy='==',
                   scipy='==',
                   pandas='==',
-                  ftfy='==')
+                  ftfy='==',
+                  pyreadstat='==')
 
 libs = ['numpy',
         'scipy',
