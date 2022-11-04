@@ -11,4 +11,4 @@ decorator
 watchdog
 requests
 python-pptx
-pyreadstat
+pyreadstat==1.1.2

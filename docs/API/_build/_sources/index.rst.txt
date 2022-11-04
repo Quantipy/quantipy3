@@ -35,7 +35,7 @@ and `numpy <http://www.numpy.org/>`_ libraries. Aimed at social and marketing re
 Key features
 """"""""""""
 
-* Reads plain .csv, converts from Dimensions, SPSS, Decipher, Ascribe and Confirmit
+* Reads plain .csv, converts from Dimensions, SPSS, Decipher, Ascribe and Forsta
 * Open metadata format to describe and manage datasets
 * Powerful, metadata-driven cleaning, editing, recoding and transformation of datasets
 * Computation and assessment of data weights

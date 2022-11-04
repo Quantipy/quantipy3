@@ -10,9 +10,9 @@ from quantipy.core.tools.dp.io import (
     read_decipher as r_decipher,
     read_spss as r_spss,
     read_ascribe as r_ascribe,
-    read_confirmit_from_files as r_confirmit_from_files,
-    read_confirmit_api as r_confirmit_api,
-    write_confirmit_api as w_confirmit_api,
+    read_forsta_from_files as r_forsta_from_files,
+    read_forsta_api as r_forsta_api,
+    write_forsta_api as w_forsta_api,
     write_spss as w_spss,
     write_quantipy as w_quantipy,
     write_dimensions as w_dimensions)
@@ -585,8 +585,8 @@ class DataSet(object):
         self._rename_blacklist_vars()
         return None
 
-    def read_confirmit_from_files(self, path_meta, path_data, reset=True, verbose=False):
-        """Read confirmit data
+    def read_forsta_from_files(self, path_meta, path_data, reset=True, verbose=False):
+        """Read forsta data
 
         Parameters
         ----------
@@ -601,11 +601,11 @@ class DataSet(object):
         """
         if verbose:
             self.write_allowed = True
-        self._meta, self._data = r_confirmit_from_files(path_meta, path_data, verbose)
+        self._meta, self._data = r_forsta_from_files(self, path_meta, path_data, verbose)
         self._set_file_info(path_data, path_meta, reset=reset)
 
-    def read_confirmit_api(self, projectid, public_url, idp_url=None, client_id=None, client_secret=None, reset=True, schema_vars=None, schema_filter=None, verbose=False):
-        """Read confirmit data from confirmit api
+    def read_forsta_api(self, projectid, public_url, idp_url=None, client_id=None, client_secret=None, reset=True, schema_vars=None, schema_filter=None, verbose=False):
+        """Read forsta data from forsta api
 
         Parameters
         ----------
@@ -624,12 +624,13 @@ class DataSet(object):
             client_id = os.getenv('CLIENT_ID')
         if not client_secret:
             client_secret = os.getenv('CLIENT_SECRET')
-
-        self._meta, self._data = r_confirmit_api(projectid, public_url, idp_url, client_id, client_secret, schema_vars, schema_filter, verbose)
+        self._original_meta, self._original_data, self._meta, self._data = \
+            r_forsta_api(self, projectid, public_url, idp_url, client_id, \
+                            client_secret, schema_vars, schema_filter, verbose)
         self._set_file_info('', reset=reset)
 
-    def write_confirmit(self, path_meta, path_data, schema_vars=None, verbose=False):
-        """Converts quantipy dataset into Confirmit format"""
+    def write_forsta(self, path_meta, path_data, schema_vars=None, verbose=False):
+        """Converts quantipy dataset into forsta format"""
         try:
             if self.write_allowed:
                 res_meta_string = json.dumps(self._meta)
@@ -644,9 +645,9 @@ class DataSet(object):
         except AttributeError:
             raise Exception("Must set has_external parameter in read method first")
 
-    def write_confirmit_api(self, projectid, public_url, idp_url, client_id, client_secret, schema_vars):
-        """Converts quantipy dataset into Confirmit format and uploads it to the confirmit API"""
-        return w_confirmit_api(projectid, public_url, idp_url, client_id, client_secret, schema_vars)
+    def write_forsta_api(self, projectid, public_url, idp_url, client_id, client_secret, schema_vars):
+        """Converts quantipy dataset into forsta format and uploads it to the forsta API"""
+        return w_forsta_api(self, projectid, public_url, idp_url, client_id, client_secret, schema_vars)
 
     def read_spss(self, path_sav, **kwargs):
         """
@@ -1931,7 +1932,7 @@ class DataSet(object):
             idx = self.manifest_filter(f)
         else:
             idx = self.take(f)
-        data = self._data.copy().iloc[idx]
+        data = self._data.copy().loc[idx]
         stack = qp.Stack(name='ct', add_data={'ct': (data, self._meta)})
         if xtotal or not y:
             y = ['@'] + self.unroll(y)
