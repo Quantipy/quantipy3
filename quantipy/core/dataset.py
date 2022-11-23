@@ -1932,7 +1932,7 @@ class DataSet(object):
             idx = self.manifest_filter(f)
         else:
             idx = self.take(f)
-        data = self._data.copy().iloc[idx]
+        data = self._data.copy().loc[idx]
         stack = qp.Stack(name='ct', add_data={'ct': (data, self._meta)})
         if xtotal or not y:
             y = ['@'] + self.unroll(y)
