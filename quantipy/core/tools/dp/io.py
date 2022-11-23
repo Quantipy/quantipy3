@@ -330,8 +330,8 @@ def read_forsta_from_files(self, path_meta, path_data, verbose=True):
     meta, data = quantipy_from_forsta(self, path_meta, path_data, verbose)
     return meta, data
 
-def read_forsta_api(self, projectid, public_url, idp_url, client_id, client_secret, schema_vars, schema_filter, verbose):
-    json_data, json_meta = get_surveys(projectid, public_url, idp_url, client_id, client_secret, schema_vars, schema_filter)
+def read_forsta_api(self, projectid, public_url, idp_url, client_id, client_secret, schema_vars, data_filter, verbose):
+    json_data, json_meta = get_surveys(projectid, public_url, idp_url, client_id, client_secret, schema_vars, data_filter)
     meta, data = quantipy_from_forsta(self, json_meta[0], json_data, verbose)
     return json_meta, json_data, meta, data
 
