@@ -12,8 +12,8 @@ def get_surveys(projectid, public_url, idp_url, client_id, client_secret, schema
     data_params = {}
     meta_params = {}
     if schema_vars:
-        data_params['variables'] = schema_vars
-        meta_params['variables'] = schema_vars
+        data_params['variables'] = ','.join(schema_vars)
+        meta_params['variables'] = ','.join(schema_vars)
 
     if schema_filter:
         data_params['filterExpression'] = schema_filter

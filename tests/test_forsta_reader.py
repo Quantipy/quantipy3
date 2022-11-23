@@ -507,6 +507,14 @@ def test_read_from_api():
 @pytest.mark.skip(reason="forsta api has changed")
 def test_writer_to_api():
     dataset = qp.DataSet("forsta")
+    dataset.read_forsta_api(
+    projectid="p913481003361",
+    public_url=PUBLIC_URL,
+    idp_url=IDP_URL,
+    client_id=CLIENT_ID,
+    client_secret=CLIENT_SECRET,
+    schema_vars=["q9", "q7", "q11"]
+    )
     response = dataset.write_forsta_api(projectid="p913481003361",
                                            public_url=PUBLIC_URL,
                                            idp_url=IDP_URL,
