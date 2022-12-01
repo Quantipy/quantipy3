@@ -2,7 +2,7 @@ import requests as req
 import json
 
 
-def get_surveys(projectid, public_url, idp_url, client_id, client_secret, schema_vars=None, schema_filter=None):
+def get_surveys(projectid, public_url, idp_url, client_id, client_secret, schema_vars=None, data_filter=None):
     # Source configuration
     source_projectid = projectid
     source_public_site_url = public_url
@@ -12,11 +12,11 @@ def get_surveys(projectid, public_url, idp_url, client_id, client_secret, schema
     data_params = {}
     meta_params = {}
     if schema_vars:
-        data_params['variables'] = schema_vars
-        meta_params['variables'] = schema_vars
+        data_params['variables'] = ','.join(schema_vars)
+        meta_params['variables'] = ','.join(schema_vars)
 
-    if schema_filter:
-        data_params['filterExpression'] = schema_filter
+    if data_filter:
+        data_params['filterExpression'] = data_filter
 
     def get_token(source_idp_url, source_client_id, source_client_secret):
         # Get access token

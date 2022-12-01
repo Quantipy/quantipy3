@@ -604,7 +604,7 @@ class DataSet(object):
         self._meta, self._data = r_forsta_from_files(self, path_meta, path_data, verbose)
         self._set_file_info(path_data, path_meta, reset=reset)
 
-    def read_forsta_api(self, projectid, public_url, idp_url=None, client_id=None, client_secret=None, reset=True, schema_vars=None, schema_filter=None, verbose=False):
+    def read_forsta_api(self, projectid, public_url, idp_url=None, client_id=None, client_secret=None, reset=True, schema_vars=None, data_filter=None, verbose=False):
         """Read forsta data from forsta api
 
         Parameters
@@ -626,7 +626,7 @@ class DataSet(object):
             client_secret = os.getenv('CLIENT_SECRET')
         self._original_meta, self._original_data, self._meta, self._data = \
             r_forsta_api(self, projectid, public_url, idp_url, client_id, \
-                            client_secret, schema_vars, schema_filter, verbose)
+                            client_secret, schema_vars, data_filter, verbose)
         self._set_file_info('', reset=reset)
 
     def write_forsta(self, path_meta, path_data, schema_vars=None, verbose=False):
