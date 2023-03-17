@@ -60,7 +60,7 @@ def quantipy_from_forsta(self, meta_json, data_json, verbose=False, text_key='en
                     else:
                         source = "columns@{variable_name}_{field}" \
                             .format(variable_name=variable['name'], field=field['code'])
-                    language_code = field['texts'][0].get('languageId')
+                    language_code = field['texts'][0].get('languageId') if field.get("texts") else None
                     language_text = {}
                     if language_code:
                         language_text[languages[language_code]] = field['texts'][0]['text']
@@ -135,8 +135,11 @@ def quantipy_from_forsta(self, meta_json, data_json, verbose=False, text_key='en
                             should_add_code_mapping = True
                             col_values_val = idx + 1
 
-                    language_code = value["texts"][0]["languageId"]
-                    values_dict = {"text": { languages[language_code]: value["texts"][0]["text"]}, "value": col_values_val}
+                    values_dict = {"value": col_values_val}
+                    if value.get("texts"):
+                        language_code = value["texts"][0]["languageId"]
+                        values_dict["text"] = { languages[language_code]: value["texts"][0]["text"]}
+
                     if value.get('score'):
                         values_dict["factor"] = int(value.get('score'))
                     col_values_arr.append(values_dict)
