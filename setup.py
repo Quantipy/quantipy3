@@ -41,7 +41,7 @@ else:
     INSTALL_REQUIRES = version_libs(libs, precisions, versions)
 
 setup(name='quantipy3',
-      version='0.2.13',
+      version='0.2.16',
       author='Geir Freysson',
       author_email='geir@datasmoothie.com',
       packages=find_packages(exclude=['tests']),
