@@ -139,6 +139,8 @@ def quantipy_from_forsta(self, meta_json, data_json, verbose=False, text_key='en
                     if value.get("texts"):
                         language_code = value["texts"][0]["languageId"]
                         values_dict["text"] = { languages[language_code]: value["texts"][0]["text"]}
+                    else:
+                        values_dict["text"] = { global_language: ''}
 
                     if value.get('score'):
                         values_dict["factor"] = int(value.get('score'))
