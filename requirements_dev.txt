@@ -1,5 +1,5 @@
 pytest
 pytest-cov
 pytest-xdist # allows the use of multiple cores for testing
-python-dotenv==0.21.0
+python-dotenv==1.2.2
 -e .
